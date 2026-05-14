@@ -4,7 +4,7 @@
 
 async function inviaEmail(emailDestinatario, idModelloBrevo, parametriMail) {
     // IL TUO NUOVO URL DI GOOGLE APPS SCRIPT
-    const WORKER_URL = "https://script.google.com/macros/s/AKfycbxGsCn32UQ69OqhbQCIn22PXCeZsgAmalrquDdjqAvKbVha9Nl_THl2I5EZSA-TYJJc/exec";
+    const WORKER_URL = "https://script.google.com/macros/s/AKfycbygPgpwK_kQVIpIreMy_l-X7cueedH1rle3QByC5Ok6-SAOSBI5_pZnu5Avnd16iHQn/exec";
     try {
         const response = await fetch(WORKER_URL, {
             method: "POST",
