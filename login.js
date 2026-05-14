@@ -3,15 +3,16 @@
    ============================================================ */
 
 async function inviaEmail(emailDestinatario, idModelloBrevo, parametriMail) {
-    const WORKER_URL = "https://harzafi-email.allorasonoadam.workers.dev/";
+    // IL TUO NUOVO URL DI GOOGLE APPS SCRIPT
+    const WORKER_URL = "https://script.google.com/macros/s/AKfycbxGsCn32UQ69OqhbQCIn22PXCeZsgAmalrquDdjqAvKbVha9Nl_THl2I5EZSA-TYJJc/exec";
     try {
         const response = await fetch(WORKER_URL, {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "text/plain" }, // <-- OBBLIGATORIO PER NON AVERE ERRORI CORS
             body: JSON.stringify({ emailDestinatario, idModelloBrevo, parametriMail })
         });
         const data = await response.json();
-        if (!response.ok) throw new Error(data.error || "Errore sconosciuto");
+        if (!data.success) throw new Error(data.error || "Errore sconosciuto");
     } catch (err) { console.error("❌ Email error:", err); }
 }
 
