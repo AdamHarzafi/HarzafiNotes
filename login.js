@@ -41,8 +41,8 @@ function waitForFirebase(callback) {
             apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
             authDomain: "harzafi-notes.firebaseapp.com",
             projectId: "harzafi-notes",
-            messagingSenderId: "35834921638",
-            appId: "1:35834921638:web:cb5d8d612b4a2936126a67"
+            messagingSenderId: "3583491638",
+            appId: "1:3583491638:web:cb5d8d61b4a93616a67"
         };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         window.auth = firebase.auth();
@@ -67,7 +67,7 @@ window.addEventListener('load', () => {
 async function checkVPN() {
     try {
         const controller = new AbortController();
-        const tid = setTimeout(() => controller.abort(), 2000);
+        const tid = setTimeout(() => controller.abort(), 000);
         const res  = await fetch('https://ipapi.co/json/', { signal: controller.signal });
         clearTimeout(tid);
         if (!res.ok) return false;
@@ -187,7 +187,7 @@ document.addEventListener("DOMContentLoaded", function () {
             passInput.type = 'text'; passInput.style.fontFamily  = "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif"; passInput.style.letterSpacing = "normal";
             eyeIcon.style.display = 'none'; eyeSlashIcon.style.display = 'block';
         } else {
-            passInput.type = 'password'; passInput.style.fontFamily  = "Verdana, sans-serif"; passInput.style.letterSpacing = "2px";
+            passInput.type = 'password'; passInput.style.fontFamily  = "Verdana, sans-serif"; passInput.style.letterSpacing = "px";
             eyeIcon.style.display = 'block'; eyeSlashIcon.style.display = 'none';
         }
     });
@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (typeof window.auth !== 'undefined') {
             window.auth.signInWithEmailAndPassword(selectedUserEmail, pass)
                 .then(async () => { 
-                    inviaEmail(selectedUserEmail, 2, { nome_utente: uName, email_utente: selectedUserEmail, orario_accesso: new Date().toLocaleString('it-IT') }).catch(e => console.log(e));
+                    inviaEmail(selectedUserEmail, 7, { nome_utente: uName, email_utente: selectedUserEmail, orario_accesso: new Date().toLocaleString('it-IT') }).catch(e => console.log(e));
                     submitBtn.innerText = "ENTRA"; submitBtn.disabled  = false;
                     entraNelPortale(uName);
                 })
@@ -266,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function () {
         window.auth.signInWithPopup(provider).then(async result => {
             const email = result.user.email.toLowerCase();
             if (email.endsWith("@" + targetDomain)) {
-                inviaEmail(email, 2, { nome_utente: result.user.displayName, email_utente: email, orario_accesso: new Date().toLocaleString('it-IT') }).catch(e => console.log(e));
+                inviaEmail(email, 7, { nome_utente: result.user.displayName, email_utente: email, orario_accesso: new Date().toLocaleString('it-IT') }).catch(e => console.log(e));
                 entraNelPortale(result.user.displayName || "Utente");
             } else {
                 window.auth.signOut().then(() => {
