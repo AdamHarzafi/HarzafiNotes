@@ -2,13 +2,22 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Dashboard — Harzafi Notes</title>
+    
+    <!-- Ottimizzazioni per App Mobile -->
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ffffff">
+    
+    <!-- Font e CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/png" sizes="32x32" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
 </head>
 <body>
-    <!-- NAVBAR -->
+    
+    <!-- NAVBAR CON LOGO IMMAGINE -->
     <nav class="navbar-wrapper glass scrolled" style="display:flex; justify-content:space-between; z-index:100;">
         <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Logo Harzafi" style="height: 36px; object-fit: contain;">
         <div style="display:flex; gap:15px; align-items:center;">
@@ -19,7 +28,7 @@
 
     <!-- DASHBOARD LAYOUT -->
     <div class="dash-layout" style="margin-top: 100px;">
-        <!-- SIDEBAR MATERIE -->
+        <!-- SIDEBAR MATERIE SCORREVOLE SU MOBILE -->
         <aside class="sidebar-materie">
             <h3 style="margin-bottom:20px; font-weight:900; font-size:1.2rem; color:var(--text-dark);">Materie 3°A</h3>
             <button class="materia-btn active" onclick="filtraMateria('Tutte')">Tutti i file</button>
@@ -33,16 +42,17 @@
             <button class="materia-btn" onclick="filtraMateria('Matematica')">Matematica <span class="prof-name">Abramo Rosamaria</span></button>
         </aside>
 
-        <!-- MAIN CONTENT -->
+        <!-- MAIN CONTENT (GRIGLIA APPUNTI) -->
         <main>
             <h2 id="titoloMateria" style="font-weight:900; margin-bottom:30px; font-size:2rem; letter-spacing:-1px;">Tutti i file</h2>
             <div id="notesContainer" class="notes-grid">
+                <!-- Qui vengono iniettati gli appunti dal file dashboard.js -->
                 <p style="color:var(--text-light); font-weight:700; font-size:1.1rem;">Caricamento appunti dal server...</p>
             </div>
         </main>
     </div>
 
-    <!-- MODALE UPLOAD -->
+    <!-- MODALE UPLOAD CON TENDINA PREMIUM -->
     <div id="uploadModal" class="modal-overlay">
         <div class="modal-content">
             <button id="btnChiudiUpload" class="close-btn">×</button>
@@ -50,17 +60,22 @@
             
             <input type="text" id="upTitolo" class="apple-input" placeholder="Titolo dell'appunto (es. Slide Reti IP)" style="width:100%; margin-bottom:15px;">
             
-            <div class="custom-select" style="margin-bottom:20px;">
-                <select id="upMateria" class="apple-input" style="width:100%; padding:0 20px;">
-                    <option value="Informatica">Informatica</option>
-                    <option value="Lingua Italiana">Lingua Italiana</option>
-                    <option value="Lingua Inglese">Lingua Inglese</option>
-                    <option value="Sistemi e Reti">Sistemi e Reti</option>
-                    <option value="Storia">Storia</option>
-                    <option value="TPSIT">TPSIT</option>
-                    <option value="Telecomunicazioni">Telecomunicazioni</option>
-                    <option value="Matematica">Matematica</option>
-                </select>
+            <!-- Tendina Estetica (Nuovo Stile) -->
+            <div class="custom-select" id="upload-materia-select" style="margin-bottom:20px;">
+                <button type="button" class="custom-select-trigger" aria-expanded="false">
+                    <span id="upload-materia-display">Informatica</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;color:var(--text-light);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                </button>
+                <div class="custom-options" id="upload-materia-options">
+                    <div class="custom-option">Informatica</div>
+                    <div class="custom-option">Lingua Italiana</div>
+                    <div class="custom-option">Lingua Inglese</div>
+                    <div class="custom-option">Sistemi e Reti</div>
+                    <div class="custom-option">Storia</div>
+                    <div class="custom-option">TPSIT</div>
+                    <div class="custom-option">Telecomunicazioni</div>
+                    <div class="custom-option">Matematica</div>
+                </div>
             </div>
 
             <div class="file-input-wrapper">
@@ -80,11 +95,12 @@
         </div>
     </div>
 
-    <!-- Firebase -->
+    <!-- Script Firebase (Compat mode) -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     
+    <!-- Script Logica Dashboard -->
     <script src="dashboard.js"></script>
 </body>
 </html>
