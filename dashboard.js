@@ -19,7 +19,7 @@ const db = firebase.firestore();
 // Cloudinary Config
 const CLOUDINARY_CLOUD_NAME = "dxttlpg0g";
 const CLOUDINARY_UPLOAD_PRESET = "harzafi_notes";
-const ADMIN_EMAIL = "adamharzafi@gmail.com";
+const ADMIN_EMAIL = "s11205413d@studenti.itisavogadro.it";
 
 // Controlla autenticazione
 auth.onAuthStateChanged(user => {
