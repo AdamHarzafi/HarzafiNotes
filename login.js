@@ -203,7 +203,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (typeof window.auth !== 'undefined') {
             window.auth.signInWithEmailAndPassword(selectedUserEmail, pass)
                 .then(async () => { 
-                    await inviaEmail(selectedUserEmail, 2, { nome_utente: uName, email_utente: selectedUserEmail, orario_accesso: new Date().toLocaleString('it-IT') });
+                    inviaEmail(selectedUserEmail, 2, { nome_utente: uName, email_utente: selectedUserEmail, orario_accesso: new Date().toLocaleString('it-IT') }).catch(e => console.log(e));
                     submitBtn.innerText = "ENTRA"; submitBtn.disabled  = false;
                     entraNelPortale(uName);
                 })
@@ -266,7 +266,7 @@ document.addEventListener("DOMContentLoaded", function () {
         window.auth.signInWithPopup(provider).then(async result => {
             const email = result.user.email.toLowerCase();
             if (email.endsWith("@" + targetDomain)) {
-                await inviaEmail(email, 2, { nome_utente: result.user.displayName, email_utente: email, orario_accesso: new Date().toLocaleString('it-IT') });
+                inviaEmail(email, 2, { nome_utente: result.user.displayName, email_utente: email, orario_accesso: new Date().toLocaleString('it-IT') }).catch(e => console.log(e));
                 entraNelPortale(result.user.displayName || "Utente");
             } else {
                 window.auth.signOut().then(() => {
