@@ -56,9 +56,12 @@ window.filtraMateria = function(materia) {
 };
 
 // Carica appunti da Firestore
+// Aggiungi in alto nel file la variabile per la tendina
+let materiaUploadSelezionata = "Informatica";
+
 function caricaAppunti(materia) {
     const container = document.getElementById('notesContainer');
-    container.innerHTML = '<p style="color:var(--text-light); font-weight:700;">Recupero file dal server...</p>';
+    container.innerHTML = '<div class="btn-loader" style="justify-content:flex-start; margin-top:20px;"><div class="btn-spinner"></div><span style="font-weight:700; color:var(--text-gray);">Sincronizzazione file...</span></div>';
     
     let query = db.collection('appunti').orderBy('data', 'desc');
     if (materia !== "Tutte") query = query.where('materia', '==', materia);
@@ -73,29 +76,88 @@ function caricaAppunti(materia) {
         let index = 0;
         snap.forEach(doc => {
             const data = doc.data();
-            let icon = '📄', iconClass = 'icon-doc';
+            const docId = doc.id; // L'ID CI SERVE PER ELIMINARE IL FILE!
             const fName = (data.nomeFile || "").toLowerCase();
             
-            if (fName.includes('.pdf')) { icon = '📕'; iconClass = 'icon-pdf'; }
-            else if (fName.includes('.png') || fName.includes('.jpg') || fName.includes('.jpeg')) { icon = '🖼️'; iconClass = 'icon-img'; }
-            else if (fName.includes('.zip') || fName.includes('.rar')) { icon = '📦'; iconClass = 'icon-zip'; }
+            // Icone SVG Professionali
+            const iconPDF = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
+            const iconIMG = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`;
+            const iconZIP = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-1 8h-4v4h-2v-4H9v-2h4V8h2v4h4v2z"/></svg>`;
+            const iconDOC = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`;
+
+            let icon = iconDOC; let iconClass = 'icon-doc';
+            let isImage = false;
+            
+            if (fName.includes('.pdf')) { icon = iconPDF; iconClass = 'icon-pdf'; }
+            else if (fName.includes('.png') || fName.includes('.jpg') || fName.includes('.jpeg')) { icon = iconIMG; iconClass = 'icon-img'; isImage = true; }
+            else if (fName.includes('.zip') || fName.includes('.rar')) { icon = iconZIP; iconClass = 'icon-zip'; }
+
+            // Se è Admin, mostra il tasto elimina
+            let deleteBtnHTML = '';
+            if (auth.currentUser && auth.currentUser.email === ADMIN_EMAIL) {
+                deleteBtnHTML = `<button class="btn-delete" onclick="eliminaFile('${docId}')">Elimina Appunto</button>`;
+            }
+
+            // Se è un'immagine, mostra l'anteprima, altrimenti l'icona
+            let visualMedia = isImage 
+                ? `<img src="${data.urlFile}" class="img-preview" alt="${data.titolo}">` 
+                : `<div class="note-icon ${iconClass}">${icon}</div>`;
 
             const card = `
                 <div class="note-card" style="animation-delay: ${index * 0.05}s">
-                    <div class="note-icon ${iconClass}">${icon}</div>
+                    ${visualMedia}
                     <h3 class="note-title">${data.titolo}</h3>
                     <p class="note-meta">${data.materia} • ${new Date(data.data).toLocaleDateString('it-IT')}</p>
-                    <a href="${data.urlFile}" target="_blank" rel="noopener noreferrer" class="btn-download">↓ Scarica File</a>
+                    <a href="${data.urlFile}" target="_blank" rel="noopener noreferrer" class="btn-download">
+                        ${isImage ? 'Apri Originale' : '↓ Scarica File'}
+                    </a>
+                    ${deleteBtnHTML}
                 </div>
             `;
             container.innerHTML += card;
             index++;
         });
     }).catch(err => {
-        console.error(err);
         container.innerHTML = '<p style="color:var(--danger); font-weight:700;">Errore di connessione a Firestore.</p>';
     });
 }
+
+// FUNZIONE PER ELIMINARE IL FILE DAL DATABASE
+window.eliminaFile = function(docId) {
+    if(confirm("Sei sicuro di voler eliminare questo appunto per tutta la classe?")) {
+        db.collection('appunti').doc(docId).delete().then(() => {
+            // Ricarica la vista corrente
+            const materiaAttuale = document.getElementById('titoloMateria').innerText === 'Tutti i file' ? 'Tutte' : document.getElementById('titoloMateria').innerText;
+            caricaAppunti(materiaAttuale);
+        }).catch(err => alert("Errore durante l'eliminazione"));
+    }
+};
+
+// LOGICA PER LA NUOVA TENDINA MODALE UPLOAD
+document.addEventListener('DOMContentLoaded', () => {
+    const trigger = document.querySelector('#upload-materia-select .custom-select-trigger');
+    const options = document.querySelectorAll('#upload-materia-options .custom-option');
+    const display = document.getElementById('upload-materia-display');
+    const customSelect = document.getElementById('upload-materia-select');
+
+    if(trigger) {
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            customSelect.classList.toggle('open');
+        });
+
+        options.forEach(opt => {
+            opt.addEventListener('click', (e) => {
+                e.stopPropagation();
+                display.innerText = opt.innerText;
+                materiaUploadSelezionata = opt.innerText; // Salva la variabile
+                customSelect.classList.remove('open');
+            });
+        });
+
+        document.addEventListener('click', () => customSelect.classList.remove('open'));
+    }
+});
 
 // Upload Modal
 document.getElementById('btnUploadModal').addEventListener('click', () => {
