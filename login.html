@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Accesso — Harzafi Notes</title>
+    <meta name="robots" content="noimageindex">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#ffffff">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" sizes="32x32" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        #login-page-wrapper { min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; position: relative; background: #ffffff; }
+        .login-bg-mesh { position: fixed; inset: 0; background: radial-gradient(ellipse at 15% 25%, rgba(14,165,233,0.13) 0%, transparent 40%), radial-gradient(ellipse at 85% 70%, rgba(2,132,199,0.10) 0%, transparent 45%); filter: blur(35px); pointer-events: none; z-index: 0; }
+        .login-card { position: relative; z-index: 1; background: #ffffff; width: 100%; max-width: 580px; border-radius: 36px; padding: 44px 52px 36px; box-shadow: 0 30px 70px rgba(2,132,199,0.10), 0 0 0 1px rgba(2,132,199,0.06); animation: cardReveal 0.6s cubic-bezier(0.32,0.72,0,1) both; }
+        @keyframes cardReveal { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        .back-link { display: inline-flex; align-items: center; gap: 8px; color: var(--text-light); font-weight: 700; font-size: 0.9rem; text-decoration: none; margin-bottom: 28px; transition: color 0.3s, transform 0.3s var(--apple-ease); }
+        .back-link svg { width: 18px; fill: currentColor; transition: transform 0.3s var(--apple-ease); }
+        .back-link:hover { color: var(--primary); }
+        .back-link:hover svg { transform: translateX(-3px); }
+        @media (max-width: 767px) { #login-page-wrapper { padding: 0; align-items: flex-start; } .login-card { padding: 40px 24px 30px; border-radius: 0; box-shadow: none; max-width: 100%; min-height: 100vh; min-height: 100dvh; } .login-bg-mesh { display: none; } }
+    </style>
+</head>
+<body>
+    <div class="login-bg-mesh" aria-hidden="true"></div>
+
+    <div id="login-page-wrapper">
+        <div class="login-card">
+            <a href="index.html" class="back-link" aria-label="Torna alla home page">
+                <svg viewBox="0 0 24 24"><path d="M20,11H7.83l5.59-5.59L12,4l-8,8 8,8 1.41-1.41L7.83,13H20v-2Z"/></svg> Torna ad Harzafi Notes
+            </a>
+
+            <div class="modal-logo-wrapper">
+                <h2 style="color:var(--primary); font-weight:900; font-size:1.8rem; margin:0; letter-spacing:-1px;">Harzafi<span style="color:var(--text-dark);">Notes</span></h2>
+            </div>
+            <h2 class="auth-title">Area Riservata</h2>
+
+            <div class="segmented-control" id="role-control">
+                <div class="seg-slider" id="role-slider"></div>
+                <button class="seg-btn active" data-role="studente">Studente</button>
+                <button class="seg-btn" data-role="docente">Docente</button>
+            </div>
+
+            <div id="login-view" class="fade-form">
+                
+                <!-- Cloudflare Turnstile -->
+                <div id="cf-turnstile-widget" class="cf-turnstile" data-sitekey="0x4AAAAAAC6Galn1mtnng7_P" data-size="flexible" data-execution="execute" data-callback="onTurnstileSuccess" data-expired-callback="onTurnstileExpired" data-error-callback="onTurnstileError" style="position:absolute;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none;"></div>
+
+                <form id="login-form" target="dummyframe" action="about:blank" method="POST">
+                    
+                    <!-- Dropdown Utenti -->
+                    <div class="input-group">
+                        <label class="input-label">Seleziona Utente:</label>
+                        <div class="custom-select" id="username-select">
+                            <input type="text" id="hidden-username" name="username" autocomplete="username" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;" tabindex="-1">
+                            <button type="button" class="custom-select-trigger" aria-label="Seleziona utente" aria-expanded="false" aria-haspopup="listbox">
+                                <span id="username-display">Seleziona Utente</span>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;color:var(--text-light);"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                            </button>
+                            <div class="custom-options" id="username-options" role="listbox" aria-labelledby="username-display"></div>
+                        </div>
+                    </div>
+
+                    <!-- Password -->
+                    <div class="input-group">
+                        <div class="input-label">
+                            <span>Password:</span>
+                            <a href="#" id="btn-forgot-pass" style="color:var(--primary);text-decoration:none;text-transform:none;letter-spacing:normal;">Password dimenticata?</a>
+                        </div>
+                        <div style="position:relative;width:100%;">
+                            <input type="password" id="password-input" class="apple-input" placeholder="Inserisci la password" autocomplete="current-password" style="padding-right:50px;">
+                            <button type="button" id="toggle-password" class="toggle-password-btn" aria-label="Mostra o nascondi password">
+                                <svg id="eye-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/></svg>
+                                <svg id="eye-slash-icon" viewBox="0 0 24 24" fill="currentColor" style="display:none;"><path d="M11.83,9L15,12.16C15,12.11 15,12.05 15,12A3,3 0 0,0 12,9C11.94,9 11.89,9 11.83,9M7.53,9.8L9.08,11.35C9.03,11.56 9,11.77 9,12A3,3 0 0,0 12,15C12.22,15 12.44,14.97 12.65,14.92L14.2,16.47C13.53,16.8 12.79,17 12,17A5,5 0 0,1 7,12C7,11.21 7.2,10.47 7.53,9.8M2,4.27L4.28,6.55L4.73,7C3.08,8.3 1.78,10 1,12C2.73,16.39 7,19.5 12,19.5C13.55,19.5 15.03,19.2 16.38,18.66L16.81,19.08L19.73,22L21,20.73L3.27,3M12,7A5,5 0 0,1 17,12C17,12.64 16.87,13.26 16.64,13.82L19.57,16.75C21.07,15.5 22.27,13.86 23,12C21.27,7.61 17,4.5 12,4.5C10.6,4.5 9.26,4.75 8,5.2L10.17,7.35C10.74,7.13 11.35,7 12,7Z"/></svg>
+                            </button>
+                        </div>
+                        <div class="error-msg" id="login-error">Credenziali errate. Riprova.</div>
+                    </div>
+
+                    <button type="submit" id="login-submit" class="btn-gradient">ENTRA</button>
+
+                    <div class="divider">- OPPURE CON -</div>
+
+                    <!-- Google & HID -->
+                    <button type="button" id="custom-google-btn" class="btn-social">
+                        <img src="IMMAGINI/GOOGLE-LOGO.png" loading="lazy" alt="Google" style="width:24px; position:absolute; left:24px;">
+                        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;">
+                            <span class="btn-text-main" style="font-weight:800; color:#374151; font-size:0.95rem;">ACCEDI CON GOOGLE</span>
+                            <span class="btn-text-sub" style="font-weight:600; color:#9ca3af; font-size:0.75rem;">Tramite account istituzionale</span>
+                        </div>
+                    </button>
+                    <div class="error-msg" id="google-login-error" style="margin-bottom:10px;"></div>
+
+                    <button type="button" id="btn-harzafi-id" class="btn-social" style="border-color:#0284c7;">
+                        <img src="IMMAGINI/LOGO-HARZAFI.png" loading="lazy" alt="Logo Harzafi" style="height:18px;">
+                        <span style="color:#0284c7;">ACCEDI CON HARZAFI ID</span>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <iframe name="dummyframe" id="dummyframe" style="display:none;"></iframe>
+
+    <!-- Modale Harzafi ID -->
+    <div id="hid-modal" class="modal-overlay bottom-sheet">
+        <div class="modal-content">
+            <button id="hid-close-btn" class="close-btn">&times;</button>
+            <div class="bottom-sheet-body">
+                <div id="hid-scan-view">
+                    <h2 style="font-size:1.8rem;margin-bottom:10px;color:var(--text-dark);text-align:center;font-weight:900;">Scansione Harzafi ID.</h2>
+                    <p style="margin-bottom:35px;font-size:1.05rem;font-weight:500;color:var(--text-gray);text-align:center;">Avvicina il badge per accedere all'archivio.</p>
+                    <div style="display:flex;justify-content:center;margin-bottom:35px;">
+                        <div style="width:130px;height:130px;border-radius:50%;border:6px solid #3b82f6;display:flex;justify-content:center;align-items:center;background:rgba(59,130,246,0.05);">
+                            <img src="IMMAGINI/NFC-LOGO.png" alt="NFC" style="width:130px;">
+                        </div>
+                    </div>
+                    <a id="hid-open-manual" href="#" style="color:var(--primary);font-weight:800;text-decoration:none;display:block;margin-bottom:25px;text-align:center;">Non funziona? Inserisci L'HID</a>
+                    <button id="hid-cancel-btn" class="btn-premium" style="width:100%;background:#f1f5f9;color:var(--text-dark);">Annulla</button>
+                </div>
+                <div id="hid-manual-view" style="display:none;">
+                    <h2 style="text-align:center;font-size:1.6rem;margin-bottom:10px;color:var(--text-dark);font-weight:900;">Inserisci Harzafi ID</h2>
+                    <div class="input-group">
+                        <input type="text" id="hid-input" class="apple-input" placeholder="XXXXXXXXXXXXXXXXXXXXXXXX" maxlength="24" style="text-align:center;letter-spacing:2px;">
+                        <div class="error-msg" id="hid-error">HID non valido. Riprova.</div>
+                    </div>
+                    <button type="button" id="hid-submit-btn" class="btn-gradient">VERIFICA E ACCEDI</button>
+                    <button type="button" id="hid-back-btn" class="btn-text">← Torna alla scansione</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale Recupero Password -->
+    <div id="forgot-sheet-modal" class="modal-overlay bottom-sheet">
+        <div class="modal-content">
+            <button id="forgot-sheet-close" class="close-btn">&times;</button>
+            <div id="shared-otp-view">
+                <div id="otp-step-1" class="bottom-sheet-body" style="padding-top:40px;">
+                    <h2 class="recovery-title" id="otp-role-title" style="font-size:1.7rem;margin-bottom:10px; text-align:center; font-weight:900;">Area Recupero</h2>
+                    <p style="font-size:1rem;font-weight:500;color:var(--text-gray);text-align:center;margin-bottom:30px;">Inserisci la tua email istituzionale per ricevere un link di recupero sicuro.</p>
+                    <div class="input-group">
+                        <input type="email" id="otp-email-input" class="apple-input" placeholder="tua.email@istituto.it" style="text-align:center;">
+                        <div class="error-msg" id="otp-error-msg">Email non trovata. Riprova.</div>
+                    </div>
+                    <button type="button" id="btn-send-otp" class="btn-gradient">INVIA LINK</button>
+                    <button type="button" id="btn-otp-back-selection" class="btn-text" style="margin-top:15px;">← Torna al Login</button>
+                </div>
+                <div id="otp-step-3" class="bottom-sheet-body" style="display:none;padding-top:40px;text-align:center;">
+                    <h2 class="recovery-title" style="font-size:1.7rem;margin-bottom:10px;color:var(--success); font-weight:900;">Email Inviata!</h2>
+                    <p style="font-size:1.05rem;font-weight:500;color:var(--text-gray);margin-bottom:30px;">Abbiamo inviato un link sicuro. Controlla la casella di posta.</p>
+                    <button type="button" class="btn-gradient" onclick="document.getElementById('forgot-sheet-modal').classList.remove('active')" style="width:100%;">← TORNA AL LOGIN</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script Cloudflare & Firebase -->
+    <script defer src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script defer src="https://accounts.google.com/gsi/client"></script>
+    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+    
+    <script defer src="login.js"></script>
+</body>
+</html>

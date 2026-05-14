@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard — Harzafi Notes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- NAVBAR -->
+    <nav class="navbar-wrapper glass scrolled" style="display:flex; justify-content:space-between; z-index:100;">
+        <h2 style="font-weight:900; color:var(--text-dark); margin:0;">Harzafi<span style="color:var(--primary);">Notes</span></h2>
+        <div style="display:flex; gap:15px; align-items:center;">
+            <button id="btnUploadModal" class="btn-premium" style="display:none; padding:8px 16px;">+ Carica File</button>
+            <button id="btnEsci" style="background:none; border:none; font-weight:800; color:var(--danger); cursor:pointer; font-size:1rem;">Esci</button>
+        </div>
+    </nav>
+
+    <!-- DASHBOARD LAYOUT -->
+    <div class="dash-layout" style="margin-top: 100px;">
+        <!-- SIDEBAR MATERIE -->
+        <aside class="sidebar-materie">
+            <h3 style="margin-bottom:20px; font-weight:900; font-size:1.2rem; color:var(--text-dark);">Materie 3°A</h3>
+            <button class="materia-btn active" onclick="filtraMateria('Tutte')">Tutti i file</button>
+            <button class="materia-btn" onclick="filtraMateria('Informatica')">Informatica <span class="prof-name">Folcarelli, Talomo</span></button>
+            <button class="materia-btn" onclick="filtraMateria('Lingua Italiana')">Lingua Italiana <span class="prof-name">Pedio Alessia</span></button>
+            <button class="materia-btn" onclick="filtraMateria('Lingua Inglese')">Lingua Inglese <span class="prof-name">Pallone Mariateresa</span></button>
+            <button class="materia-btn" onclick="filtraMateria('Sistemi e Reti')">Sistemi e Reti <span class="prof-name">Farese, Sammartino</span></button>
+            <button class="materia-btn" onclick="filtraMateria('Storia')">Storia <span class="prof-name">Pedio Alessia</span></button>
+            <button class="materia-btn" onclick="filtraMateria('TPSIT')">TPSIT <span class="prof-name">Folcarelli, Maffucci</span></button>
+            <button class="materia-btn" onclick="filtraMateria('Telecomunicazioni')">Telecomunicazioni <span class="prof-name">Genetti, Iannacone</span></button>
+            <button class="materia-btn" onclick="filtraMateria('Matematica')">Matematica <span class="prof-name">Abramo Rosamaria</span></button>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main>
+            <h2 id="titoloMateria" style="font-weight:900; margin-bottom:30px; font-size:2rem; letter-spacing:-1px;">Tutti i file</h2>
+            <div id="notesContainer" class="notes-grid">
+                <p style="color:var(--text-light); font-weight:700; font-size:1.1rem;">Caricamento appunti dal server...</p>
+            </div>
+        </main>
+    </div>
+
+    <!-- MODALE UPLOAD -->
+    <div id="uploadModal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="btnChiudiUpload" class="close-btn">×</button>
+            <h2 style="font-weight:900; margin-bottom:25px; font-size: 1.6rem; letter-spacing: -0.5px;">Carica nuovo file</h2>
+            
+            <input type="text" id="upTitolo" class="apple-input" placeholder="Titolo dell'appunto (es. Slide Reti IP)" style="width:100%; margin-bottom:15px;">
+            
+            <div class="custom-select" style="margin-bottom:20px;">
+                <select id="upMateria" class="apple-input" style="width:100%; padding:0 20px;">
+                    <option value="Informatica">Informatica</option>
+                    <option value="Lingua Italiana">Lingua Italiana</option>
+                    <option value="Lingua Inglese">Lingua Inglese</option>
+                    <option value="Sistemi e Reti">Sistemi e Reti</option>
+                    <option value="Storia">Storia</option>
+                    <option value="TPSIT">TPSIT</option>
+                    <option value="Telecomunicazioni">Telecomunicazioni</option>
+                    <option value="Matematica">Matematica</option>
+                </select>
+            </div>
+
+            <div class="file-input-wrapper">
+                <input type="file" id="upFile">
+                <span class="file-input-text" id="fileNameText">📁 Clicca qui per scegliere un file...</span>
+            </div>
+            
+            <div style="display:flex; gap:15px;">
+                <button onclick="document.getElementById('uploadModal').classList.remove('active')" style="flex:1; padding:15px; border-radius:16px; border:none; font-weight:800; cursor:pointer; background:#f1f5f9; color:var(--text-dark); transition:0.3s;">Annulla</button>
+                <button id="btnSalva" class="btn-gradient" style="flex:2; border-radius:16px;">Carica nel Cloud</button>
+            </div>
+
+            <div id="progressContainer" class="progress-container">
+                <div id="progressBar" class="progress-bar"></div>
+            </div>
+            <p id="uploadStatus" style="text-align:center; margin-top:15px; font-weight:800; color:var(--primary); font-size:0.9rem;"></p>
+        </div>
+    </div>
+
+    <!-- Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    
+    <script src="dashboard.js"></script>
+</body>
+</html>
