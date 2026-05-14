@@ -1,5 +1,5 @@
 /* ============================================================
-   login.js — Logica Login Avanzata (Identica a FSL)
+   login.js — Logica Login Avanzata (Harzafi Notes)
    ============================================================ */
 
 async function inviaEmail(emailDestinatario, idModelloBrevo, parametriMail) {
@@ -37,15 +37,12 @@ window.onTurnstileError   = function () {
 
 function waitForFirebase(callback) {
     if (typeof firebase !== 'undefined') {
-        // NUOVO DB HARZAFI NOTES
         const firebaseConfig = {
-            apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
+            apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfaklT7-0A",
             authDomain: "harzafi-notes.firebaseapp.com",
             projectId: "harzafi-notes",
-            storageBucket: "harzafi-notes.firebasestorage.app",
             messagingSenderId: "35834921638",
-            appId: "1:35834921638:web:cb5d8d612b4a2936126a67",
-            measurementId: "G-N8K6G729CM"
+            appId: "1:35834921638:web:cb5d8d612b4a2936126a67"
         };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         window.auth = firebase.auth();
@@ -111,8 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     snapshot.forEach(doc => creaOpzioneDropdown(doc.data().nome, doc.data().email || "email_mancante@scuola.it", optionsContainer));
                 })
                 .catch(() => {
-                    // SE VEDI QUESTO ERRORE, MANCANO I PERMESSI SU FIRESTORE DEL NUOVO PROGETTO
-                    optionsContainer.innerHTML = '<div class="custom-option" style="color:var(--danger);">Errore di connessione (Controlla le regole Firestore)</div>';
+                    optionsContainer.innerHTML = '<div class="custom-option" style="color:var(--danger);">Errore di connessione al server</div>';
                 });
         } else {
             optionsContainer.innerHTML = '<div class="custom-option" style="color:var(--text-light);text-align:center;">In attesa di connessione...</div>';
@@ -147,6 +143,7 @@ document.addEventListener("DOMContentLoaded", function () {
         trigger.addEventListener('click', function (e) {
             e.stopPropagation();
             const parent = this.parentElement;
+            const isOpen = parent.classList.contains('open');
             document.querySelectorAll('.custom-select').forEach(s => { if (s !== parent) s.classList.remove('open'); });
             parent.classList.toggle('open');
             this.setAttribute('aria-expanded', parent.classList.contains('open'));
@@ -219,6 +216,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     errorMsg.style.display = 'block'; errorMsg.style.animation = 'none';
                     void errorMsg.offsetWidth; errorMsg.style.animation = 'shake 0.4s';
                 });
+        } else {
+            errorMsg.innerText = "Servizio temporaneamente offline."; errorMsg.style.display = 'block';
+            submitBtn.innerText = "ENTRA"; submitBtn.disabled  = false;
         }
     };
 
@@ -227,6 +227,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (document.activeElement) document.activeElement.blur();
         const pass  = passInput.value.trim();
         const uName = hiddenUsernameInput.value.trim();
+
         if (typeof window.auth === 'undefined') { errorMsg.innerText = "Database offline."; errorMsg.style.display = 'block'; return; }
         if (!uName || !selectedUserEmail)       { errorMsg.innerText = "Seleziona prima un utente dalla lista."; errorMsg.style.display = 'block'; return; }
         if (!pass)                              { errorMsg.innerText = "Il campo password è obbligatorio."; errorMsg.style.display = 'block'; return; }
@@ -256,6 +257,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const isVpn = await checkVPN();
         if (isVpn) { googleErrorMsg.innerText = "Disattivare la VPN per continuare."; googleErrorMsg.style.display = 'block'; googleBtn.innerHTML = originalHTML; googleBtn.disabled  = false; return; }
+        if (typeof window.auth === 'undefined') { googleErrorMsg.innerText = "Servizio offline."; googleErrorMsg.style.display = 'block'; googleBtn.innerHTML = originalHTML; googleBtn.disabled = false; return; }
         
         const provider = new firebase.auth.GoogleAuthProvider();
         const targetDomain = selectedRole === 'studente' ? 'studenti.itisavogadro.it' : 'itisavogadro.it';
@@ -272,28 +274,34 @@ document.addEventListener("DOMContentLoaded", function () {
                     googleBtn.innerHTML = originalHTML; googleBtn.disabled  = false;
                 });
             }
-        }).catch(() => { googleErrorMsg.innerText = "Accesso annullato."; googleErrorMsg.style.display = 'block'; googleBtn.innerHTML = originalHTML; googleBtn.disabled = false; });
+        }).catch(() => { googleErrorMsg.innerText = "Accesso annullato. Riprova."; googleErrorMsg.style.display = 'block'; googleBtn.innerHTML = originalHTML; googleBtn.disabled = false; });
     });
 
     document.getElementById('btn-harzafi-id').addEventListener('click', () => { document.getElementById('hid-modal').classList.add('active'); });
     document.getElementById('hid-close-btn').addEventListener('click', ()  => document.getElementById('hid-modal').classList.remove('active'));
     document.getElementById('hid-cancel-btn').addEventListener('click', () => document.getElementById('hid-modal').classList.remove('active'));
-    document.getElementById('hid-open-manual').addEventListener('click', e => { e.preventDefault(); document.getElementById('hid-scan-view').style.display = 'none'; document.getElementById('hid-manual-view').style.display = 'block'; });
-    document.getElementById('hid-back-btn').addEventListener('click', () => { document.getElementById('hid-manual-view').style.display = 'none'; document.getElementById('hid-scan-view').style.display = 'block'; });
+    document.getElementById('hid-open-manual').addEventListener('click', e => { e.preventDefault(); document.getElementById('hid-scan-view').style.display = 'none'; document.getElementById('hid-manual-view').style.display = 'block'; document.getElementById('hid-input').focus(); });
+    document.getElementById('hid-back-btn').addEventListener('click', () => { document.getElementById('hid-manual-view').style.display = 'none'; document.getElementById('hid-scan-view').style.display = 'block'; document.getElementById('hid-error').style.display = 'none';});
 
     document.getElementById('hid-submit-btn').addEventListener('click', async () => {
+        if (document.activeElement) document.activeElement.blur();
         const hidErrorEl  = document.getElementById('hid-error');
         const hidSubmitBtn = document.getElementById('hid-submit-btn');
         const origText    = hidSubmitBtn.innerHTML;
         const inputVal    = document.getElementById('hid-input').value.trim();
 
+        const isVpn = await checkVPN();
+        if (isVpn) { hidErrorEl.innerText = "Disattivare la VPN per continuare."; hidErrorEl.style.display = 'block'; return; }
         if (!inputVal.length) return;
+
         hidSubmitBtn.innerHTML = "VERIFICA IN CORSO..."; hidSubmitBtn.disabled = true; hidErrorEl.style.display = 'none';
 
         if (typeof window.db !== 'undefined') {
             window.db.collection("studenti").where("HID", "==", inputVal).get().then(async snap => {
                 if (!snap.empty) {
                     try { await window.auth.signInAnonymously(); } catch (err) {}
+                    document.getElementById('hid-modal').classList.remove('active');
+                    hidSubmitBtn.innerHTML = origText; hidSubmitBtn.disabled = false; document.getElementById('hid-input').value = "";
                     entraNelPortale(snap.docs[0].data().nome);
                 } else { throw new Error("HID non valido"); }
             }).catch(() => {
@@ -301,6 +309,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 hidErrorEl.style.animation = 'none'; void hidErrorEl.offsetWidth; hidErrorEl.style.animation = 'shake 0.4s';
                 hidSubmitBtn.innerHTML = origText; hidSubmitBtn.disabled = false;
             });
+        } else {
+            hidErrorEl.innerText = "Database offline."; hidErrorEl.style.display = 'block';
+            hidSubmitBtn.innerHTML = origText; hidSubmitBtn.disabled = false;
         }
     });
 
