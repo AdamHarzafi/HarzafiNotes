@@ -24,20 +24,24 @@
         </div>
     </nav>
 
-    <!-- DASHBOARD -->
+   <!-- DASHBOARD -->
     <div class="dash-layout" style="margin-top: 100px;">
-        <aside class="sidebar-materie">
-            <h3 style="margin-bottom:20px; font-weight:900; font-size:1.2rem; color:var(--text-dark);">Materie 3°A</h3>
-            <button class="materia-btn active" onclick="filtraMateria('Tutte')">Tutti i file</button>
-            <button class="materia-btn" onclick="filtraMateria('Informatica')">Informatica <span class="prof-name">Folcarelli, Talomo</span></button>
-            <button class="materia-btn" onclick="filtraMateria('Lingua Italiana')">Lingua Italiana <span class="prof-name">Pedio Alessia</span></button>
-            <button class="materia-btn" onclick="filtraMateria('Lingua Inglese')">Lingua Inglese <span class="prof-name">Pallone Mariateresa</span></button>
-            <button class="materia-btn" onclick="filtraMateria('Sistemi e Reti')">Sistemi e Reti <span class="prof-name">Farese, Sammartino</span></button>
-            <button class="materia-btn" onclick="filtraMateria('Storia')">Storia <span class="prof-name">Pedio Alessia</span></button>
-            <button class="materia-btn" onclick="filtraMateria('TPSIT')">TPSIT <span class="prof-name">Folcarelli, Maffucci</span></button>
-            <button class="materia-btn" onclick="filtraMateria('Telecomunicazioni')">Telecomunicazioni <span class="prof-name">Genetti, Iannacone</span></button>
-            <button class="materia-btn" onclick="filtraMateria('Matematica')">Matematica <span class="prof-name">Abramo Rosamaria</span></button>
-        </aside>
+        
+        <!-- NUOVO WRAPPER PER L'EFFETTO SFOCATURA -->
+        <div class="sidebar-mobile-wrapper">
+            <aside class="sidebar-materie">
+                <h3 style="margin-bottom:20px; font-weight:900; font-size:1.2rem; color:var(--text-dark);">Materie 3°A</h3>
+                <button class="materia-btn active" onclick="filtraMateria('Tutte')">Tutti i file</button>
+                <button class="materia-btn" onclick="filtraMateria('Informatica')">Informatica <span class="prof-name">Folcarelli, Talomo</span></button>
+                <button class="materia-btn" onclick="filtraMateria('Lingua Italiana')">Lingua Italiana <span class="prof-name">Pedio Alessia</span></button>
+                <button class="materia-btn" onclick="filtraMateria('Lingua Inglese')">Lingua Inglese <span class="prof-name">Pallone Mariateresa</span></button>
+                <button class="materia-btn" onclick="filtraMateria('Sistemi e Reti')">Sistemi e Reti <span class="prof-name">Farese, Sammartino</span></button>
+                <button class="materia-btn" onclick="filtraMateria('Storia')">Storia <span class="prof-name">Pedio Alessia</span></button>
+                <button class="materia-btn" onclick="filtraMateria('TPSIT')">TPSIT <span class="prof-name">Folcarelli, Maffucci</span></button>
+                <button class="materia-btn" onclick="filtraMateria('Telecomunicazioni')">Telecomunicazioni <span class="prof-name">Genetti, Iannacone</span></button>
+                <button class="materia-btn" onclick="filtraMateria('Matematica')">Matematica <span class="prof-name">Abramo Rosamaria</span></button>
+            </aside>
+        </div>
 
         <main>
             <h2 id="titoloMateria" style="font-weight:900; margin-bottom:30px; font-size:2rem; letter-spacing:-1px;">Tutti i file</h2>
