@@ -74,7 +74,7 @@ function caricaAppunti(materia) {
         let index = 0;
         snap.forEach(doc => {
             const data = doc.data();
-            const docId = doc.id; // L'ID CI SERVE PER ELIMINARE IL FILE!
+            const docId = doc.id;
             const fName = (data.nomeFile || "").toLowerCase();
             
             // Icone SVG Professionali
@@ -82,33 +82,47 @@ function caricaAppunti(materia) {
             const iconIMG = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`;
             const iconZIP = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-1 8h-4v4h-2v-4H9v-2h4V8h2v4h4v2z"/></svg>`;
             const iconDOC = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`;
+            const iconVID = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>`;
 
             let icon = iconDOC; let iconClass = 'icon-doc';
             let isImage = false;
+            let isVideo = false;
             
             if (fName.includes('.pdf')) { icon = iconPDF; iconClass = 'icon-pdf'; }
-            else if (fName.includes('.png') || fName.includes('.jpg') || fName.includes('.jpeg')) { icon = iconIMG; iconClass = 'icon-img'; isImage = true; }
-            else if (fName.includes('.zip') || fName.includes('.rar')) { icon = iconZIP; iconClass = 'icon-zip'; }
+            else if (fName.match(/\.(png|jpg|jpeg|gif|webp)$/i)) { icon = iconIMG; iconClass = 'icon-img'; isImage = true; }
+            else if (fName.match(/\.(mp4|mov|webm|mkv)$/i)) { icon = iconVID; iconClass = 'icon-img'; isVideo = true; }
+            else if (fName.match(/\.(zip|rar|7z)$/i)) { icon = iconZIP; iconClass = 'icon-zip'; }
 
-            // Se è Admin, mostra il tasto elimina
+            // Tasto elimina Admin
             let deleteBtnHTML = '';
             if (auth.currentUser && auth.currentUser.email === ADMIN_EMAIL) {
                 deleteBtnHTML = `<button class="btn-delete" onclick="eliminaFile('${docId}')">Elimina Appunto</button>`;
             }
 
-            // Se è un'immagine, mostra l'anteprima, altrimenti l'icona
-            let visualMedia = isImage 
-                ? `<img src="${data.urlFile}" class="img-preview" alt="${data.titolo}">` 
-                : `<div class="note-icon ${iconClass}">${icon}</div>`;
+            // Anteprima cliccabile
+            let visualMedia = '';
+            if (isImage) {
+                visualMedia = `<img src="${data.urlFile}" class="img-preview" alt="${data.titolo}" onclick="apriMediaViewer('${data.urlFile}', false)" style="cursor:pointer; transition:0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">`;
+            } else if (isVideo) {
+                visualMedia = `<video src="${data.urlFile}" preload="metadata" class="img-preview" style="cursor:pointer; background:#000; object-fit:cover;" onclick="apriMediaViewer('${data.urlFile}', true)"></video>`;
+            } else {
+                visualMedia = `<div class="note-icon ${iconClass}">${icon}</div>`;
+            }
+
+            // Tasto Azione Dinamico
+            let actionBtn = '';
+            if (isImage || isVideo) {
+                actionBtn = `<button class="btn-download" onclick="apriMediaViewer('${data.urlFile}', ${isVideo})" style="width:100%; border:none; cursor:pointer;">👁️ Apri nel Lettore</button>`;
+            } else {
+                actionBtn = `<a href="${data.urlFile}" target="_blank" rel="noopener noreferrer" class="btn-download" style="display:block;">↓ Scarica File</a>`;
+            }
 
             const card = `
                 <div class="note-card" style="animation-delay: ${index * 0.05}s">
                     ${visualMedia}
                     <h3 class="note-title">${data.titolo}</h3>
                     <p class="note-meta">${data.materia} • ${new Date(data.data).toLocaleDateString('it-IT')}</p>
-                    <a href="${data.urlFile}" target="_blank" rel="noopener noreferrer" class="btn-download">
-                        ${isImage ? 'Apri Originale' : '↓ Scarica File'}
-                    </a>
+                    ${actionBtn}
                     ${deleteBtnHTML}
                 </div>
             `;
@@ -241,4 +255,27 @@ document.getElementById('btnSalva').addEventListener('click', () => {
     };
 
     xhr.send(formData);
+});
+
+// ==========================================
+// LOGICA LETTORE MULTIMEDIALE
+// ==========================================
+window.apriMediaViewer = function(url, isVideo) {
+    const container = document.getElementById('mediaContainer');
+    
+    if (isVideo) {
+        // Se è un video inserisce il player con i comandi (Play/Pausa, Volume, Schermo intero)
+        container.innerHTML = `<video src="${url}" controls autoplay class="viewer-video"></video>`;
+    } else {
+        // Se è una foto carica l'immagine in alta qualità
+        container.innerHTML = `<img src="${url}" class="viewer-img" alt="Anteprima">`;
+    }
+    
+    document.getElementById('mediaViewerModal').classList.add('active');
+};
+
+document.getElementById('btnChiudiViewer').addEventListener('click', () => {
+    // Svuota il contenitore per fermare il video (evita che continui a suonare in background)
+    document.getElementById('mediaContainer').innerHTML = ''; 
+    document.getElementById('mediaViewerModal').classList.remove('active');
 });
