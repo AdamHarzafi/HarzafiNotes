@@ -184,7 +184,7 @@ if (fileInput) {
 document.getElementById('btnSalva').addEventListener('click', () => {
     const file = document.getElementById('upFile').files[0];
     const titolo = document.getElementById('upTitolo').value.trim();
-    const materia = document.getElementById('upMateria').value;
+    const materia = materiaUploadSelezionata;
     const status = document.getElementById('uploadStatus');
     const progressContainer = document.getElementById('progressContainer');
     const progressBar = document.getElementById('progressBar');
