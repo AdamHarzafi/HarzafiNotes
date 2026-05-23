@@ -194,3 +194,48 @@ p { line-height: 1.6; color: var(--text-gray); font-size: 1.05rem; }
     .materia-btn { width: auto; flex: 0 0 auto; display: inline-block; padding: 10px 20px; margin: 0; }
     .prof-name { display: none; } /* Nasconde nomi prof per fare spazio */
 }
+
+/* PERSONALIZZAZIONE ELEGANTE BARRA DI SCORRIMENTO */
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+::-webkit-scrollbar-track {
+    background: transparent; 
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(2, 132, 199, 0.2); 
+    border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--primary); 
+}
+
+/* STILI PER IL LETTORE MULTIMEDIALE INTEGRATO */
+#mediaViewerModal .modal-content {
+    background: transparent !important;
+    box-shadow: none !important;
+    max-width: 1000px !important;
+    padding: 0 !important;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+.viewer-img { 
+    max-width: 100%; 
+    max-height: 85vh; 
+    object-fit: contain; 
+    border-radius: 16px; 
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+}
+.viewer-video { 
+    width: 100%; 
+    max-width: 900px; 
+    max-height: 85vh; 
+    border-radius: 16px; 
+    outline: none; 
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+    background: #000; 
+}
