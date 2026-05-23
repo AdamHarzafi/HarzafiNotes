@@ -26,8 +26,10 @@
 :focus:not(:focus-visible) { outline: none !important; }
 
 input, textarea { -webkit-user-select: auto; user-select: auto; }
-html { scroll-behavior: smooth; overflow-x: hidden; width: 100vw; }
-body { background-color: var(--bg-body); color: var(--text-dark); overflow-x: hidden; width: 100%; min-height: 100vh; margin: 0; }
+
+/* FIX SCROLL MORBIDO SU MOBILE */
+html { scroll-behavior: smooth; }
+body { background-color: var(--bg-body); color: var(--text-dark); min-height: 100vh; margin: 0; width: 100%; overflow-x: hidden; -webkit-overflow-scrolling: touch; }
 
 .glass { background: var(--surface); backdrop-filter: saturate(180%) blur(25px); -webkit-backdrop-filter: saturate(180%) blur(25px); box-shadow: 0 8px 32px rgba(2, 132, 199, 0.05); }
 .reveal { opacity: 0; transform: translateY(30px) scale(0.96); transition: opacity 0.8s var(--apple-ease), transform 0.8s var(--apple-ease); }
@@ -66,7 +68,7 @@ p { line-height: 1.6; color: var(--text-gray); font-size: 1.05rem; }
 .bento-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; margin-bottom: 24px; color: var(--primary); }
 .bento-card h3 { font-size: 1.8rem; margin-bottom: 12px; }
 
-/* STRUTTURA LOGIN FSL E MODALI */
+/* STRUTTURA MODALI E LOGIN */
 .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); z-index: 99999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s var(--apple-ease); padding: 20px; }
 .modal-overlay.active { opacity: 1; pointer-events: auto; }
 .modal-content { background: #ffffff; width: 100%; max-width: 620px; border-radius: 32px; padding: 35px 50px 30px; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15); transform: scale(0.95) translateY(20px); transition: transform 0.5s var(--apple-smooth); position: relative; max-height: 95vh; overflow-y: auto; overflow-x: hidden; }
@@ -88,7 +90,6 @@ p { line-height: 1.6; color: var(--text-gray); font-size: 1.05rem; }
 .seg-btn.active { color: var(--text-dark); }
 .seg-slider { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); background: #ffffff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: transform 0.4s var(--apple-ease); z-index: 1; }
 
-/* === RIPRISTINO COMPLETO STILI LOGIN === */
 .login-rules-banner { background: #f0f9ff; color: var(--primary); border: 1px solid #bae6fd; padding: 10px 16px; text-align: center; border-radius: 14px; font-weight: 700; margin-bottom: 15px; font-size: 0.85rem; cursor: pointer; transition: transform 0.3s; }
 .login-rules-banner:hover { background: #e0f2fe; border-color: #7dd3fc; transform: translateY(-2px); }
 
@@ -102,6 +103,10 @@ p { line-height: 1.6; color: var(--text-gray); font-size: 1.05rem; }
 .privacy-disclaimer { text-align: center; font-size: 0.75rem; color: var(--text-gray); line-height: 1.5; margin: 12px 0 15px; padding: 0 10px; font-weight: 500; }
 .privacy-disclaimer svg { width: 26px; height: 26px; color: var(--primary); margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto; }
 
+/* FIX COLORE AZZURRO LINK PRIVACY */
+.privacy-disclaimer a { color: var(--accent); font-weight: 800; text-decoration: none; transition: color 0.3s; }
+.privacy-disclaimer a:hover { color: var(--primary); text-decoration: underline; }
+
 .divider { display: flex; align-items: center; text-align: center; margin: 15px 0; color: var(--text-light); font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; }
 .divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e2e8f0; }
 .divider::before { margin-right: 15px; } .divider::after { margin-left: 15px; }
@@ -112,7 +117,6 @@ p { line-height: 1.6; color: var(--text-gray); font-size: 1.05rem; }
 
 .fade-form { animation: fadeIn 0.4s var(--apple-ease) forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(15px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-/* === FINE RIPRISTINO LOGIN === */
 
 .custom-select { position: relative; width: 100%; }
 .custom-select-trigger { display: flex; justify-content: space-between; align-items: center; width: 100%; height: 52px; padding: 0 20px; background: #f5f5f7; border: 1px solid transparent; border-radius: 16px; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-sizing: border-box; }
@@ -168,76 +172,67 @@ p { line-height: 1.6; color: var(--text-gray); font-size: 1.05rem; }
 .btn-delete { background: #fee2e2; color: #dc2626; border: none; padding: 8px; border-radius: 10px; cursor: pointer; font-weight: 800; font-size: 0.8rem; margin-top: 10px; transition: 0.3s; width: 100%; }
 .btn-delete:hover { background: #f87171; color: white; }
 
-/* OTTIMIZZAZIONE MOBILE DEFINITIVA */
+/* PULSANTE SCROLL TO TOP */
+.scroll-top-btn {
+    position: fixed; bottom: 30px; right: 30px; width: 52px; height: 52px;
+    background: #ffffff; border-radius: 50%; box-shadow: 0 10px 25px rgba(2, 132, 199, 0.2);
+    border: 1px solid rgba(2, 132, 199, 0.1); display: flex; align-items: center; justify-content: center;
+    cursor: pointer; z-index: 9999; opacity: 0; visibility: hidden;
+    transform: translateY(20px); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    color: var(--primary); outline: none;
+}
+.scroll-top-btn.visible { opacity: 1; visibility: visible; transform: translateY(0); }
+.scroll-top-btn:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 35px rgba(2, 132, 199, 0.3); }
+
+/* ================================================================= */
+/* OTTIMIZZAZIONE MOBILE COMPLETA DEFINITIVA */
+/* ================================================================= */
 @media (max-width: 900px) {
+    .nav-links { display: none; } /* Nasconde i link menu troppo larghi */
+    .bento-grid { grid-template-columns: 1fr; } /* Box in singola colonna per non spaccare lo schermo */
+    .bento-card.large { grid-column: span 1; }
+    
     .dash-layout { grid-template-columns: 1fr; margin-top: 80px; padding: 0 15px; }
-    .sidebar-materie { display: flex; overflow-x: auto; white-space: nowrap; padding: 15px; border-radius: 16px; gap: 10px; margin-bottom: 20px; }
+    
+    /* FIX: Effetto Sfocatura barra laterale mobile */
+    .sidebar-mobile-wrapper { position: relative; margin-bottom: 20px; width: 100%; }
+    .sidebar-mobile-wrapper::after {
+        content: ''; position: absolute; top: 0; right: 0; bottom: 0; width: 55px;
+        background: linear-gradient(to right, rgba(255,255,255,0), var(--surface-solid) 95%);
+        pointer-events: none; border-radius: 0 24px 24px 0; z-index: 5;
+    }
+    
+    .sidebar-materie { 
+        display: flex; overflow-x: auto; white-space: nowrap; padding: 15px; 
+        padding-right: 60px; /* Spazio extra per compensare la sfocatura */
+        border-radius: 24px; gap: 10px; margin-bottom: 0;
+        -ms-overflow-style: none; scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+    }
+    .sidebar-materie::-webkit-scrollbar { display: none; }
     .sidebar-materie h3 { display: none; } 
     .materia-btn { width: auto; flex: 0 0 auto; display: inline-block; padding: 10px 20px; margin: 0; }
     .prof-name { display: none; } 
+    
     .navbar-wrapper { width: 92%; padding: 12px 18px; top: 15px; }
     .navbar-wrapper.scrolled { width: 100%; padding: 15px 20px; top: 0; }
     .notes-grid { grid-template-columns: 1fr; }
+    .scroll-top-btn { bottom: 20px; right: 20px; width: 45px; height: 45px; }
 }
 
-/* ================================================================= */
-/* PERSONALIZZAZIONE ELEGANTE BARRA DI SCORRIMENTO */
-/* ================================================================= */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(2, 132, 199, 0.2); border-radius: 10px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-/* ================================================================= */
-/* SFONDO SFOCATO INTENSO E CONTENITORE LETTORE (EFFETTO APPLE) */
-/* ================================================================= */
-#mediaViewerModal {
-    background: rgba(15, 23, 42, 0.85) !important;
-    backdrop-filter: blur(25px) saturate(180%) !important;
-    -webkit-backdrop-filter: blur(25px) saturate(180%) !important;
-    z-index: 999999;
-}
-#mediaViewerModal .modal-content {
-    background: transparent !important; box-shadow: none !important;
-    max-width: 1200px !important; padding: 0 !important;
-    display: flex; justify-content: center; align-items: center;
-    height: 100vh; overflow: hidden; position: relative;
-}
-
-/* FRECCE DI NAVIGAZIONE IN VETRO */
-.media-nav-btn {
-    position: absolute; top: 50%; transform: translateY(-50%);
-    background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
-    color: white; border-radius: 50%; width: 54px; height: 54px;
-    font-size: 22px; cursor: pointer; z-index: 1000000;
-    backdrop-filter: blur(10px); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
-    display: flex; align-items: center; justify-content: center;
-}
+#mediaViewerModal { background: rgba(15, 23, 42, 0.85) !important; backdrop-filter: blur(25px) saturate(180%) !important; -webkit-backdrop-filter: blur(25px) saturate(180%) !important; z-index: 999999; }
+#mediaViewerModal .modal-content { background: transparent !important; box-shadow: none !important; max-width: 1200px !important; padding: 0 !important; display: flex; justify-content: center; align-items: center; height: 100vh; overflow: hidden; position: relative; }
+.media-nav-btn { position: absolute; top: 50%; transform: translateY(-50%); background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 50%; width: 54px; height: 54px; font-size: 22px; cursor: pointer; z-index: 1000000; backdrop-filter: blur(10px); transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); display: flex; align-items: center; justify-content: center; }
 .media-nav-btn:hover { background: rgba(255,255,255,0.25); transform: translateY(-50%) scale(1.15); }
 .media-nav-btn.left { left: 30px; }
 .media-nav-btn.right { right: 30px; }
-@media (max-width: 768px) {
-    .media-nav-btn { width: 44px; height: 44px; font-size: 18px; }
-    .media-nav-btn.left { left: 10px; }
-    .media-nav-btn.right { right: 10px; }
-}
-
-/* ANIMAZIONE "POP" DI APERTURA (Molla stile Apple) */
-.viewer-media-item {
-    max-width: 90%; max-height: 85vh; border-radius: 16px;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.5); object-fit: contain;
-    animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-}
+@media (max-width: 768px) { .media-nav-btn { width: 44px; height: 44px; font-size: 18px; } .media-nav-btn.left { left: 10px; } .media-nav-btn.right { right: 10px; } }
+.viewer-media-item { max-width: 90%; max-height: 85vh; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); object-fit: contain; animation: popIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
 .viewer-video { background: #000; outline: none; width: 100%; max-width: 900px; }
-
-@keyframes popIn {
-    0% { opacity: 0; transform: scale(0.6) translateY(40px); }
-    100% { opacity: 1; transform: scale(1) translateY(0); }
-}
-
-/* TRANSIZIONE QUANDO SI CAMBIA FOTO/VIDEO */
-.media-switching {
-    opacity: 0 !important;
-    transform: scale(0.92) !important;
-    transition: all 0.25s ease-in-out !important;
-}
+@keyframes popIn { 0% { opacity: 0; transform: scale(0.6) translateY(40px); } 100% { opacity: 1; transform: scale(1) translateY(0); } }
+.media-switching { opacity: 0 !important; transform: scale(0.92) !important; transition: all 0.25s ease-in-out !important; }
