@@ -2,6 +2,7 @@
    dashboard.js — Dashboard Harzafi Notes
    ============================================================ */
 
+// CREDENZIALI CORRETTE (IDENTICHE AL LOGIN.JS)
 const firebaseConfig = {
     apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
     authDomain: "harzafi-notes.firebaseapp.com",
@@ -14,48 +15,35 @@ if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 const auth = firebase.auth();
 const db = firebase.firestore();
 
-// Cloudinary Config
 const CLOUDINARY_CLOUD_NAME = "dxttlpg0g";
 const CLOUDINARY_UPLOAD_PRESET = "harzafi_notes";
 const ADMIN_EMAIL = "s11205413d@studenti.itisavogadro.it";
 
-// Controlla autenticazione
+let materiaUploadSelezionata = "Informatica";
+
 auth.onAuthStateChanged(user => {
     if (!user) {
         window.location.href = "login.html";
     } else {
-        initDashboard(user);
+        if (user.email === ADMIN_EMAIL) {
+            document.getElementById('btnUploadModal').style.display = 'block';
+        }
+        caricaAppunti('Tutte');
     }
 });
 
-function initDashboard(user) {
-    // Mostra pulsante upload solo per admin
-    if (user.email === ADMIN_EMAIL) {
-        document.getElementById('btnUploadModal').style.display = 'block';
-    }
-    
-    // Carica appunti iniziali
-    caricaAppunti('Tutte');
-}
-
-// Logout
 document.getElementById('btnEsci').addEventListener('click', () => {
     auth.signOut().then(() => {
         window.location.href = "login.html";
     });
 });
 
-// Filtra per materia
 window.filtraMateria = function(materia) {
     document.querySelectorAll('.materia-btn').forEach(btn => btn.classList.remove('active'));
     event.currentTarget.classList.add('active');
     document.getElementById('titoloMateria').textContent = materia === 'Tutte' ? 'Tutti i file' : materia;
     caricaAppunti(materia);
 };
-
-// Carica appunti da Firestore
-// Aggiungi in alto nel file la variabile per la tendina
-let materiaUploadSelezionata = "Informatica";
 
 function caricaAppunti(materia) {
     const container = document.getElementById('notesContainer');
@@ -71,13 +59,15 @@ function caricaAppunti(materia) {
             return;
         }
 
-        let index = 0;
+        window.mediaGallery = []; 
+        let indexCard = 0;
+        let indexMedia = 0;
+
         snap.forEach(doc => {
             const data = doc.data();
-            const docId = doc.id;
+            const docId = doc.id; 
             const fName = (data.nomeFile || "").toLowerCase();
             
-            // Icone SVG Professionali
             const iconPDF = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
             const iconIMG = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`;
             const iconZIP = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-1 8h-4v4h-2v-4H9v-2h4V8h2v4h4v2z"/></svg>`;
@@ -85,40 +75,43 @@ function caricaAppunti(materia) {
             const iconVID = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>`;
 
             let icon = iconDOC; let iconClass = 'icon-doc';
-            let isImage = false;
-            let isVideo = false;
+            let isImage = false; let isVideo = false;
             
             if (fName.includes('.pdf')) { icon = iconPDF; iconClass = 'icon-pdf'; }
             else if (fName.match(/\.(png|jpg|jpeg|gif|webp)$/i)) { icon = iconIMG; iconClass = 'icon-img'; isImage = true; }
             else if (fName.match(/\.(mp4|mov|webm|mkv)$/i)) { icon = iconVID; iconClass = 'icon-img'; isVideo = true; }
             else if (fName.match(/\.(zip|rar|7z)$/i)) { icon = iconZIP; iconClass = 'icon-zip'; }
 
-            // Tasto elimina Admin
+            let currentItemMediaIndex = -1;
+            if (isImage || isVideo) {
+                currentItemMediaIndex = indexMedia;
+                window.mediaGallery.push({ url: data.urlFile, isVideo: isVideo, titolo: data.titolo });
+                indexMedia++;
+            }
+
             let deleteBtnHTML = '';
             if (auth.currentUser && auth.currentUser.email === ADMIN_EMAIL) {
                 deleteBtnHTML = `<button class="btn-delete" onclick="eliminaFile('${docId}')">Elimina Appunto</button>`;
             }
 
-            // Anteprima cliccabile
             let visualMedia = '';
             if (isImage) {
-                visualMedia = `<img src="${data.urlFile}" class="img-preview" alt="${data.titolo}" onclick="apriMediaViewer('${data.urlFile}', false)" style="cursor:pointer; transition:0.3s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">`;
+                visualMedia = `<img src="${data.urlFile}" class="img-preview" alt="${data.titolo}" onclick="apriMediaViewer(${currentItemMediaIndex})" style="cursor:pointer; transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">`;
             } else if (isVideo) {
-                visualMedia = `<video src="${data.urlFile}" preload="metadata" class="img-preview" style="cursor:pointer; background:#000; object-fit:cover;" onclick="apriMediaViewer('${data.urlFile}', true)"></video>`;
+                visualMedia = `<video src="${data.urlFile}" preload="metadata" class="img-preview" style="cursor:pointer; background:#000; object-fit:cover;" onclick="apriMediaViewer(${currentItemMediaIndex})"></video>`;
             } else {
                 visualMedia = `<div class="note-icon ${iconClass}">${icon}</div>`;
             }
 
-            // Tasto Azione Dinamico
             let actionBtn = '';
             if (isImage || isVideo) {
-                actionBtn = `<button class="btn-download" onclick="apriMediaViewer('${data.urlFile}', ${isVideo})" style="width:100%; border:none; cursor:pointer;">👁️ Apri nel Lettore</button>`;
+                actionBtn = `<button class="btn-download" onclick="apriMediaViewer(${currentItemMediaIndex})" style="width:100%; border:none; cursor:pointer; background: var(--primary-light); color: var(--primary);">Apri</button>`;
             } else {
                 actionBtn = `<a href="${data.urlFile}" target="_blank" rel="noopener noreferrer" class="btn-download" style="display:block;">↓ Scarica File</a>`;
             }
 
             const card = `
-                <div class="note-card" style="animation-delay: ${index * 0.05}s">
+                <div class="note-card" style="animation-delay: ${indexCard * 0.05}s">
                     ${visualMedia}
                     <h3 class="note-title">${data.titolo}</h3>
                     <p class="note-meta">${data.materia} • ${new Date(data.data).toLocaleDateString('it-IT')}</p>
@@ -127,25 +120,22 @@ function caricaAppunti(materia) {
                 </div>
             `;
             container.innerHTML += card;
-            index++;
+            indexCard++;
         });
     }).catch(err => {
         container.innerHTML = '<p style="color:var(--danger); font-weight:700;">Errore di connessione a Firestore.</p>';
     });
 }
 
-// FUNZIONE PER ELIMINARE IL FILE DAL DATABASE
 window.eliminaFile = function(docId) {
     if(confirm("Sei sicuro di voler eliminare questo appunto per tutta la classe?")) {
         db.collection('appunti').doc(docId).delete().then(() => {
-            // Ricarica la vista corrente
             const materiaAttuale = document.getElementById('titoloMateria').innerText === 'Tutti i file' ? 'Tutte' : document.getElementById('titoloMateria').innerText;
             caricaAppunti(materiaAttuale);
         }).catch(err => alert("Errore durante l'eliminazione"));
     }
 };
 
-// LOGICA PER LA NUOVA TENDINA MODALE UPLOAD
 document.addEventListener('DOMContentLoaded', () => {
     const trigger = document.querySelector('#upload-materia-select .custom-select-trigger');
     const options = document.querySelectorAll('#upload-materia-options .custom-option');
@@ -162,7 +152,7 @@ document.addEventListener('DOMContentLoaded', () => {
             opt.addEventListener('click', (e) => {
                 e.stopPropagation();
                 display.innerText = opt.innerText;
-                materiaUploadSelezionata = opt.innerText; // Salva la variabile
+                materiaUploadSelezionata = opt.innerText; 
                 customSelect.classList.remove('open');
             });
         });
@@ -171,7 +161,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Upload Modal
 document.getElementById('btnUploadModal').addEventListener('click', () => {
     document.getElementById('uploadModal').classList.add('active');
     document.getElementById('progressContainer').style.display = 'none';
@@ -183,7 +172,6 @@ document.getElementById('btnChiudiUpload').addEventListener('click', () => {
     document.getElementById('uploadModal').classList.remove('active');
 });
 
-// File input styling
 const fileInput = document.getElementById('upFile');
 if (fileInput) {
     fileInput.addEventListener('change', (e) => {
@@ -192,11 +180,10 @@ if (fileInput) {
     });
 }
 
-// Salva file
 document.getElementById('btnSalva').addEventListener('click', () => {
     const file = document.getElementById('upFile').files[0];
     const titolo = document.getElementById('upTitolo').value.trim();
-    const materia = materiaUploadSelezionata;
+    const materia = materiaUploadSelezionata; // PRENDE LA TENDINA BELLA
     const status = document.getElementById('uploadStatus');
     const progressContainer = document.getElementById('progressContainer');
     const progressBar = document.getElementById('progressBar');
@@ -258,24 +245,63 @@ document.getElementById('btnSalva').addEventListener('click', () => {
 });
 
 // ==========================================
-// LOGICA LETTORE MULTIMEDIALE
+// LETTORE MULTIMEDIALE & GALLERIA 
 // ==========================================
-window.apriMediaViewer = function(url, isVideo) {
-    const container = document.getElementById('mediaContainer');
-    
-    if (isVideo) {
-        // Se è un video inserisce il player con i comandi (Play/Pausa, Volume, Schermo intero)
-        container.innerHTML = `<video src="${url}" controls autoplay class="viewer-video"></video>`;
-    } else {
-        // Se è una foto carica l'immagine in alta qualità
-        container.innerHTML = `<img src="${url}" class="viewer-img" alt="Anteprima">`;
-    }
-    
+let currentMediaIndex = -1;
+
+window.apriMediaViewer = function(index) {
+    currentMediaIndex = index;
+    aggiornaMediaViewer();
     document.getElementById('mediaViewerModal').classList.add('active');
 };
 
+function aggiornaMediaViewer() {
+    const container = document.getElementById('mediaContainer');
+    const item = window.mediaGallery[currentMediaIndex];
+    
+    container.innerHTML = ''; 
+    
+    setTimeout(() => {
+        if (item.isVideo) {
+            container.innerHTML = `<video src="${item.url}" controls autoplay class="viewer-media-item viewer-video"></video>`;
+        } else {
+            container.innerHTML = `<img src="${item.url}" class="viewer-media-item" alt="${item.titolo}">`;
+        }
+    }, 10);
+
+    const mostraFrecce = window.mediaGallery.length > 1 ? 'flex' : 'none';
+    document.getElementById('btnPrevMedia').style.display = mostraFrecce;
+    document.getElementById('btnNextMedia').style.display = mostraFrecce;
+}
+
+window.cambiaMedia = function(direzione) {
+    const container = document.getElementById('mediaContainer');
+    const elemento = container.querySelector('.viewer-media-item');
+    
+    if(elemento) elemento.classList.add('media-switching');
+
+    setTimeout(() => {
+        if (direzione === 'next') {
+            currentMediaIndex = (currentMediaIndex + 1) % window.mediaGallery.length;
+        } else {
+            currentMediaIndex = (currentMediaIndex - 1 + window.mediaGallery.length) % window.mediaGallery.length;
+        }
+        aggiornaMediaViewer();
+    }, 250); 
+};
+
+document.getElementById('btnNextMedia').addEventListener('click', () => cambiaMedia('next'));
+document.getElementById('btnPrevMedia').addEventListener('click', () => cambiaMedia('prev'));
+
+document.addEventListener('keydown', (e) => {
+    if (document.getElementById('mediaViewerModal').classList.contains('active')) {
+        if (e.key === 'ArrowRight' && window.mediaGallery.length > 1) cambiaMedia('next');
+        if (e.key === 'ArrowLeft' && window.mediaGallery.length > 1) cambiaMedia('prev');
+        if (e.key === 'Escape') document.getElementById('btnChiudiViewer').click();
+    }
+});
+
 document.getElementById('btnChiudiViewer').addEventListener('click', () => {
-    // Svuota il contenitore per fermare il video (evita che continui a suonare in background)
     document.getElementById('mediaContainer').innerHTML = ''; 
     document.getElementById('mediaViewerModal').classList.remove('active');
 });
