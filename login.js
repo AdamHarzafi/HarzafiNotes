@@ -39,12 +39,12 @@ window.onTurnstileError   = function () {
 function waitForFirebase(callback) {
     if (typeof firebase !== 'undefined') {
         const firebaseConfig = {
-    apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
-    authDomain: "harzafi-notes.firebaseapp.com",
-    projectId: "harzafi-notes",
-    messagingSenderId: "3583491638",
-    appId: "1:3583491638:web:cb5d8d61b4a93616a67"
-};
+            apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
+            authDomain: "harzafi-notes.firebaseapp.com",
+            projectId: "harzafi-notes",
+            messagingSenderId: "3583491638",
+            appId: "1:3583491638:web:cb5d8d61b4a93616a67"
+        };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         window.auth = firebase.auth();
         window.db   = firebase.firestore();
@@ -68,7 +68,7 @@ window.addEventListener('load', () => {
 async function checkVPN() {
     try {
         const controller = new AbortController();
-        const tid = setTimeout(() => controller.abort(), 000);
+        const tid = setTimeout(() => controller.abort(), 2000); // Impostato a 2s per dare tempo in caso di rete lenta
         const res  = await fetch('https://ipapi.co/json/', { signal: controller.signal });
         clearTimeout(tid);
         if (!res.ok) return false;
@@ -250,21 +250,39 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const googleBtn      = document.getElementById('custom-google-btn');
     const googleErrorMsg = document.getElementById('google-login-error');
-    googleBtn.addEventListener('click', async () => {
+    
+    googleBtn.addEventListener('click', () => {
         if (document.activeElement) document.activeElement.blur();
         const originalHTML = googleBtn.innerHTML;
         googleBtn.innerHTML  = `<div class="btn-loader"><div class="btn-spinner"></div><span class="btn-text-main" style="margin-left:5px;">CARICO...</span></div>`;
         googleBtn.disabled   = true; googleErrorMsg.style.display = 'none';
 
-        const isVpn = await checkVPN();
-        if (isVpn) { googleErrorMsg.innerText = "Disattivare la VPN per continuare."; googleErrorMsg.style.display = 'block'; googleBtn.innerHTML = originalHTML; googleBtn.disabled  = false; return; }
-        if (typeof window.auth === 'undefined') { googleErrorMsg.innerText = "Servizio offline."; googleErrorMsg.style.display = 'block'; googleBtn.innerHTML = originalHTML; googleBtn.disabled = false; return; }
+        if (typeof window.auth === 'undefined') { 
+            googleErrorMsg.innerText = "Servizio offline."; 
+            googleErrorMsg.style.display = 'block'; 
+            googleBtn.innerHTML = originalHTML; 
+            googleBtn.disabled = false; 
+            return; 
+        }
         
         const provider = new firebase.auth.GoogleAuthProvider();
         const targetDomain = selectedRole === 'studente' ? 'studenti.itisavogadro.it' : 'itisavogadro.it';
         provider.setCustomParameters({ hd: targetDomain });
 
+        // Apro SUBITO il popup per non far scattare i blocchi dei browser mobile (es. Safari/Chrome)
         window.auth.signInWithPopup(provider).then(async result => {
+            
+            // Faccio il check VPN *DOPO* aver effettuato il login al popup
+            const isVpn = await checkVPN();
+            if (isVpn) { 
+                await window.auth.signOut();
+                googleErrorMsg.innerText = "Disattivare la VPN per continuare."; 
+                googleErrorMsg.style.display = 'block'; 
+                googleBtn.innerHTML = originalHTML; 
+                googleBtn.disabled  = false; 
+                return; 
+            }
+
             const email = result.user.email.toLowerCase();
             if (email.endsWith("@" + targetDomain)) {
                 inviaEmail(email, 7, { nome_utente: result.user.displayName, email_utente: email, orario_accesso: new Date().toLocaleString('it-IT') }).catch(e => console.log(e));
@@ -275,7 +293,13 @@ document.addEventListener("DOMContentLoaded", function () {
                     googleBtn.innerHTML = originalHTML; googleBtn.disabled  = false;
                 });
             }
-        }).catch(() => { googleErrorMsg.innerText = "Accesso annullato. Riprova."; googleErrorMsg.style.display = 'block'; googleBtn.innerHTML = originalHTML; googleBtn.disabled = false; });
+        }).catch((error) => { 
+            console.error("Login Error: ", error);
+            googleErrorMsg.innerText = "Accesso annullato o popup bloccato."; 
+            googleErrorMsg.style.display = 'block'; 
+            googleBtn.innerHTML = originalHTML; 
+            googleBtn.disabled = false; 
+        });
     });
 
     document.getElementById('btn-harzafi-id').addEventListener('click', () => { document.getElementById('hid-modal').classList.add('active'); });
