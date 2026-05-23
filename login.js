@@ -39,14 +39,12 @@ window.onTurnstileError   = function () {
 function waitForFirebase(callback) {
     if (typeof firebase !== 'undefined') {
         const firebaseConfig = {
-          apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
-          authDomain: "harzafi-notes.firebaseapp.com",
-          projectId: "harzafi-notes",
-          storageBucket: "harzafi-notes.firebasestorage.app", // Aggiunto
-          messagingSenderId: "35834921638", // Corretto
-          appId: "1:35834921638:web:cb5d8d612b4a2936126a67", // Corretto
-          measurementId: "G-N8K6G729CM" // Aggiunto
-         };
+    apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
+    authDomain: "harzafi-notes.firebaseapp.com",
+    projectId: "harzafi-notes",
+    messagingSenderId: "3583491638",
+    appId: "1:3583491638:web:cb5d8d61b4a93616a67"
+};
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         window.auth = firebase.auth();
         window.db   = firebase.firestore();
