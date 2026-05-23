@@ -5,19 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Dashboard — Harzafi Notes</title>
     
-    <!-- Ottimizzazioni per App Mobile -->
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="theme-color" content="#ffffff">
     
-    <!-- Font e CSS -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" sizes="32x32" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
 </head>
 <body>
     
-    <!-- NAVBAR CON LOGO IMMAGINE -->
+    <!-- NAVBAR -->
     <nav class="navbar-wrapper glass scrolled" style="display:flex; justify-content:space-between; z-index:100;">
         <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Logo Harzafi" style="height: 36px; object-fit: contain;">
         <div style="display:flex; gap:15px; align-items:center;">
@@ -26,9 +24,8 @@
         </div>
     </nav>
 
-    <!-- DASHBOARD LAYOUT -->
+    <!-- DASHBOARD -->
     <div class="dash-layout" style="margin-top: 100px;">
-        <!-- SIDEBAR MATERIE SCORREVOLE SU MOBILE -->
         <aside class="sidebar-materie">
             <h3 style="margin-bottom:20px; font-weight:900; font-size:1.2rem; color:var(--text-dark);">Materie 3°A</h3>
             <button class="materia-btn active" onclick="filtraMateria('Tutte')">Tutti i file</button>
@@ -42,17 +39,15 @@
             <button class="materia-btn" onclick="filtraMateria('Matematica')">Matematica <span class="prof-name">Abramo Rosamaria</span></button>
         </aside>
 
-        <!-- MAIN CONTENT (GRIGLIA APPUNTI) -->
         <main>
             <h2 id="titoloMateria" style="font-weight:900; margin-bottom:30px; font-size:2rem; letter-spacing:-1px;">Tutti i file</h2>
             <div id="notesContainer" class="notes-grid">
-                <!-- Qui vengono iniettati gli appunti dal file dashboard.js -->
                 <p style="color:var(--text-light); font-weight:700; font-size:1.1rem;">Caricamento appunti dal server...</p>
             </div>
         </main>
     </div>
 
-    <!-- MODALE UPLOAD CON TENDINA PREMIUM -->
+    <!-- MODALE UPLOAD -->
     <div id="uploadModal" class="modal-overlay">
         <div class="modal-content">
             <button id="btnChiudiUpload" class="close-btn">×</button>
@@ -60,7 +55,6 @@
             
             <input type="text" id="upTitolo" class="apple-input" placeholder="Titolo dell'appunto (es. Slide Reti IP)" style="width:100%; margin-bottom:15px;">
             
-            <!-- Tendina Estetica (Nuovo Stile) -->
             <div class="custom-select" id="upload-materia-select" style="margin-bottom:20px;">
                 <button type="button" class="custom-select-trigger" aria-expanded="false">
                     <span id="upload-materia-display">Informatica</span>
@@ -88,31 +82,30 @@
                 <button id="btnSalva" class="btn-gradient" style="flex:2; border-radius:16px;">Carica nel Cloud</button>
             </div>
 
-            <div id="progressContainer" class="progress-container">
-                <div id="progressBar" class="progress-bar"></div>
-            </div>
+            <div id="progressContainer" class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
             <p id="uploadStatus" style="text-align:center; margin-top:15px; font-weight:800; color:var(--primary); font-size:0.9rem;"></p>
         </div>
     </div>
 
-    <!-- Script Firebase (Compat mode) -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <!-- MODALE LETTORE MULTIMEDIALE CON GALLERIA -->
+    <div id="mediaViewerModal" class="modal-overlay">
+        <!-- Frecce Navigazione -->
+        <button id="btnPrevMedia" class="media-nav-btn left" style="display:none;">❮</button>
+        <button id="btnNextMedia" class="media-nav-btn right" style="display:none;">❯</button>
 
-    <!-- MODALE VISUALIZZATORE MEDIA (IMMAGINI E VIDEO) -->
-    <div id="mediaViewerModal" class="modal-overlay" style="z-index: 999999; background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(10px);">
         <div class="modal-content">
-            <!-- Tasto X per chiudere -->
-            <button id="btnChiudiViewer" class="close-btn" style="top: 20px; right: 20px; background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.3); width: 44px; height: 44px; font-size: 24px;">×</button>
+            <!-- Tasto Chiudi -->
+            <button id="btnChiudiViewer" class="close-btn" style="position:absolute; top: 25px; right: 25px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.2); width: 44px; height: 44px; font-size: 24px; z-index: 1000000; backdrop-filter: blur(10px);">×</button>
             
-            <div id="mediaContainer" style="width: 100%; padding: 20px; display: flex; justify-content: center; align-items: center;">
-                <!-- Immagine o Video appariranno qui magicamente -->
+            <!-- Contenitore Immagine/Video -->
+            <div id="mediaContainer" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative;">
             </div>
         </div>
     </div>
-    
-    <!-- Script Logica Dashboard -->
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     <script src="dashboard.js"></script>
 </body>
 </html>
