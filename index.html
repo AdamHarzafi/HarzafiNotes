@@ -15,29 +15,24 @@
     
     <link rel="stylesheet" href="style.css">
     <style>
-        .hero-title-big { font-size: clamp(3.5rem, 8vw, 6.5rem); font-weight: 900; line-height: 1.05; letter-spacing: -2px; margin-bottom: 20px; color: var(--text-dark); }
-        .hero-subtitle-big { font-size: clamp(1.2rem, 3vw, 1.4rem); color: var(--text-gray); font-weight: 500; max-width: 650px; margin: 0 auto 40px; line-height: 1.6; }
+        .hero-title-big { font-size: clamp(3.0rem, 8vw, 6.5rem); font-weight: 900; line-height: 1.05; letter-spacing: -2px; margin-bottom: 20px; color: var(--text-dark); }
+        .hero-subtitle-big { font-size: clamp(1.1rem, 3vw, 1.4rem); color: var(--text-gray); font-weight: 500; max-width: 650px; margin: 0 auto 40px; line-height: 1.6; }
         
         .floating-orb { position: absolute; border-radius: 50%; filter: blur(50px); z-index: -1; animation: float 10s ease-in-out infinite alternate; }
         .orb-1 { width: 300px; height: 300px; background: rgba(2, 132, 199, 0.15); top: 10%; left: 15%; }
         .orb-2 { width: 400px; height: 400px; background: rgba(14, 165, 233, 0.1); bottom: 10%; right: 10%; animation-delay: -5s; }
         
-        @keyframes float {
-            0% { transform: translateY(0px) scale(1); }
-            100% { transform: translateY(30px) scale(1.1); }
-        }
+        @keyframes float { 0% { transform: translateY(0px) scale(1); } 100% { transform: translateY(30px) scale(1.1); } }
     </style>
 </head>
 <body>
 
-    <!-- Sfondi Dinamici -->
     <div class="floating-orb orb-1"></div>
     <div class="floating-orb orb-2"></div>
 
     <nav class="navbar-wrapper glass" id="navbar">
         <div class="nav-logo">
-            <!-- LOGO IN CIMA AL POSTO DELLA SCRITTA -->
-            <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Logo Harzafi" style="height: 36px; cursor: pointer;" onclick="window.scrollTo(0,0)">
+            <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Logo Harzafi" style="height: 36px; cursor: pointer;" onclick="window.scrollTo({top:0, behavior:'smooth'})">
         </div>
         <div class="nav-links">
             <a href="#features">Funzionalità</a>
@@ -51,21 +46,17 @@
     <header class="hero-wrapper" style="min-height: 100vh; display: flex; align-items: center; position: relative; overflow: hidden; padding-top: 80px;">
         <div class="hero-container" style="max-width: 1200px; margin: 0 auto; padding: 0 5%; text-align: center; width: 100%;">
             <div class="reveal active">
-                
                 <div style="display:inline-flex; align-items:center; gap:10px; background: #f0f9ff; color: #0284c7; padding: 8px 24px; border-radius: 30px; font-weight: 800; font-size: 0.9rem; margin-bottom: 30px; border: 1px solid #bae6fd; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.1);">
                     <svg viewBox="0 0 24 24" style="width:18px; fill:currentColor;"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96z"/></svg>
                     IL CLOUD DELLA CLASSE 3°A
                 </div>
-
                 <h1 class="hero-title-big">
                     Tutti gli appunti.<br>
                     <span class="animated-gradient-text">Nessun limite.</span>
                 </h1>
-                
                 <p class="hero-subtitle-big">
                     Harzafi Notes è la piattaforma di archiviazione centralizzata. Slide, PDF, schemi e codici sorgente caricati dai professori e sempre accessibili ovunque tu sia.
                 </p>
-                
                 <div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;">
                     <a href="login.html" style="text-decoration:none;">
                         <button class="btn-gradient" style="width:auto; padding: 0 40px; font-size: 1.15rem; height: 56px;">Apri l'Archivio</button>
@@ -111,12 +102,32 @@
         <p style="font-size: 1rem; color: var(--text-gray); font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">Applicativo Cloud Ufficiale © - Tutti i diritti riservati</p>
     </footer>
 
+    <!-- PULSANTE TORNA IN ALTO COME DA FOTO -->
+    <button id="scrollTopBtn" class="scroll-top-btn" aria-label="Torna su">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
     <script>
         document.addEventListener("DOMContentLoaded", () => {
             const navbar = document.getElementById('navbar');
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            
             window.addEventListener('scroll', () => {
                 navbar.classList.toggle('scrolled', window.scrollY > 40);
+                
+                // Mostra il pulsante se si scorre in basso
+                if (window.scrollY > 300) {
+                    scrollTopBtn.classList.add('visible');
+                } else {
+                    scrollTopBtn.classList.remove('visible');
+                }
             }, { passive: true });
+
+            scrollTopBtn.addEventListener('click', () => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
 
             const observer = new IntersectionObserver(entries => {
                 entries.forEach(e => { if(e.isIntersecting) { e.target.classList.add('active'); observer.unobserve(e.target); }});
