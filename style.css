@@ -66,7 +66,7 @@ p { line-height: 1.6; color: var(--text-gray); font-size: 1.05rem; }
 .bento-icon { width: 64px; height: 64px; border-radius: 50%; background: var(--primary-light); display: flex; align-items: center; justify-content: center; margin-bottom: 24px; color: var(--primary); }
 .bento-card h3 { font-size: 1.8rem; margin-bottom: 12px; }
 
-/* STRUTTURA LOGIN FSL */
+/* STRUTTURA LOGIN FSL E MODALI */
 .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); z-index: 99999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s var(--apple-ease); padding: 20px; }
 .modal-overlay.active { opacity: 1; pointer-events: auto; }
 .modal-content { background: #ffffff; width: 100%; max-width: 620px; border-radius: 32px; padding: 35px 50px 30px; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15); transform: scale(0.95) translateY(20px); transition: transform 0.5s var(--apple-smooth); position: relative; max-height: 95vh; overflow-y: auto; overflow-x: hidden; }
@@ -88,10 +88,31 @@ p { line-height: 1.6; color: var(--text-gray); font-size: 1.05rem; }
 .seg-btn.active { color: var(--text-dark); }
 .seg-slider { position: absolute; top: 4px; bottom: 4px; left: 4px; width: calc(50% - 4px); background: #ffffff; border-radius: 10px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); transition: transform 0.4s var(--apple-ease); z-index: 1; }
 
+/* === RIPRISTINO COMPLETO STILI LOGIN === */
+.login-rules-banner { background: #f0f9ff; color: var(--primary); border: 1px solid #bae6fd; padding: 10px 16px; text-align: center; border-radius: 14px; font-weight: 700; margin-bottom: 15px; font-size: 0.85rem; cursor: pointer; transition: transform 0.3s; }
+.login-rules-banner:hover { background: #e0f2fe; border-color: #7dd3fc; transform: translateY(-2px); }
+
 .input-group { margin-bottom: 15px; position: relative; }
 .input-label { font-size: 0.8rem; font-weight: 800; color: var(--text-gray); margin-bottom: 6px; display: flex; justify-content: space-between; text-transform: uppercase; }
 .apple-input { width: 100%; height: 52px; padding: 0 20px; background: #f5f5f7; border: 1px solid transparent; border-radius: 16px; font-size: 1.05rem; font-weight: 600; color: var(--text-dark); transition: all 0.3s var(--apple-ease); box-sizing: border-box; }
 .apple-input:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15); }
+#password-input { font-family: Verdana, sans-serif; letter-spacing: 2px; }
+.toggle-password-btn { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; color: var(--text-light); }
+
+.privacy-disclaimer { text-align: center; font-size: 0.75rem; color: var(--text-gray); line-height: 1.5; margin: 12px 0 15px; padding: 0 10px; font-weight: 500; }
+.privacy-disclaimer svg { width: 26px; height: 26px; color: var(--primary); margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto; }
+
+.divider { display: flex; align-items: center; text-align: center; margin: 15px 0; color: var(--text-light); font-size: 0.75rem; font-weight: 800; letter-spacing: 1px; }
+.divider::before, .divider::after { content: ''; flex: 1; border-bottom: 1px solid #e2e8f0; }
+.divider::before { margin-right: 15px; } .divider::after { margin-left: 15px; }
+
+.rules-list { list-style: none; margin-bottom: 24px; padding: 0; }
+.rules-list li { padding: 14px 16px; background: #f8fafc; border-left: 4px solid var(--primary); border-radius: 12px; margin-bottom: 10px; font-weight: 700; color: var(--text-dark); font-size: 0.9rem; display: flex; align-items: center; gap: 12px; transition: transform 0.3s; }
+.rules-list li:hover { transform: translateX(5px); background: #f1f5f9; }
+
+.fade-form { animation: fadeIn 0.4s var(--apple-ease) forwards; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(15px) scale(0.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+/* === FINE RIPRISTINO LOGIN === */
 
 .custom-select { position: relative; width: 100%; }
 .custom-select-trigger { display: flex; justify-content: space-between; align-items: center; width: 100%; height: 52px; padding: 0 20px; background: #f5f5f7; border: 1px solid transparent; border-radius: 16px; font-size: 1.05rem; font-weight: 600; cursor: pointer; transition: all 0.3s; box-sizing: border-box; }
