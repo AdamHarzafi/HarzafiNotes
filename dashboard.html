@@ -2,7 +2,8 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <!-- FIX SCHERMATA PICCOLISSIMA: Forza le proporzioni esatte e blocca lo zoom automatico -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Dashboard — Harzafi Notes</title>
     
     <meta name="mobile-web-app-capable" content="yes">
@@ -16,18 +17,18 @@
 <body>
     
     <!-- NAVBAR -->
-    <nav class="navbar-wrapper glass scrolled" style="display:flex; justify-content:space-between; z-index:100;">
-        <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Logo Harzafi" style="height: 36px; object-fit: contain;">
-        <div style="display:flex; gap:15px; align-items:center;">
-            <button id="btnUploadModal" class="btn-premium" style="display:none; padding:8px 16px;">+ Carica File</button>
-            <button id="btnEsci" style="background:none; border:none; font-weight:800; color:var(--danger); cursor:pointer; font-size:1rem;">Esci</button>
+    <nav class="navbar-wrapper glass scrolled" style="display:flex; justify-content:space-between; z-index:100; align-items:center;">
+        <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Logo Harzafi" class="nav-logo-img" style="height: 36px; object-fit: contain;">
+        <div style="display:flex; gap:10px; align-items:center;">
+            <button id="btnUploadModal" class="btn-premium nav-btn" style="display:none; padding:8px 16px;">+ Carica File</button>
+            <button id="btnEsci" class="nav-btn-logout" style="background:none; border:none; font-weight:800; color:var(--danger); cursor:pointer; font-size:1rem;">Esci</button>
         </div>
     </nav>
 
-   <!-- DASHBOARD -->
-    <div class="dash-layout" style="margin-top: 100px;">
+    <!-- DASHBOARD -->
+    <div class="dash-layout">
         
-        <!-- NUOVO WRAPPER PER L'EFFETTO SFOCATURA -->
+        <!-- WRAPPER SFOCATURA MOBILE -->
         <div class="sidebar-mobile-wrapper">
             <aside class="sidebar-materie">
                 <h3 style="margin-bottom:20px; font-weight:900; font-size:1.2rem; color:var(--text-dark);">Materie 3°A</h3>
@@ -44,7 +45,7 @@
         </div>
 
         <main>
-            <h2 id="titoloMateria" style="font-weight:900; margin-bottom:30px; font-size:2rem; letter-spacing:-1px;">Tutti i file</h2>
+            <h2 id="titoloMateria" class="dash-title">Tutti i file</h2>
             <div id="notesContainer" class="notes-grid">
                 <p style="color:var(--text-light); font-weight:700; font-size:1.1rem;">Caricamento appunti dal server...</p>
             </div>
@@ -55,9 +56,9 @@
     <div id="uploadModal" class="modal-overlay">
         <div class="modal-content">
             <button id="btnChiudiUpload" class="close-btn">×</button>
-            <h2 style="font-weight:900; margin-bottom:25px; font-size: 1.6rem; letter-spacing: -0.5px;">Carica nuovo file</h2>
+            <h2 class="modal-title">Carica nuovo file</h2>
             
-            <input type="text" id="upTitolo" class="apple-input" placeholder="Titolo dell'appunto (es. Slide Reti IP)" style="width:100%; margin-bottom:15px;">
+            <input type="text" id="upTitolo" class="apple-input" placeholder="Titolo (es. Slide Reti IP)" style="width:100%; margin-bottom:15px;">
             
             <div class="custom-select" id="upload-materia-select" style="margin-bottom:20px;">
                 <button type="button" class="custom-select-trigger" aria-expanded="false">
@@ -78,12 +79,12 @@
 
             <div class="file-input-wrapper">
                 <input type="file" id="upFile">
-                <span class="file-input-text" id="fileNameText">📁 Clicca qui per scegliere un file...</span>
+                <span class="file-input-text" id="fileNameText" style="text-align: center; padding: 0 10px;">📁 Clicca qui per scegliere un file...</span>
             </div>
             
-            <div style="display:flex; gap:15px;">
-                <button onclick="document.getElementById('uploadModal').classList.remove('active')" style="flex:1; padding:15px; border-radius:16px; border:none; font-weight:800; cursor:pointer; background:#f1f5f9; color:var(--text-dark); transition:0.3s;">Annulla</button>
-                <button id="btnSalva" class="btn-gradient" style="flex:2; border-radius:16px;">Carica nel Cloud</button>
+            <div style="display:flex; gap:10px;">
+                <button onclick="document.getElementById('uploadModal').classList.remove('active')" class="btn-cancel-modal">Annulla</button>
+                <button id="btnSalva" class="btn-gradient" style="flex:2; border-radius:16px; font-size: 1rem; height: 50px;">Carica</button>
             </div>
 
             <div id="progressContainer" class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
