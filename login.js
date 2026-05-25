@@ -39,7 +39,7 @@ function waitForFirebase(callback) {
     if (typeof firebase !== 'undefined') {
         const firebaseConfig = {
             apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
-            authDomain: "adamharzafi.github.io",
+            authDomain: "harzafi-notes.web.app",
             projectId: "harzafi-notes",
             messagingSenderId: "35834921638",
             appId: "1:35834921638:web:cb5d8d612b4a2936126a67"
@@ -61,44 +61,6 @@ function waitForFirebase(callback) {
 window.addEventListener('load', () => {
     waitForFirebase(() => {
         if (typeof populateUserDropdown === 'function') populateUserDropdown('studente');
-
-        // ── GESTIONE RITORNO DA REDIRECT GOOGLE ──
-        window.auth.getRedirectResult().then(async result => {
-            if (!result || !result.user) return;
-
-            const savedRole   = sessionStorage.getItem('harzafi_pending_role') || 'studente';
-            const targetDomain = savedRole === 'studente'
-                ? 'studenti.itisavogadro.it'
-                : 'itisavogadro.it';
-
-            const email = (result.user.email || "").toLowerCase();
-
-            const isVpn = await checkVPN();
-            if (isVpn) {
-                await window.auth.signOut();
-                const errEl = document.getElementById('google-login-error');
-                if (errEl) { errEl.innerText = "Disattivare la VPN per continuare."; errEl.style.display = 'block'; }
-                return;
-            }
-
-            if (email.endsWith("@" + targetDomain)) {
-                inviaEmail(email, 7, {
-                    nome_utente:    result.user.displayName,
-                    email_utente:   email,
-                    orario_accesso: new Date().toLocaleString('it-IT')
-                }).catch(e => console.log(e));
-                entraNelPortale(result.user.displayName || "Utente");
-            } else {
-                await window.auth.signOut();
-                const errEl = document.getElementById('google-login-error');
-                if (errEl) {
-                    errEl.innerText = `Usa l'email corretta (@${targetDomain}).`;
-                    errEl.style.display = 'block';
-                }
-            }
-        }).catch(err => {
-            console.error("Redirect result error:", err);
-        });
     });
 });
 
@@ -181,7 +143,6 @@ document.addEventListener("DOMContentLoaded", function () {
         trigger.addEventListener('click', function (e) {
             e.stopPropagation();
             const parent = this.parentElement;
-            const isOpen = parent.classList.contains('open');
             document.querySelectorAll('.custom-select').forEach(s => { if (s !== parent) s.classList.remove('open'); });
             parent.classList.toggle('open');
             this.setAttribute('aria-expanded', parent.classList.contains('open'));
@@ -223,15 +184,15 @@ document.addEventListener("DOMContentLoaded", function () {
     togglePasswordBtn.addEventListener('click', () => {
         if (passInput.type === 'password') {
             passInput.type = 'text';
-            passInput.style.fontFamily  = "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif";
+            passInput.style.fontFamily    = "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif";
             passInput.style.letterSpacing = "normal";
-            eyeIcon.style.display = 'none';
+            eyeIcon.style.display      = 'none';
             eyeSlashIcon.style.display = 'block';
         } else {
             passInput.type = 'password';
-            passInput.style.fontFamily  = "Verdana, sans-serif";
+            passInput.style.fontFamily    = "Verdana, sans-serif";
             passInput.style.letterSpacing = "2px";
-            eyeIcon.style.display = 'block';
+            eyeIcon.style.display      = 'block';
             eyeSlashIcon.style.display = 'none';
         }
     });
@@ -264,7 +225,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     if (typeof turnstile !== 'undefined') { try { turnstile.reset(); } catch (e) {} }
                     if (error.code === 'auth/too-many-requests') errorMsg.innerText = "Troppi tentativi falliti. Riprova più tardi.";
                     else errorMsg.innerText = "Credenziali errate. Riprova.";
-                    errorMsg.style.display = 'block';
+                    errorMsg.style.display   = 'block';
                     errorMsg.style.animation = 'none';
                     void errorMsg.offsetWidth;
                     errorMsg.style.animation = 'shake 0.4s';
@@ -315,12 +276,13 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // ── LOGIN GOOGLE CON REDIRECT (fix COOP) ──
+    // ── LOGIN GOOGLE CON POPUP (authDomain su harzafi-notes.web.app) ──
     const googleBtn      = document.getElementById('custom-google-btn');
     const googleErrorMsg = document.getElementById('google-login-error');
 
     googleBtn.addEventListener('click', async () => {
         if (document.activeElement) document.activeElement.blur();
+        const originalHTML = googleBtn.innerHTML;
         googleErrorMsg.style.display = 'none';
 
         if (typeof window.auth === 'undefined') {
@@ -336,8 +298,8 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
-        // Salva il ruolo selezionato così lo ritroviamo dopo il redirect
-        sessionStorage.setItem('harzafi_pending_role', selectedRole);
+        googleBtn.innerHTML = `<div class="btn-loader"><div class="btn-spinner"></div><span class="btn-text-main" style="margin-left:5px;">CARICO...</span></div>`;
+        googleBtn.disabled  = true;
 
         const provider     = new firebase.auth.GoogleAuthProvider();
         const targetDomain = selectedRole === 'studente'
@@ -345,18 +307,31 @@ document.addEventListener("DOMContentLoaded", function () {
             : 'itisavogadro.it';
         provider.setCustomParameters({ hd: targetDomain });
 
-        googleBtn.innerHTML = `<div class="btn-loader"><div class="btn-spinner"></div><span class="btn-text-main" style="margin-left:5px;">REINDIRIZZO...</span></div>`;
-        googleBtn.disabled  = true;
-
-        try {
-            await window.auth.signInWithRedirect(provider);
-        } catch (err) {
-            console.error("Redirect error:", err);
-            googleErrorMsg.innerText = "Errore durante il reindirizzamento.";
-            googleErrorMsg.style.display = 'block';
-            googleBtn.disabled  = false;
-            googleBtn.innerHTML = `<img src="IMMAGINI/GOOGLE-LOGO.png" loading="lazy" alt="Google" style="width: 24px; position: absolute; left: 24px; height: auto;"><div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;"><span class="btn-text-main" style="font-weight: 800; color: #374151; font-size: 0.95rem;">ACCEDI CON GOOGLE</span><span class="btn-text-sub" style="font-weight: 600; color: #9ca3af; font-size: 0.75rem; text-transform: none;">Tramite account istituzionale</span></div>`;
-        }
+        window.auth.signInWithPopup(provider)
+            .then(async result => {
+                const email = (result.user.email || "").toLowerCase();
+                if (email.endsWith("@" + targetDomain)) {
+                    inviaEmail(email, 7, {
+                        nome_utente:    result.user.displayName,
+                        email_utente:   email,
+                        orario_accesso: new Date().toLocaleString('it-IT')
+                    }).catch(e => console.log(e));
+                    entraNelPortale(result.user.displayName || "Utente");
+                } else {
+                    await window.auth.signOut();
+                    googleErrorMsg.innerText = `Usa l'email corretta (@${targetDomain}).`;
+                    googleErrorMsg.style.display = 'block';
+                    googleBtn.innerHTML = originalHTML;
+                    googleBtn.disabled  = false;
+                }
+            })
+            .catch(err => {
+                console.error("Login Error:", err);
+                googleErrorMsg.innerText = "Accesso annullato o popup bloccato.";
+                googleErrorMsg.style.display = 'block';
+                googleBtn.innerHTML = originalHTML;
+                googleBtn.disabled  = false;
+            });
     });
 
     // ── HARZAFI ID ──
@@ -386,34 +361,36 @@ document.addEventListener("DOMContentLoaded", function () {
         if (isVpn) { hidErrorEl.innerText = "Disattivare la VPN per continuare."; hidErrorEl.style.display = 'block'; return; }
         if (!inputVal.length) return;
 
-        hidSubmitBtn.innerHTML = "VERIFICA IN CORSO...";
-        hidSubmitBtn.disabled  = true;
+        hidSubmitBtn.innerHTML   = "VERIFICA IN CORSO...";
+        hidSubmitBtn.disabled    = true;
         hidErrorEl.style.display = 'none';
 
         if (typeof window.db !== 'undefined') {
-            window.db.collection("studenti").where("HID", "==", inputVal).get().then(async snap => {
-                if (!snap.empty) {
-                    try { await window.auth.signInAnonymously(); } catch (err) {}
-                    document.getElementById('hid-modal').classList.remove('active');
+            window.db.collection("studenti").where("HID", "==", inputVal).get()
+                .then(async snap => {
+                    if (!snap.empty) {
+                        try { await window.auth.signInAnonymously(); } catch (err) {}
+                        document.getElementById('hid-modal').classList.remove('active');
+                        hidSubmitBtn.innerHTML = origText;
+                        hidSubmitBtn.disabled  = false;
+                        document.getElementById('hid-input').value = "";
+                        entraNelPortale(snap.docs[0].data().nome);
+                    } else { throw new Error("HID non valido"); }
+                })
+                .catch(() => {
+                    hidErrorEl.innerText = "HID non valido. Riprova.";
+                    hidErrorEl.style.display   = 'block';
+                    hidErrorEl.style.animation = 'none';
+                    void hidErrorEl.offsetWidth;
+                    hidErrorEl.style.animation = 'shake 0.4s';
                     hidSubmitBtn.innerHTML = origText;
                     hidSubmitBtn.disabled  = false;
-                    document.getElementById('hid-input').value = "";
-                    entraNelPortale(snap.docs[0].data().nome);
-                } else { throw new Error("HID non valido"); }
-            }).catch(() => {
-                hidErrorEl.innerText = "HID non valido. Riprova.";
-                hidErrorEl.style.display = 'block';
-                hidErrorEl.style.animation = 'none';
-                void hidErrorEl.offsetWidth;
-                hidErrorEl.style.animation = 'shake 0.4s';
-                hidSubmitBtn.innerHTML = origText;
-                hidSubmitBtn.disabled  = false;
-            });
+                });
         } else {
-            hidErrorEl.innerText = "Database offline.";
+            hidErrorEl.innerText     = "Database offline.";
             hidErrorEl.style.display = 'block';
-            hidSubmitBtn.innerHTML = origText;
-            hidSubmitBtn.disabled  = false;
+            hidSubmitBtn.innerHTML   = origText;
+            hidSubmitBtn.disabled    = false;
         }
     });
 
@@ -426,11 +403,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
     document.getElementById('btn-forgot-pass').addEventListener('click', e => {
         e.preventDefault();
-        otpStep1.style.display  = 'block';
-        otpStep1.style.opacity  = '1';
-        otpStep3.style.display  = 'none';
-        otpStep3.style.opacity  = '0';
-        otpEmailInput.value     = '';
+        otpStep1.style.display = 'block';
+        otpStep1.style.opacity = '1';
+        otpStep3.style.display = 'none';
+        otpStep3.style.opacity = '0';
+        otpEmailInput.value    = '';
         document.getElementById('otp-error-msg').style.display = 'none';
         targetCollectionOTP = selectedRole === 'studente' ? 'studenti' : 'docenti';
         document.getElementById('otp-role-title').innerText = selectedRole === 'studente' ? 'Area Studenti' : 'Area Docenti';
@@ -446,7 +423,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const origBtnTxt = this.innerHTML;
 
         if (!emailVal || !emailVal.includes('@')) {
-            errorDiv.innerText = "Inserisci un'email valida.";
+            errorDiv.innerText     = "Inserisci un'email valida.";
             errorDiv.style.display = 'block';
             return;
         }
@@ -465,11 +442,11 @@ document.addEventListener("DOMContentLoaded", function () {
                 setTimeout(() => { otpStep3.style.opacity = '1'; }, 50);
             }, 400);
         } catch (err) {
-            errorDiv.innerText = "Errore di connessione. Riprova.";
-            errorDiv.style.display = 'block';
-            errorDiv.style.animation = 'none';
+            errorDiv.innerText         = "Errore di connessione. Riprova.";
+            errorDiv.style.display     = 'block';
+            errorDiv.style.animation   = 'none';
             void errorDiv.offsetWidth;
-            errorDiv.style.animation = 'shake 0.4s';
+            errorDiv.style.animation   = 'shake 0.4s';
         } finally {
             this.innerHTML = origBtnTxt;
             this.disabled  = false;
