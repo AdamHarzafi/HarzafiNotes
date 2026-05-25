@@ -5,7 +5,7 @@
 // CREDENZIALI CORRETTE (IDENTICHE AL LOGIN.JS)
 const firebaseConfig = {
     apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
-    authDomain: "harzafi-notes.firebaseapp.com",
+    authDomain: "adamharzafi.github.io",
     projectId: "harzafi-notes",
     messagingSenderId: "35834921638",
     appId: "1:35834921638:web:cb5d8d612b4a2936126a67"
