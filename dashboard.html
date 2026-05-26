@@ -14,12 +14,13 @@
     <link rel="icon" type="image/png" sizes="32x32" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
 
     <style>
-        /* STILI AGGIUNTIVI PER LE NUOVE FUNZIONI */
+        /* STILI PER LA RICERCA */
         .search-bar { width: 100%; min-width: 250px; padding: 12px 20px; border-radius: 24px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); font-size: 0.95rem; font-weight: 600; color: var(--text-dark); transition: all 0.3s var(--apple-ease); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
         .search-bar:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15); background: #fff; }
         .search-bar::placeholder { color: var(--text-light); font-weight: 500; }
         
-        .badge-type { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+        /* BADGE TIPI E NOVITÀ */
+        .badge-type { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
         .badge-pdf { background: #fee2e2; color: #dc2626; }
         .badge-img { background: #e0f2fe; color: #0284c7; }
         .badge-vid { background: #f3e8ff; color: #9333ea; }
@@ -29,17 +30,14 @@
         @keyframes pulseNew { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
         .badge-new { background: var(--success); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; margin-left: 10px; animation: pulseNew 2s infinite; vertical-align: middle; }
 
-        /* MODALITA' STUDIO (FOCUS MODE) */
-        body.study-mode .navbar-wrapper { opacity: 0; pointer-events: none; transform: translateY(-100%); }
-        body.study-mode .sidebar-mobile-wrapper { display: none !important; }
-        body.study-mode .dash-layout { grid-template-columns: 1fr; max-width: 1200px; margin-top: 40px; transition: all 0.5s var(--apple-ease); }
-        body.study-mode .dash-header { justify-content: center; flex-direction: column; align-items: center; text-align: center; margin-bottom: 50px; }
-        body.study-mode #searchNotes, body.study-mode #btnStudyMode { display: none; }
-        body.study-mode .note-card { background: #ffffff; box-shadow: 0 15px 40px rgba(0,0,0,0.06); transform: scale(1.02); border-color: rgba(0,0,0,0.05); }
-        body.study-mode { background-color: #f8fafc; }
+        /* PULSANTE CONDIVIDI (MIGLIORATO E PIÙ ELEGANTE) */
+        .action-icon-btn { background: #f8fafc; border: none; color: #64748b; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--apple-ease); }
+        .action-icon-btn:hover { background: var(--primary-light); color: var(--primary); transform: scale(1.08); box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15); }
+        .action-icon-btn:active { transform: scale(0.95); }
 
-        .btn-focus-exit { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 14px 30px; font-size: 1.05rem; box-shadow: 0 15px 35px rgba(2, 132, 199, 0.4); border: 2px solid rgba(255,255,255,0.2); }
-        body.study-mode .btn-focus-exit { display: flex; animation: fadeUp 0.6s var(--apple-ease); }
+        /* NOTIFICHE TOAST (POPUP) */
+        .toast-notification { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); opacity: 0; background: #0f172a; color: white; padding: 14px 28px; border-radius: 30px; font-weight: 700; font-size: 0.95rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 99999; display: flex; align-items: center; gap: 10px; pointer-events: none; }
+        .toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
     </style>
 </head>
 <body>
@@ -68,7 +66,7 @@
         
         <div class="sidebar-mobile-wrapper">
             <aside class="sidebar-materie">
-                <h3 class="desktop-only-title">Archivio 3°A</h3>
+                <h3 class="desktop-only-title" style="font-size: 0.9rem; color: var(--text-light);">Materie 3°A</h3>
                 <button class="materia-btn active" onclick="filtraMateria('Tutte')">Tutti i file</button>
                 <button class="materia-btn" onclick="filtraMateria('Informatica')">Informatica <span class="prof-name">Folcarelli, Talomo</span></button>
                 <button class="materia-btn" onclick="filtraMateria('Lingua Italiana')">Lingua Italiana <span class="prof-name">Pedio Alessia</span></button>
@@ -83,7 +81,7 @@
 
         <main class="main-content">
             
-            <!-- HEADER INTELLIGENTE CON RICERCA E FOCUS MODE -->
+            <!-- HEADER INTELLIGENTE CON RICERCA -->
             <div class="dash-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 35px; flex-wrap: wrap; gap: 20px;">
                 <div>
                     <p id="greetingText" style="color: var(--primary); font-weight: 800; font-size: 1.05rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">Caricamento...</p>
@@ -94,9 +92,6 @@
                         <input type="text" id="searchNotes" class="search-bar" placeholder="Cerca per titolo o materia...">
                         <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2.5" style="width: 18px; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
                     </div>
-                    <button id="btnStudyMode" class="btn-secondary" style="padding: 0 20px; border-radius: 24px; border-color: transparent; background: #f1f5f9; color: var(--text-dark);" title="Modalità Studio">
-                        <svg viewBox="0 0 24 24" fill="currentColor" width="22"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-                    </button>
                 </div>
             </div>
 
@@ -116,15 +111,11 @@
         </main>
     </div>
 
-    <!-- TASTO USCITA MODALITÀ STUDIO -->
-    <button id="btnExitStudyMode" class="btn-gradient btn-focus-exit">
-        <svg viewBox="0 0 24 24" fill="currentColor" width="20" style="margin-right: 10px;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        Chiudi Modalità Studio
-    </button>
+    <!-- NOTIFICA A SCOMPARSA (TOAST) -->
+    <div id="globalToast" class="toast-notification">✅ Operazione completata</div>
 
     <!-- MODALE UPLOAD -->
     <div id="uploadModal" class="modal-overlay">
-        <!-- Contenuto inalterato ma ottimizzato nello stile -->
         <div class="modal-content">
             <button id="btnChiudiUpload" class="close-btn">×</button>
             <h2 class="modal-title">Carica nuovo file</h2>
