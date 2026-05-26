@@ -16,65 +16,6 @@
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
-
-    <style>
-        /* Stili specifici per layout pagina testo (condivisi con Privacy) */
-        body { overflow-x: hidden; width: 100%; min-height: 100vh; line-height: 1.5; font-weight: 400; }
-
-        .privacy-bg-mesh {
-            position: fixed; inset: 0;
-            background: radial-gradient(ellipse at 15% 25%, rgba(14,165,233,0.12) 0%, transparent 40%),
-                        radial-gradient(ellipse at 85% 70%, rgba(2,132,199,0.08) 0%, transparent 45%);
-            filter: blur(35px); pointer-events: none; z-index: 0; transform: translateZ(0);
-        }
-
-        .privacy-main { position: relative; z-index: 1; padding: 140px 20px 80px; display: flex; flex-direction: column; align-items: center; }
-        
-        .privacy-header { text-align: center; max-width: 800px; margin-bottom: 60px; animation: fadeUp 0.8s var(--apple-ease); }
-        .privacy-icon { width: 80px; height: 80px; margin: 0 auto 24px; background: var(--primary-light); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--primary); box-shadow: 0 10px 25px rgba(2, 132, 199, 0.15); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .privacy-icon:hover { transform: scale(1.1) rotate(5deg); }
-        .privacy-icon svg { width: 44px; fill: currentColor; }
-        
-        .privacy-header h1 { font-size: clamp(2.2rem, 6vw, 3.5rem); font-weight: 900; letter-spacing: -0.03em; margin-bottom: 20px; color: var(--text-dark); }
-        .privacy-header p.lead { font-size: clamp(1.1rem, 3vw, 1.3rem); color: var(--text-gray); font-weight: 500; line-height: 1.5; padding: 0 10px; }
-
-        .apple-summary-box { background: #ffffff; max-width: 800px; width: 100%; margin: 0 auto 60px; border-radius: 32px; padding: 45px 50px; box-shadow: 0 20px 50px rgba(2, 132, 199, 0.08), 0 0 0 1px rgba(2, 132, 199, 0.05); animation: fadeUp 1s var(--apple-ease); }
-        .summary-list { list-style: none; padding: 0; }
-        .summary-list li { position: relative; padding-left: 28px; margin-bottom: 24px; font-size: 1.1rem; color: var(--text-dark); font-weight: 600; line-height: 1.5; }
-        .summary-list li:last-child { margin-bottom: 0; }
-        .summary-list li::before { content: "•"; position: absolute; left: 0; top: -2px; color: var(--primary); font-weight: 900; font-size: 1.6rem; }
-
-        .privacy-content { max-width: 800px; width: 100%; margin: 0 auto; animation: fadeUp 1.2s var(--apple-ease); }
-        .privacy-section { margin-bottom: 55px; }
-        .privacy-section h2 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 20px; color: var(--text-dark); border-bottom: 2px solid var(--border-color); padding-bottom: 12px; }
-        .privacy-section p { font-size: 1.05rem; color: var(--text-gray); margin-bottom: 20px; line-height: 1.7; font-weight: 500; }
-        
-        .privacy-section ul { padding-left: 28px; margin-bottom: 24px; list-style: none; }
-        .privacy-section ul li { position: relative; font-size: 1.05rem; color: var(--text-gray); margin-bottom: 12px; line-height: 1.6; font-weight: 500; }
-        .privacy-section ul li::before { content: "•"; position: absolute; left: -22px; top: -2px; color: var(--text-light); font-weight: 900; font-size: 1.4rem; }
-        .privacy-section strong { color: var(--text-dark); font-weight: 800; }
-
-        .privacy-link { color: var(--primary); font-weight: 700; text-decoration: none; transition: color 0.3s; }
-        .privacy-link:hover { text-decoration: underline; color: var(--primary-hover); }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* OTTIMIZZAZIONE MOBILE */
-        @media (max-width: 768px) {
-            .privacy-main { padding: 110px 20px 40px; }
-            .privacy-icon { width: 65px; height: 65px; margin-bottom: 20px; }
-            .privacy-icon svg { width: 34px; }
-            .apple-summary-box { padding: 30px 24px; border-radius: 24px; box-shadow: 0 15px 35px rgba(2, 132, 199, 0.06), 0 0 0 1px rgba(2, 132, 199, 0.05);}
-            .summary-list li { font-size: 1rem; padding-left: 22px; }
-            .summary-list li::before { font-size: 1.4rem; top: -3px;}
-            .privacy-section h2 { font-size: 1.4rem; }
-            .privacy-section p { font-size: 1rem; }
-            .privacy-section ul li { font-size: 1rem; }
-        }
-    </style>
 </head>
 <body>
 
@@ -121,7 +62,7 @@
             
             <section class="privacy-section">
                 <h2>Stato di Conformità</h2>
-                <p>La presente piattaforma, <strong>Harzafi Notes</strong>, è <strong>conforme</strong> a quanto previsto dalle linee guida sull'accessibilità degli strumenti informatici. Abbiamo integrato tecnologie moderne come WAI-ARIA (Web Accessibility Initiative - Accessible Rich Internet Applications) per comunicare correttamente lo stato degli elementi interattivi (come bottoni, modali e menu a tendina) alle tecnologie assistive.</p>
+                <p>La presente piattaforma, <strong>Harzafi Notes</strong>, è <strong>conforme</strong> a quanto previsto dalle linee guida sull'accessibilità degli strumenti informatici. Abbiamo integrato tecnologie moderne come WAI-ARIA per comunicare correttamente lo stato degli elementi interattivi alle tecnologie assistive.</p>
             </section>
 
             <section class="privacy-section">
@@ -130,29 +71,19 @@
                 <ul>
                     <li><strong>Email Responsabile Tecnico:</strong> <a href="mailto:harzafi.support@gmail.com" class="privacy-link">harzafi.support@gmail.com</a></li>
                 </ul>
-                <p>Nella segnalazione, ti preghiamo di indicare:</p>
-                <ul>
-                    <li>L'URL della pagina in cui hai riscontrato il problema.</li>
-                    <li>Una breve descrizione dell'ostacolo.</li>
-                    <li>Il dispositivo, il sistema operativo e l'eventuale strumento di assistenza (es. Screen Reader) utilizzato.</li>
-                </ul>
+                <p>Nella segnalazione, ti preghiamo di indicare l'URL della pagina, una descrizione del problema e il dispositivo/screen reader utilizzato.</p>
             </section>
 
             <section class="privacy-section">
-                <h2>Procedura di Attuazione (Difensore Civico Digitale)</h2>
-                <p>In caso di mancata o insoddisfacente risposta da parte dell'Amministrazione ai feedback inviati, conformemente all'art. 3-quinquies, comma 3 della Legge 9 gennaio 2004, n. 4, l'utente ha il diritto di fare ricorso al Difensore Civico per il Digitale tramite l'apposito servizio messo a disposizione dall'AGID.</p>
-            </section>
-
-            <section class="privacy-section">
-                <h2>Redazione della Dichiarazione</h2>
-                <p>La presente dichiarazione è stata redatta e validata internamente in data <strong>26 Maggio 2026</strong> dal team di sviluppo di Harzafi Notes, avvalendosi di validatori W3C e test eseguiti tramite lettori vocali di sistema (Apple VoiceOver e NVDA).</p>
+                <h2>Procedura di Attuazione</h2>
+                <p>In caso di mancata o insoddisfacente risposta da parte dell'Amministrazione ai feedback inviati, conformemente all'art. 3-quinquies della Legge 4/2004, l'utente ha il diritto di fare ricorso al Difensore Civico per il Digitale tramite l'apposito servizio AGID.</p>
             </section>
 
         </article>
     </main>
 
     <!-- FOOTER -->
-    <footer id="footer" class="footer-wrapper content-lazy">
+    <footer id="footer" class="footer-wrapper content-lazy" style="margin-top: 0; box-shadow: none;">
         <div class="mim-footer-wrap reveal">
             <a href="https://www.miur.gov.it/" target="_blank" rel="noopener noreferrer">
                 <img src="IMMAGINI/LOGO-MIM.png" loading="lazy" decoding="async" class="footer-logo-mim" alt="Logo Ministero">
