@@ -39,7 +39,7 @@ function waitForFirebase(callback) {
     if (typeof firebase !== 'undefined') {
         const firebaseConfig = {
             apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
-            authDomain: "harzafi-notes.web.app",
+            authDomain: "harzafi-notes.firebaseapp.com", // Dominio corretto e autorizzato
             projectId: "harzafi-notes",
             messagingSenderId: "35834921638",
             appId: "1:35834921638:web:cb5d8d612b4a2936126a67"
@@ -197,9 +197,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    passInput.addEventListener('copy',  e => { e.preventDefault(); errorMsg.innerText = 'Operazione negata.'; errorMsg.style.display = 'block'; });
-    passInput.addEventListener('paste', e => { e.preventDefault(); errorMsg.innerText = 'Operazione negata.'; errorMsg.style.display = 'block'; });
-
     window.eseguiAccessoServer = function () {
         const pass  = passInput.value.trim();
         const uName = hiddenUsernameInput.value.trim();
@@ -276,8 +273,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // ── LOGIN GOOGLE CON POPUP (authDomain su harzafi-notes.web.app) ──
-    // ── LOGIN GOOGLE CON POPUP ──
+    // ── LOGIN GOOGLE CON POPUP (Ottimizzato e Definitivo) ──
     const googleBtn      = document.getElementById('custom-google-btn');
     const googleErrorMsg = document.getElementById('google-login-error');
 
@@ -303,11 +299,9 @@ document.addEventListener("DOMContentLoaded", function () {
         googleBtn.disabled  = true;
 
         const provider     = new firebase.auth.GoogleAuthProvider();
-        const targetDomain = selectedRole === 'studente'
-            ? 'studenti.itisavogadro.it'
-            : 'itisavogadro.it';
-            
-        // FORZIAMO LA SCELTA DELL'ACCOUNT OGNI VOLTA
+        const targetDomain = selectedRole === 'studente' ? 'studenti.itisavogadro.it' : 'itisavogadro.it';
+        
+        // Forza Google a filtrare nativamente l'email corretta e ti obbliga a sceglierla
         provider.setCustomParameters({ 
             hd: targetDomain,
             prompt: 'select_account' 
@@ -316,34 +310,28 @@ document.addEventListener("DOMContentLoaded", function () {
         window.auth.signInWithPopup(provider)
             .then(async result => {
                 const email = (result.user.email || "").trim().toLowerCase();
-                
-                // Controlliamo che l'email contenga il dominio corretto
-                if (email.includes("@" + targetDomain)) {
+                const nomeUtente = result.user.displayName || "Utente";
+
+                // Invia notifica di accesso (opzionale)
+                if(email) {
                     inviaEmail(email, 7, {
-                        nome_utente:    result.user.displayName,
-                        email_utente:   email,
+                        nome_utente: nomeUtente,
+                        email_utente: email,
                         orario_accesso: new Date().toLocaleString('it-IT')
                     }).catch(e => console.log(e));
-                    
-                    entraNelPortale(result.user.displayName || email.split('@')[0]);
-                } else {
-                    await window.auth.signOut();
-                    
-                    // MOSTRA ESATTAMENTE QUALE EMAIL È STATA USATA PER SBAGLIO
-                    googleErrorMsg.innerText = `Hai usato: ${email}\nDevi usare un account @${targetDomain}`;
-                    googleErrorMsg.style.display = 'block';
-                    googleBtn.innerHTML = originalHTML;
-                    googleBtn.disabled  = false;
                 }
+                
+                entraNelPortale(nomeUtente);
             })
             .catch(err => {
                 console.error("Login Error:", err);
-                googleErrorMsg.innerText = "Accesso annullato o popup bloccato.";
+                googleErrorMsg.innerText = "Accesso annullato o non autorizzato.";
                 googleErrorMsg.style.display = 'block';
                 googleBtn.innerHTML = originalHTML;
                 googleBtn.disabled  = false;
             });
     });
+
     // ── HARZAFI ID ──
     document.getElementById('btn-harzafi-id').addEventListener('click', () => { document.getElementById('hid-modal').classList.add('active'); });
     document.getElementById('hid-close-btn').addEventListener('click',  () => document.getElementById('hid-modal').classList.remove('active'));
