@@ -15,197 +15,7 @@
     <link rel="icon" type="image/png" sizes="32x32" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
     
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-
-    <style>
-
-        :root {
-            --primary: #0284c7;        
-            --primary-hover: #0369a1;  
-            --primary-light: #e0f2fe;  
-            --bg-body: #ffffff; 
-            --surface: rgba(255, 255, 255, 0.75);
-            --text-dark: #0f172a; 
-            --text-gray: #475569; 
-            --text-light: #94a3b8;
-            --success: #10b981;
-            --border-color: #e2e8f0;
-            --apple-ease: cubic-bezier(0.32, 0.72, 0, 1);
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
-        
-        body { background-color: var(--bg-body); color: var(--text-dark); overflow-x: hidden; width: 100%; min-height: 100vh; min-height: 100dvh; line-height: 1.5; font-weight: 400; }
-
-        .privacy-bg-mesh {
-            position: fixed;
-            inset: 0;
-            background:
-                radial-gradient(ellipse at 15% 25%, rgba(14,165,233,0.12) 0%, transparent 40%),
-                radial-gradient(ellipse at 85% 70%, rgba(2,132,199,0.08) 0%, transparent 45%);
-            filter: blur(35px);
-            pointer-events: none;
-            z-index: 0;
-            transform: translateZ(0);
-        }
-
-        :focus-visible { outline: 3px solid var(--primary) !important; outline-offset: 3px !important; border-radius: 8px; transition: outline-offset 0.2s ease; }
-        :focus:not(:focus-visible) { outline: none !important; }
-
-        .navbar-wrapper { 
-            position: fixed; top: 20px; left: 50%; transform: translateX(-50%) translateZ(0); 
-            width: calc(100% - 40px); max-width: 1200px; z-index: 1000; border-radius: 100px; 
-            padding: 12px 24px; display: flex; justify-content: space-between; align-items: center; 
-            border: 1px solid rgba(255, 255, 255, 0.8); background: var(--surface); 
-            backdrop-filter: saturate(180%) blur(25px); -webkit-backdrop-filter: saturate(180%) blur(25px);
-            transition: top 0.4s var(--apple-ease), width 0.4s var(--apple-ease), max-width 0.4s var(--apple-ease), border-radius 0.4s var(--apple-ease), background 0.4s var(--apple-ease), padding 0.4s var(--apple-ease), border-color 0.4s var(--apple-ease), box-shadow 0.4s var(--apple-ease); 
-        }
-        .navbar-wrapper.scrolled { 
-            top: 0; width: 100%; max-width: 2560px; border-radius: 0; padding: 15px 5vw; 
-            background: rgba(255, 255, 255, 0.85); backdrop-filter: saturate(200%) blur(40px); 
-            -webkit-backdrop-filter: saturate(200%) blur(40px); border: 1px solid transparent; 
-            border-bottom-color: rgba(0, 0, 0, 0.08); box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05); 
-        }
-
-        .animated-gradient-text { 
-            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 25%, #0ea5e9 50%, #0369a1 75%, #0284c7 100%); 
-            background-size: 300% 300%; 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            animation: textPulseColor 5s cubic-bezier(0.25, 1, 0.5, 1) infinite; 
-        }
-        @keyframes textPulseColor { 
-            0% { background-position: 0% 50%; } 
-            20% { background-position: 100% 50%; } 
-            60% { background-position: 50% 50%; } 
-            100% { background-position: 0% 50%; } 
-        }
-
-        .nav-logo { background: transparent; border: none; padding: 0; margin: 0; display: inline-flex; align-items: center; justify-content: center; }
-        .nav-logo img { height: 36px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.05)); transition: transform 0.3s var(--apple-ease); }
-        .nav-links { display: flex; gap: 35px; }
-        .nav-links a { text-decoration: none; color: var(--text-dark); font-weight: 700; font-size: 0.95rem; transition: color 0.3s, transform 0.3s var(--apple-ease); }
-        .nav-links a:hover { color: var(--primary); transform: translateY(-2px); }
-        
-        .btn-premium { background: var(--primary-light); color: var(--primary); border: none; padding: 10px 20px; border-radius: 30px; font-size: 0.95rem; font-weight: 800; cursor: pointer; text-decoration: none; transition: all 0.4s var(--apple-ease); display: inline-flex; align-items: center; justify-content: center; }
-        .btn-premium:hover { background: var(--primary); color: white; transform: scale(1.04); box-shadow: 0 10px 20px rgba(2, 132, 199, 0.2); }
-
-        .privacy-main { position: relative; z-index: 1; padding: 140px 20px 80px; display: flex; flex-direction: column; align-items: center; }
-        
-        .privacy-header { text-align: center; max-width: 800px; margin-bottom: 60px; animation: fadeUp 0.8s var(--apple-ease); }
-        .privacy-icon { width: 80px; height: 80px; margin: 0 auto 24px; background: var(--primary-light); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--primary); box-shadow: 0 10px 25px rgba(2, 132, 199, 0.15); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
-        .privacy-icon:hover { transform: scale(1.1) rotate(5deg); }
-        .privacy-icon svg { width: 44px; fill: currentColor; }
-        
-        .privacy-header h1 { font-size: clamp(2.2rem, 6vw, 3.5rem); font-weight: 900; letter-spacing: -0.03em; margin-bottom: 20px; color: var(--text-dark); }
-        .privacy-header p.lead { font-size: clamp(1.1rem, 3vw, 1.3rem); color: var(--text-gray); font-weight: 500; line-height: 1.5; padding: 0 10px; }
-
-        .apple-summary-box { background: #ffffff; max-width: 800px; width: 100%; margin: 0 auto 60px; border-radius: 32px; padding: 45px 50px; box-shadow: 0 20px 50px rgba(2, 132, 199, 0.08), 0 0 0 1px rgba(2, 132, 199, 0.05); animation: fadeUp 1s var(--apple-ease); }
-        .summary-list { list-style: none; padding: 0; }
-        .summary-list li { position: relative; padding-left: 28px; margin-bottom: 24px; font-size: 1.1rem; color: var(--text-dark); font-weight: 600; line-height: 1.5; }
-        .summary-list li:last-child { margin-bottom: 0; }
-        .summary-list li::before { content: "•"; position: absolute; left: 0; top: -2px; color: var(--primary); font-weight: 900; font-size: 1.6rem; }
-
-        .privacy-content { max-width: 800px; width: 100%; margin: 0 auto; animation: fadeUp 1.2s var(--apple-ease); }
-        .privacy-section { margin-bottom: 55px; }
-        .privacy-section h2 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 20px; color: var(--text-dark); border-bottom: 2px solid var(--border-color); padding-bottom: 12px; }
-        .privacy-section p { font-size: 1.05rem; color: var(--text-gray); margin-bottom: 20px; line-height: 1.7; font-weight: 500; }
-        
-        .privacy-section ul { padding-left: 28px; margin-bottom: 24px; list-style: none; }
-        .privacy-section ul li { position: relative; font-size: 1.05rem; color: var(--text-gray); margin-bottom: 12px; line-height: 1.6; font-weight: 500; }
-        .privacy-section ul li::before { content: "•"; position: absolute; left: -22px; top: -2px; color: var(--text-light); font-weight: 900; font-size: 1.4rem; }
-        .privacy-section strong { color: var(--text-dark); font-weight: 800; }
-
-        .privacy-link { color: var(--primary); font-weight: 700; text-decoration: none; transition: color 0.3s; }
-        .privacy-link:hover { text-decoration: underline; color: var(--primary-hover); }
-
-        /* ================================================================= */
-        /* FOOTER AVANZATO */
-        /* ================================================================= */
-        .content-lazy { content-visibility: auto; contain-intrinsic-size: 1000px; }
-        .footer-wrapper { background: var(--surface-solid); border-top: 1px solid rgba(2, 132, 199, 0.08); border-radius: 48px 48px 0 0; padding: 80px 5% 40px; color: var(--text-dark); margin-top: 80px; box-shadow: 0 -20px 50px rgba(2, 132, 199, 0.03); position: relative; z-index: 10; }
-        .mim-footer-wrap { width: 100%; display: flex; justify-content: center; margin-bottom: 50px; }
-        .footer-logo-mim { height: 80px; filter: opacity(0.9); transition: transform 0.4s var(--apple-ease), filter 0.4s; } 
-        .footer-logo-mim:hover { filter: opacity(1) drop-shadow(0 15px 25px rgba(0,0,0,0.1)); transform: scale(1.05); }
-        .grid-infos { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); max-width: 1200px; margin: 0 auto 50px; gap: 40px; border-bottom: 1px solid var(--border-color); padding-bottom: 50px; }
-        .col-info h4 { font-size: 1.15rem; color: var(--text-dark); font-weight: 900; margin-bottom: 24px; text-transform: uppercase; display: flex; align-items: center; gap: 12px;}
-        .col-info h4 svg { width: 22px; fill: var(--primary); transition: transform 0.4s var(--apple-ease); }
-        .col-info:hover h4 svg { transform: scale(1.2) rotate(10deg); }
-        .col-info p { font-size: 1rem; line-height: 1.8; color: var(--text-gray); font-weight: 500;}
-        .col-info a { color: var(--text-gray); text-decoration: none; font-weight: 700; transition: color 0.3s var(--apple-ease);}
-        .col-info a:hover { color: var(--primary); }
-        .address-link { color: var(--text-gray); font-weight: 500; text-decoration: none; border-bottom: 1px dashed #cbd5e1; transition: color 0.3s, border-color 0.3s; padding-bottom: 2px;}
-        .address-link:hover { color: var(--primary); border-color: var(--primary); }
-        .tel-link { font-weight: 800; color: var(--text-dark); text-decoration: none; transition: color 0.3s, transform 0.3s; display: inline-block;}
-        .tel-link:hover { color: var(--primary); transform: scale(1.05); }
-        .col-info span.hi { font-weight: 800; color: var(--text-dark);}
-
-        .bottom-branding { text-align: center; padding-bottom: 30px; }
-        .badge-views { display: inline-flex; align-items: center; gap: 10px; background: var(--primary-light); padding: 10px 24px; border-radius: 30px; font-size: 0.9rem; font-weight: 800; color: var(--primary-hover); margin-bottom: 24px; transition: transform 0.4s var(--apple-ease), box-shadow 0.4s; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.05);}
-        .badge-views:hover { transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 20px rgba(2, 132, 199, 0.1); }
-        .badge-views strong { color: var(--primary); font-size: 1.1rem;}
-        .copyright-text { font-size: 1rem; color: var(--text-gray); font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;}
-        .legal-links { display: flex; justify-content: center; align-items: center; gap: 15px; margin-top: 20px; }
-        .legal-links a { color: var(--text-light); font-size: 0.9rem; font-weight: 700; text-decoration: none; transition: color 0.3s var(--apple-ease);}
-        .legal-links a:hover { color: var(--primary); text-decoration: underline; }
-        .desktop-divider { color: var(--border-color); font-size: 0.9rem; }
-
-        /* Modal Mappa (Strutture base) */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); z-index: 99999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.4s var(--apple-ease); padding: 20px; }
-        .modal-overlay.active { opacity: 1; pointer-events: auto; }
-        .modal-content { background: #ffffff; width: 100%; max-width: 620px; border-radius: 32px; padding: 35px 50px 30px; box-shadow: 0 25px 60px rgba(0, 0, 0, 0.15); transform: scale(0.95) translateY(20px); transition: transform 0.5s var(--apple-ease); position: relative; max-height: 95vh; overflow-y: auto; overflow-x: hidden; }
-        .modal-overlay.active .modal-content { transform: scale(1) translateY(0); }
-        .modal-overlay.bottom-sheet { align-items: flex-end; padding: 0; }
-        .modal-overlay.bottom-sheet .modal-content { border-radius: 36px 36px 0 0; padding: 0; max-width: 500px; width: 100%; margin: 0 auto; transform: translateY(100%); transition: transform 0.4s var(--apple-ease); }
-        .modal-overlay.bottom-sheet.active .modal-content { transform: translateY(0); }
-        .bottom-sheet-body { padding: 25px 25px calc(30px + env(safe-area-inset-bottom, 0px)); }
-        .close-btn { position: absolute; top: 15px; right: 15px; width: 36px; height: 36px; border-radius: 50%; background: rgba(0,0,0,0.06); border: none; font-size: 20px; cursor: pointer; color: var(--text-dark); display: flex; align-items: center; justify-content: center; z-index: 100; transition: transform 0.3s; }
-        .close-btn:hover { transform: scale(1.1); background: rgba(0,0,0,0.1); }
-
-        .map-app-btn { display: flex; flex-direction: column; align-items: center; text-decoration: none; padding: 10px; border-radius: 16px; transition: transform 0.3s var(--apple-ease), background 0.3s; width: 30%; text-align: center; }
-        .map-app-btn img { width: 60px; height: 60px; object-fit: contain; filter: drop-shadow(0 4px 10px rgba(0,0,0,0.08)); transition: transform 0.3s var(--apple-ease); }
-        .map-app-btn span { font-size: clamp(0.7rem, 2.5vw, 0.85rem); font-weight: 700; color: var(--text-dark); margin-top: 8px; white-space: nowrap; }
-        .map-app-btn:hover { background: #f8fafc; transform: translateY(-5px); }
-        .map-app-btn:hover img { transform: scale(1.1); }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* OTTIMIZZAZIONE MOBILE */
-        @media (max-width: 900px) {
-            .footer-wrapper { padding: 60px 5% 30px; margin-top: 50px;}
-            .grid-infos { justify-content: center; text-align: center; }
-            .col-info { text-align: center; }
-            .col-info h4 { justify-content: center; }
-        }
-        @media (max-width: 768px) {
-            .navbar-wrapper { width: 92%; padding: 12px 18px; top: 15px; }
-            .navbar-wrapper.scrolled { width: 100%; padding: 15px 20px; top: 0; }
-            .nav-links { display: none; }
-            .btn-premium { font-size: 0.9rem; padding: 10px 18px; }
-            
-            .privacy-main { padding: 110px 20px 40px; }
-            .privacy-icon { width: 65px; height: 65px; margin-bottom: 20px; }
-            .privacy-icon svg { width: 34px; }
-            
-            .apple-summary-box { padding: 30px 24px; border-radius: 24px; box-shadow: 0 15px 35px rgba(2, 132, 199, 0.06), 0 0 0 1px rgba(2, 132, 199, 0.05);}
-            
-            .summary-list li { font-size: 1rem; padding-left: 22px; }
-            .summary-list li::before { font-size: 1.4rem; top: -3px;}
-            
-            .privacy-section h2 { font-size: 1.4rem; }
-            .privacy-section p { font-size: 1rem; }
-            .privacy-section ul li { font-size: 1rem; }
-
-            .footer-logo-mim { height: 60px; }
-            .bottom-branding { padding-top: 10px; }
-            .badge-views { width: 100%; justify-content: center; padding: 15px;}
-            .legal-links { flex-direction: column; gap: 15px;}
-            .desktop-divider { display: none; }
-            .modal-content { padding: 35px 20px 25px !important; width: 92%; max-width: 100%; border-radius: 26px; }
-        }
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -256,9 +66,9 @@
                 <h2>Quali informazioni raccogliamo</h2>
                 <p>Per garantirti l'accesso alla piattaforma e la corretta registrazione delle attività, il sistema elabora le seguenti informazioni:</p>
                 <ul>
-                    <li><strong>Credenziali di accesso:</strong> Nome utente ed Email Istituzionale (es. <em>@studenti.itisavogadro.it</em> o <em>@itisavogadro.it</em>).</li>
-                    <li><strong>Dati di Autenticazione:</strong> Token di sessione generati tramite Google Workspace o password crittografate gestite nativamente da <strong>Firebase Authentication</strong>. Nessuna password in chiaro è visibile o memorizzata nei nostri database.</li>
-                    <li><strong>Dati di Sistema e Sicurezza:</strong> Indirizzi IP resi anonimi, tentativi di accesso e metadati del dispositivo analizzati dinamicamente da <strong>Cloudflare Turnstile</strong> per prevenire frodi, accessi bot e attacchi DDoS.</li>
+                    <li><strong>Credenziali di accesso:</strong> Nome utente ed Email Istituzionale.</li>
+                    <li><strong>Dati di Autenticazione:</strong> Token di sessione generati tramite Google Workspace o password crittografate gestite nativamente. Nessuna password in chiaro è memorizzata nei nostri database.</li>
+                    <li><strong>Dati di Sistema e Sicurezza:</strong> Indirizzi IP resi anonimi, tentativi di accesso e metadati del dispositivo analizzati per prevenire attacchi.</li>
                     <li><strong>Log di Presenza:</strong> Orario e data della timbratura effettuata tramite l'inserimento o la scansione del codice univoco <strong>Harzafi ID (HID)</strong>.</li>
                 </ul>
             </section>
@@ -273,31 +83,12 @@
                 </ul>
             </section>
 
-            <section class="privacy-section">
-                <h2>Conservazione e Trasparenza</h2>
-                <p>Manteniamo i tuoi dati personali solo per il tempo strettamente necessario a soddisfare le finalità per cui sono stati raccolti, come delineato nella presente Informativa, e conformemente ai tempi di conservazione previsti dalle direttive del <strong>Ministero dell'Istruzione e del Merito (MIM)</strong>.</p>
-                <p>Tutte le informazioni sono salvate su server certificati e protetti tramite protocolli HTTPS/SSL (TLS 1.3). In caso di interruzione del percorso di studi presso l'ITIS A. Avogadro, i dati personali associati al tuo Account Harzafi verranno resi anonimi o cancellati in modo sicuro entro 90 giorni dal termine delle procedure amministrative.</p>
-            </section>
-
-            <section class="privacy-section">
-                <h2>I tuoi Diritti Privacy (GDPR)</h2>
-                <p>In adempimento al Regolamento UE 2016/679 (GDPR), hai il diritto, in qualsiasi momento, di:</p>
-                <ul>
-                    <li>Richiedere l'accesso ai dati personali salvati nel tuo Account Harzafi.</li>
-                    <li>Richiedere la correzione di eventuali informazioni inesatte (es. omonimie).</li>
-                    <li>Richiedere la limitazione del trattamento o la rimozione dei dati, fatti salvi gli obblighi normativi scolastici di rendicontazione legale.</li>
-                </ul>
-                <p>Per esercitare questi diritti, o se hai domande riguardo a come il nostro sistema gestisce la tua privacy, puoi contattare l'Amministratore di Sistema all'indirizzo e-mail: <a href="mailto:harzafi.support@gmail.com" class="privacy-link">harzafi.support@gmail.com</a>.</p>
-            </section>
-
         </article>
 
     </main>
 
-    <!-- ==========================================
-         FOOTER AVANZATO
-         ========================================== -->
-    <footer id="footer" class="footer-wrapper content-lazy">
+    <!-- FOOTER -->
+    <footer id="footer" class="footer-wrapper content-lazy" style="margin-top: 0; box-shadow: none;">
         <div class="mim-footer-wrap reveal">
             <a href="https://www.miur.gov.it/" target="_blank" rel="noopener noreferrer">
                 <img src="IMMAGINI/LOGO-MIM.png" loading="lazy" decoding="async" class="footer-logo-mim" alt="Logo Ministero">
@@ -332,7 +123,7 @@
             <div class="legal-links">
                 <a href="accessibilita.html">Dichiarazione di Accessibilità</a>
                 <span class="desktop-divider">|</span>
-                <a href="privacy-account.html">Privacy Policy</a>
+                <a href="privacy-account.html" style="color: var(--primary);">Privacy Policy</a>
                 <span class="desktop-divider">|</span>
                 <a href="termini.html">Termini di Servizio</a>
             </div>
@@ -363,11 +154,18 @@
         </div>
     </div>
 
+    <!-- Bottone Torna Su -->
+    <button id="scrollTopBtn" class="scroll-top-btn" aria-label="Torna su">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
     <script>
         document.addEventListener("DOMContentLoaded", function () {
+            // Navbar Scroll
             const navbar = document.getElementById('navbar');
             let isScrolled = false;
-
             function handleScroll() {
                 const should = window.scrollY > 40;
                 if (should !== isScrolled) {
@@ -375,9 +173,20 @@
                     navbar.classList.toggle('scrolled', isScrolled);
                 }
             }
-
             handleScroll();
             window.addEventListener('scroll', handleScroll, { passive: true });
+
+            // Scroll to Top
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            if(scrollTopBtn){
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 300) { scrollTopBtn.classList.add('visible'); } 
+                    else { scrollTopBtn.classList.remove('visible'); }
+                }, { passive: true });
+                scrollTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
 
             // Logica Modale Mappa
             const btnOpenMaps = document.getElementById('btn-open-maps');
