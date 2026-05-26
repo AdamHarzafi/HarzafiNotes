@@ -12,6 +12,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <link rel="icon" type="image/png" sizes="32x32" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
+
+    <style>
+        /* STILI AGGIUNTIVI PER LE NUOVE FUNZIONI */
+        .search-bar { width: 100%; min-width: 250px; padding: 12px 20px; border-radius: 24px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); font-size: 0.95rem; font-weight: 600; color: var(--text-dark); transition: all 0.3s var(--apple-ease); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
+        .search-bar:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15); background: #fff; }
+        .search-bar::placeholder { color: var(--text-light); font-weight: 500; }
+        
+        .badge-type { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 12px; }
+        .badge-pdf { background: #fee2e2; color: #dc2626; }
+        .badge-img { background: #e0f2fe; color: #0284c7; }
+        .badge-vid { background: #f3e8ff; color: #9333ea; }
+        .badge-doc { background: #fef3c7; color: #d97706; }
+        .badge-zip { background: #f1f5f9; color: #475569; }
+
+        @keyframes pulseNew { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
+        .badge-new { background: var(--success); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; margin-left: 10px; animation: pulseNew 2s infinite; vertical-align: middle; }
+
+        /* MODALITA' STUDIO (FOCUS MODE) */
+        body.study-mode .navbar-wrapper { opacity: 0; pointer-events: none; transform: translateY(-100%); }
+        body.study-mode .sidebar-mobile-wrapper { display: none !important; }
+        body.study-mode .dash-layout { grid-template-columns: 1fr; max-width: 1200px; margin-top: 40px; transition: all 0.5s var(--apple-ease); }
+        body.study-mode .dash-header { justify-content: center; flex-direction: column; align-items: center; text-align: center; margin-bottom: 50px; }
+        body.study-mode #searchNotes, body.study-mode #btnStudyMode { display: none; }
+        body.study-mode .note-card { background: #ffffff; box-shadow: 0 15px 40px rgba(0,0,0,0.06); transform: scale(1.02); border-color: rgba(0,0,0,0.05); }
+        body.study-mode { background-color: #f8fafc; }
+
+        .btn-focus-exit { display: none; position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); z-index: 9999; padding: 14px 30px; font-size: 1.05rem; box-shadow: 0 15px 35px rgba(2, 132, 199, 0.4); border: 2px solid rgba(255,255,255,0.2); }
+        body.study-mode .btn-focus-exit { display: flex; animation: fadeUp 0.6s var(--apple-ease); }
+    </style>
 </head>
 <body>
     
@@ -20,15 +49,17 @@
         <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Logo Harzafi" class="nav-logo-img" style="height: 36px; object-fit: contain;">
         
         <div style="display:flex; gap:12px; align-items:center;">
-            <button id="btnUploadModal" class="btn-premium nav-btn" style="display:none; padding:8px 16px;">+ Carica File</button>
+            <button id="btnUploadModal" class="btn-premium nav-btn" style="display:none; padding:8px 16px; box-shadow: 0 4px 12px rgba(2,132,199,0.15);">+ Nuovo Appunto</button>
             
             <!-- Widget Profilo Utente (Foto e Nome) -->
-            <div class="user-profile-widget" style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.8); padding:4px 12px 4px 4px; border-radius:30px; border:1px solid var(--border-color); box-shadow:0 2px 8px rgba(0,0,0,0.03);">
-                <img id="userProfilePic" src="IMMAGINI/PROFILO-UTENTE-LOGO.png" alt="Profilo Utente" style="width:32px; height:32px; border-radius:50%; object-fit:cover; background:#f8fafc; border:1px solid rgba(2, 132, 199, 0.15);">
-                <span id="userNameDisplay" style="font-weight:800; font-size:0.85rem; color:var(--text-dark); max-width:90px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Studente</span>
+            <div class="user-profile-widget" style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.9); padding:4px 14px 4px 4px; border-radius:30px; border:1px solid rgba(2,132,199,0.1); box-shadow:0 4px 15px rgba(0,0,0,0.04);">
+                <img id="userProfilePic" src="IMMAGINI/PROFILO-UTENTE-LOGO.png" alt="Profilo Utente" style="width:34px; height:34px; border-radius:50%; object-fit:cover; background:#f1f5f9; border:2px solid #ffffff; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                <span id="userNameDisplay" style="font-weight:800; font-size:0.9rem; color:var(--text-dark); max-width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Studente</span>
             </div>
 
-            <button id="btnEsci" class="nav-btn-logout" style="background:none; border:none; font-weight:800; color:var(--danger); cursor:pointer; font-size:0.95rem; margin-left:4px;">Esci</button>
+            <button id="btnEsci" class="nav-btn-logout" style="background:var(--danger); border:none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; color:white; cursor:pointer; font-size:1.1rem; box-shadow: 0 4px 12px rgba(239, 68, 68, 0.2); transition: 0.2s;" title="Esci">
+                <svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+            </button>
         </div>
     </nav>
 
@@ -37,7 +68,7 @@
         
         <div class="sidebar-mobile-wrapper">
             <aside class="sidebar-materie">
-                <h3 class="desktop-only-title">Materie 3°A</h3>
+                <h3 class="desktop-only-title">Archivio 3°A</h3>
                 <button class="materia-btn active" onclick="filtraMateria('Tutte')">Tutti i file</button>
                 <button class="materia-btn" onclick="filtraMateria('Informatica')">Informatica <span class="prof-name">Folcarelli, Talomo</span></button>
                 <button class="materia-btn" onclick="filtraMateria('Lingua Italiana')">Lingua Italiana <span class="prof-name">Pedio Alessia</span></button>
@@ -51,15 +82,49 @@
         </div>
 
         <main class="main-content">
-            <h2 id="titoloMateria" class="dash-title">Tutti i file</h2>
+            
+            <!-- HEADER INTELLIGENTE CON RICERCA E FOCUS MODE -->
+            <div class="dash-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 35px; flex-wrap: wrap; gap: 20px;">
+                <div>
+                    <p id="greetingText" style="color: var(--primary); font-weight: 800; font-size: 1.05rem; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 0.5px;">Caricamento...</p>
+                    <h2 id="titoloMateria" class="dash-title" style="margin-bottom: 0; font-size: 2.8rem; letter-spacing: -1.5px;">Tutti i file</h2>
+                </div>
+                <div style="display: flex; gap: 12px; flex-grow: 1; max-width: 450px; justify-content: flex-end;">
+                    <div style="position: relative; width: 100%;">
+                        <input type="text" id="searchNotes" class="search-bar" placeholder="Cerca per titolo o materia...">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="var(--text-light)" stroke-width="2.5" style="width: 18px; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); pointer-events: none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+                    <button id="btnStudyMode" class="btn-secondary" style="padding: 0 20px; border-radius: 24px; border-color: transparent; background: #f1f5f9; color: var(--text-dark);" title="Modalità Studio">
+                        <svg viewBox="0 0 24 24" fill="currentColor" width="22"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9c.83 0 1.5-.67 1.5-1.5 0-.39-.15-.74-.39-1.01-.23-.26-.38-.61-.38-.99 0-.83.67-1.5 1.5-1.5H16c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8zm-5.5 9c-.83 0-1.5-.67-1.5-1.5S5.67 9 6.5 9 8 9.67 8 10.5 7.33 12 6.5 12zm3-4C8.67 8 8 7.33 8 6.5S8.67 5 9.5 5s1.5.67 1.5 1.5S10.33 8 9.5 8zm5 0c-.83 0-1.5-.67-1.5-1.5S13.67 5 14.5 5s1.5.67 1.5 1.5S15.33 8 14.5 8zm3 4c-.83 0-1.5-.67-1.5-1.5S16.67 9 17.5 9s1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+                    </button>
+                </div>
+            </div>
+
             <div id="notesContainer" class="notes-grid">
-                <p style="color:var(--text-light); font-weight:700; font-size:1.1rem;">Caricamento appunti dal server...</p>
+                <!-- SKELETON LOADER -->
+                <div class="btn-loader" style="justify-content:flex-start; width: 100%; grid-column: 1 / -1;">
+                    <div class="btn-spinner"></div><span style="font-weight:800; color:var(--text-gray); font-size: 1.1rem; margin-left: 10px;">Sincronizzazione archivio...</span>
+                </div>
+            </div>
+            
+            <!-- EMPTY STATE NASCOSTO PER LA RICERCA -->
+            <div id="emptySearchState" style="display:none; text-align:center; padding: 60px 20px; grid-column: 1 / -1;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="var(--border-color)" stroke-width="1.5" style="width: 80px; margin-bottom: 20px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
+                <h3 style="font-size: 1.5rem; color: var(--text-dark); font-weight: 800;">Nessun risultato trovato</h3>
+                <p style="color: var(--text-gray); font-weight: 500;">Prova a cercare con parole chiave diverse.</p>
             </div>
         </main>
     </div>
 
+    <!-- TASTO USCITA MODALITÀ STUDIO -->
+    <button id="btnExitStudyMode" class="btn-gradient btn-focus-exit">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="20" style="margin-right: 10px;"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        Chiudi Modalità Studio
+    </button>
+
     <!-- MODALE UPLOAD -->
     <div id="uploadModal" class="modal-overlay">
+        <!-- Contenuto inalterato ma ottimizzato nello stile -->
         <div class="modal-content">
             <button id="btnChiudiUpload" class="close-btn">×</button>
             <h2 class="modal-title">Carica nuovo file</h2>
@@ -90,7 +155,7 @@
             
             <div style="display:flex; gap:10px;">
                 <button onclick="document.getElementById('uploadModal').classList.remove('active')" class="btn-cancel-modal">Annulla</button>
-                <button id="btnSalva" class="btn-gradient" style="flex:2; border-radius:16px; font-size: 1rem; height: 50px;">Carica</button>
+                <button id="btnSalva" class="btn-gradient" style="flex:2; border-radius:16px; font-size: 1rem; height: 50px;">Carica nel Cloud</button>
             </div>
 
             <div id="progressContainer" class="progress-container"><div id="progressBar" class="progress-bar"></div></div>
