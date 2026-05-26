@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>Accessibilità - Harzafi Notes</title>
+    <meta name="robots" content="noimageindex">
+    
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#ffffff">
+    
+    <link rel="apple-touch-icon" sizes="180x180" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+
+    <style>
+        /* Stili specifici per layout pagina testo (condivisi con Privacy) */
+        body { overflow-x: hidden; width: 100%; min-height: 100vh; line-height: 1.5; font-weight: 400; }
+
+        .privacy-bg-mesh {
+            position: fixed; inset: 0;
+            background: radial-gradient(ellipse at 15% 25%, rgba(14,165,233,0.12) 0%, transparent 40%),
+                        radial-gradient(ellipse at 85% 70%, rgba(2,132,199,0.08) 0%, transparent 45%);
+            filter: blur(35px); pointer-events: none; z-index: 0; transform: translateZ(0);
+        }
+
+        .privacy-main { position: relative; z-index: 1; padding: 140px 20px 80px; display: flex; flex-direction: column; align-items: center; }
+        
+        .privacy-header { text-align: center; max-width: 800px; margin-bottom: 60px; animation: fadeUp 0.8s var(--apple-ease); }
+        .privacy-icon { width: 80px; height: 80px; margin: 0 auto 24px; background: var(--primary-light); border-radius: 50%; display: flex; justify-content: center; align-items: center; color: var(--primary); box-shadow: 0 10px 25px rgba(2, 132, 199, 0.15); transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .privacy-icon:hover { transform: scale(1.1) rotate(5deg); }
+        .privacy-icon svg { width: 44px; fill: currentColor; }
+        
+        .privacy-header h1 { font-size: clamp(2.2rem, 6vw, 3.5rem); font-weight: 900; letter-spacing: -0.03em; margin-bottom: 20px; color: var(--text-dark); }
+        .privacy-header p.lead { font-size: clamp(1.1rem, 3vw, 1.3rem); color: var(--text-gray); font-weight: 500; line-height: 1.5; padding: 0 10px; }
+
+        .apple-summary-box { background: #ffffff; max-width: 800px; width: 100%; margin: 0 auto 60px; border-radius: 32px; padding: 45px 50px; box-shadow: 0 20px 50px rgba(2, 132, 199, 0.08), 0 0 0 1px rgba(2, 132, 199, 0.05); animation: fadeUp 1s var(--apple-ease); }
+        .summary-list { list-style: none; padding: 0; }
+        .summary-list li { position: relative; padding-left: 28px; margin-bottom: 24px; font-size: 1.1rem; color: var(--text-dark); font-weight: 600; line-height: 1.5; }
+        .summary-list li:last-child { margin-bottom: 0; }
+        .summary-list li::before { content: "•"; position: absolute; left: 0; top: -2px; color: var(--primary); font-weight: 900; font-size: 1.6rem; }
+
+        .privacy-content { max-width: 800px; width: 100%; margin: 0 auto; animation: fadeUp 1.2s var(--apple-ease); }
+        .privacy-section { margin-bottom: 55px; }
+        .privacy-section h2 { font-size: 1.7rem; font-weight: 800; letter-spacing: -0.02em; margin-bottom: 20px; color: var(--text-dark); border-bottom: 2px solid var(--border-color); padding-bottom: 12px; }
+        .privacy-section p { font-size: 1.05rem; color: var(--text-gray); margin-bottom: 20px; line-height: 1.7; font-weight: 500; }
+        
+        .privacy-section ul { padding-left: 28px; margin-bottom: 24px; list-style: none; }
+        .privacy-section ul li { position: relative; font-size: 1.05rem; color: var(--text-gray); margin-bottom: 12px; line-height: 1.6; font-weight: 500; }
+        .privacy-section ul li::before { content: "•"; position: absolute; left: -22px; top: -2px; color: var(--text-light); font-weight: 900; font-size: 1.4rem; }
+        .privacy-section strong { color: var(--text-dark); font-weight: 800; }
+
+        .privacy-link { color: var(--primary); font-weight: 700; text-decoration: none; transition: color 0.3s; }
+        .privacy-link:hover { text-decoration: underline; color: var(--primary-hover); }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* OTTIMIZZAZIONE MOBILE */
+        @media (max-width: 768px) {
+            .privacy-main { padding: 110px 20px 40px; }
+            .privacy-icon { width: 65px; height: 65px; margin-bottom: 20px; }
+            .privacy-icon svg { width: 34px; }
+            .apple-summary-box { padding: 30px 24px; border-radius: 24px; box-shadow: 0 15px 35px rgba(2, 132, 199, 0.06), 0 0 0 1px rgba(2, 132, 199, 0.05);}
+            .summary-list li { font-size: 1rem; padding-left: 22px; }
+            .summary-list li::before { font-size: 1.4rem; top: -3px;}
+            .privacy-section h2 { font-size: 1.4rem; }
+            .privacy-section p { font-size: 1rem; }
+            .privacy-section ul li { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="privacy-bg-mesh" aria-hidden="true"></div>
+
+    <!-- NAVBAR -->
+    <nav class="navbar-wrapper glass" id="navbar">
+        <div class="nav-logo">
+            <a href="index.html" aria-label="Torna alla home page">
+                <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Logo Harzafi">
+            </a>
+        </div>
+        <div class="nav-links">
+            <a href="privacy-account.html">Privacy Policy</a>
+            <a href="termini.html">Termini di Servizio</a>
+        </div>
+        <a href="login.html" class="btn-premium">Torna al Login</a>
+    </nav>
+
+    <!-- MAIN CONTENT -->
+    <main class="privacy-main">
+        
+        <header class="privacy-header">
+            <div class="privacy-icon">
+                <!-- Icona Accessibilità -->
+                <svg viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/>
+                </svg>
+            </div>
+            <h1 class="animated-gradient-text">Dichiarazione di Accessibilità</h1>
+            <p class="lead">L'ITIS Amedeo Avogadro si impegna a rendere il proprio sito web accessibile, conformemente al D.lgs 10 agosto 2018, n. 106 che ha recepito la direttiva UE 2016/2102 del Parlamento europeo e del Consiglio.</p>
+        </header>
+
+        <section class="apple-summary-box">
+            <ul class="summary-list">
+                <li>La piattaforma è stata progettata seguendo i principi del <strong>Design for All</strong> per garantire un'esperienza equa e senza ostacoli.</li>
+                <li>Il portale è conforme alle <strong>Linee Guida WCAG 2.1 (Web Content Accessibility Guidelines)</strong> livello AA.</li>
+                <li>Garantita la piena navigabilità tramite tastiera, grazie all'integrazione di un sistema di "Focus Visibile" ottimizzato.</li>
+                <li>Contrasti cromatici e scala tipografica calibrati per supportare utenti con disabilità visive e semplificare la leggibilità tramite screen reader.</li>
+            </ul>
+        </section>
+
+        <article class="privacy-content">
+            
+            <section class="privacy-section">
+                <h2>Stato di Conformità</h2>
+                <p>La presente piattaforma, <strong>Harzafi Notes</strong>, è <strong>conforme</strong> a quanto previsto dalle linee guida sull'accessibilità degli strumenti informatici. Abbiamo integrato tecnologie moderne come WAI-ARIA (Web Accessibility Initiative - Accessible Rich Internet Applications) per comunicare correttamente lo stato degli elementi interattivi (come bottoni, modali e menu a tendina) alle tecnologie assistive.</p>
+            </section>
+
+            <section class="privacy-section">
+                <h2>Meccanismo di Feedback e Recapiti</h2>
+                <p>Il nostro impegno per l'accessibilità è continuo. Se dovessi riscontrare difficoltà nell'accesso ai contenuti o nell'utilizzo delle funzionalità, o se desideri richiedere informazioni in formati alternativi, puoi contattarci utilizzando il seguente recapito:</p>
+                <ul>
+                    <li><strong>Email Responsabile Tecnico:</strong> <a href="mailto:harzafi.support@gmail.com" class="privacy-link">harzafi.support@gmail.com</a></li>
+                </ul>
+                <p>Nella segnalazione, ti preghiamo di indicare:</p>
+                <ul>
+                    <li>L'URL della pagina in cui hai riscontrato il problema.</li>
+                    <li>Una breve descrizione dell'ostacolo.</li>
+                    <li>Il dispositivo, il sistema operativo e l'eventuale strumento di assistenza (es. Screen Reader) utilizzato.</li>
+                </ul>
+            </section>
+
+            <section class="privacy-section">
+                <h2>Procedura di Attuazione (Difensore Civico Digitale)</h2>
+                <p>In caso di mancata o insoddisfacente risposta da parte dell'Amministrazione ai feedback inviati, conformemente all'art. 3-quinquies, comma 3 della Legge 9 gennaio 2004, n. 4, l'utente ha il diritto di fare ricorso al Difensore Civico per il Digitale tramite l'apposito servizio messo a disposizione dall'AGID.</p>
+            </section>
+
+            <section class="privacy-section">
+                <h2>Redazione della Dichiarazione</h2>
+                <p>La presente dichiarazione è stata redatta e validata internamente in data <strong>26 Maggio 2026</strong> dal team di sviluppo di Harzafi Notes, avvalendosi di validatori W3C e test eseguiti tramite lettori vocali di sistema (Apple VoiceOver e NVDA).</p>
+            </section>
+
+        </article>
+    </main>
+
+    <!-- FOOTER -->
+    <footer id="footer" class="footer-wrapper content-lazy">
+        <div class="mim-footer-wrap reveal">
+            <a href="https://www.miur.gov.it/" target="_blank" rel="noopener noreferrer">
+                <img src="IMMAGINI/LOGO-MIM.png" loading="lazy" decoding="async" class="footer-logo-mim" alt="Logo Ministero">
+            </a>
+        </div>
+        <div class="grid-infos">
+            <div class="col-info reveal" style="transition-delay: 0.1s;">
+                <h4><svg viewBox="0 0 24 24"><path d="M12,3L2,12H5V20H19V12H22L12,3M12,7.7C14.1,7.7 15.8,9.4 15.8,11.5C15.8,13.6 14.1,15.3 12,15.3C9.9,15.3 8.2,13.6 8.2,11.5C8.2,9.4 9.9,7.7 12,7.7Z"/></svg>Struttura Operativa Scuola</h4>
+                <p>ITIS Amedeo Avogadro</p>
+                <p><a href="#" id="btn-open-maps" class="address-link">Corso San Maurizio, 8 - 10124 Torino</a></p>
+                <p>Tel: <a href="tel:+390118153611" class="tel-link">+39 011 815 3611</a></p>
+            </div>
+            <div class="col-info reveal" style="transition-delay: 0.2s;">
+                <h4><svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/></svg>Servizi Dati & Finanziari</h4>
+                <p>Email Segreteria:<br> <a href="mailto:tois05100c@istruzione.it" class="hi">tois05100c@istruzione.it</a></p>
+                <p>Rete PEC:<br> <a href="mailto:tois05100c@pec.istruzione.it" class="hi">tois05100c@pec.istruzione.it</a></p>
+            </div>
+            <div class="col-info reveal" style="transition-delay: 0.3s;">
+                <h4><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Informazioni Contatto</h4>
+                <p>Il sito è gestito da Harzafi Adam</p>
+                <p>Classe 3°A Informatica</p>
+                <p>Anno di Corso: 2025/2026</p>
+                <p>Richiesta di assistenza:<br> <a href="mailto:harzafi.support@gmail.com" class="hi">harzafi.support@gmail.com</a></p>
+            </div>
+        </div>
+        <div class="bottom-branding reveal" style="transition-delay: 0.4s;">
+            <div class="badge-views">
+                <svg style="width:20px; fill:currentColor;" viewBox="0 0 24 24"><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/></svg> 
+                Letture Tracciate: <strong id="dynamic-counter-tracker">...</strong>
+            </div>
+            <p class="copyright-text">Harzafi Notes - Portale Ufficiale © - Tutti i diritti riservati</p>
+            <div class="legal-links">
+                <a href="accessibilita.html" style="color: var(--primary);">Dichiarazione di Accessibilità</a>
+                <span class="desktop-divider">|</span>
+                <a href="privacy-account.html">Privacy Policy</a>
+                <span class="desktop-divider">|</span>
+                <a href="termini.html">Termini di Servizio</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Modale Mappa -->
+    <div id="maps-modal" class="modal-overlay bottom-sheet">
+        <div class="modal-content">
+            <button class="close-btn" aria-label="Chiudi">&times;</button>
+            <div class="bottom-sheet-body">
+                <h2 style="font-size: 1.4rem; margin-bottom: 25px; color: var(--text-dark); text-align:center; font-weight: 900;">Scegli un'app per aprire.</h2>
+                <div style="display: flex; justify-content: space-around; align-items: flex-start;">
+                    <a href="https://www.google.com/maps/search/?api=1&query=Corso+San+Maurizio,+8+-+10124+Torino" target="_blank" class="map-app-btn">
+                        <img src="IMMAGINI/GOOGLE-MAPS-LOGO.png" loading="lazy" decoding="async" alt="Google Maps">
+                        <span>Google Maps</span>
+                    </a>
+                    <a href="http://maps.apple.com/?q=Corso+San+Maurizio+8+Torino" target="_blank" class="map-app-btn">
+                        <img src="IMMAGINI/APPLE-MAPS-LOGO.png" loading="lazy" decoding="async" alt="Apple Mappe">
+                        <span>Apple Mappe</span>
+                    </a>
+                    <a href="https://waze.com/ul?q=Corso+San+Maurizio+8+Torino" target="_blank" class="map-app-btn">
+                        <img src="IMMAGINI/WAZE-LOGO.png" loading="lazy" decoding="async" alt="Waze">
+                        <span>Waze</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottone Torna Su -->
+    <button id="scrollTopBtn" class="scroll-top-btn" aria-label="Torna su">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="18 15 12 9 6 15"></polyline>
+        </svg>
+    </button>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Navbar Scroll
+            const navbar = document.getElementById('navbar');
+            let isScrolled = false;
+            function handleScroll() {
+                const should = window.scrollY > 40;
+                if (should !== isScrolled) {
+                    isScrolled = should;
+                    navbar.classList.toggle('scrolled', isScrolled);
+                }
+            }
+            handleScroll();
+            window.addEventListener('scroll', handleScroll, { passive: true });
+
+            // Scroll to Top
+            const scrollTopBtn = document.getElementById('scrollTopBtn');
+            if(scrollTopBtn){
+                window.addEventListener('scroll', () => {
+                    if (window.scrollY > 300) { scrollTopBtn.classList.add('visible'); } 
+                    else { scrollTopBtn.classList.remove('visible'); }
+                }, { passive: true });
+                scrollTopBtn.addEventListener('click', () => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                });
+            }
+
+            // Logica Modale Mappa
+            const btnOpenMaps = document.getElementById('btn-open-maps');
+            const mapsModal = document.getElementById('maps-modal');
+            if(btnOpenMaps && mapsModal) {
+                btnOpenMaps.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    mapsModal.classList.add('active');
+                });
+                const closeBtn = mapsModal.querySelector('.close-btn');
+                if(closeBtn) {
+                    closeBtn.addEventListener('click', () => mapsModal.classList.remove('active'));
+                }
+            }
+        });
+    </script>
+</body>
+</html>
