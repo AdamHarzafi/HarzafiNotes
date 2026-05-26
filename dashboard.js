@@ -2,10 +2,9 @@
    dashboard.js — Dashboard Harzafi Notes
    ============================================================ */
 
-// CREDENZIALI CORRETTE (IDENTICHE AL LOGIN.JS)
 const firebaseConfig = {
     apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
-    authDomain: "harzafi-notes.web.app",
+    authDomain: "harzafi-notes.firebaseapp.com", // Dominio corretto e autorizzato
     projectId: "harzafi-notes",
     messagingSenderId: "35834921638",
     appId: "1:35834921638:web:cb5d8d612b4a2936126a67"
@@ -183,7 +182,7 @@ if (fileInput) {
 document.getElementById('btnSalva').addEventListener('click', () => {
     const file = document.getElementById('upFile').files[0];
     const titolo = document.getElementById('upTitolo').value.trim();
-    const materia = materiaUploadSelezionata; // PRENDE LA TENDINA BELLA
+    const materia = materiaUploadSelezionata; 
     const status = document.getElementById('uploadStatus');
     const progressContainer = document.getElementById('progressContainer');
     const progressBar = document.getElementById('progressBar');
