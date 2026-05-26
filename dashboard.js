@@ -4,7 +4,7 @@
 
 const firebaseConfig = {
     apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
-    authDomain: "harzafi-notes.firebaseapp.com", // Dominio corretto e autorizzato
+    authDomain: "harzafi-notes.firebaseapp.com",
     projectId: "harzafi-notes",
     messagingSenderId: "35834921638",
     appId: "1:35834921638:web:cb5d8d612b4a2936126a67"
@@ -48,8 +48,11 @@ function caricaAppunti(materia) {
     const container = document.getElementById('notesContainer');
     container.innerHTML = '<div class="btn-loader" style="justify-content:flex-start; margin-top:20px;"><div class="btn-spinner"></div><span style="font-weight:700; color:var(--text-gray);">Sincronizzazione file...</span></div>';
     
-    let query = db.collection('appunti').orderBy('data', 'desc');
-    if (materia !== "Tutte") query = query.where('materia', '==', materia);
+    // NESSUN ORDERBY SU FIRESTORE (Evita l'errore degli indici)
+    let query = db.collection('appunti');
+    if (materia !== "Tutte") {
+        query = query.where('materia', '==', materia);
+    }
 
     query.get().then(snap => {
         container.innerHTML = '';
@@ -62,9 +65,18 @@ function caricaAppunti(materia) {
         let indexCard = 0;
         let indexMedia = 0;
 
+        // 1. Estraiamo tutti i documenti in un array
+        let appuntiArray = [];
         snap.forEach(doc => {
-            const data = doc.data();
-            const docId = doc.id; 
+            appuntiArray.push({ id: doc.id, ...doc.data() });
+        });
+
+        // 2. Ordinamento locale in JavaScript (dal più recente)
+        appuntiArray.sort((a, b) => b.data - a.data);
+
+        // 3. Generiamo le card HTML
+        appuntiArray.forEach(data => {
+            const docId = data.id; 
             const fName = (data.nomeFile || "").toLowerCase();
             
             const iconPDF = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
@@ -122,7 +134,8 @@ function caricaAppunti(materia) {
             indexCard++;
         });
     }).catch(err => {
-        container.innerHTML = '<p style="color:var(--danger); font-weight:700;">Errore di connessione a Firestore.</p>';
+        console.error("ERRORE FIRESTORE:", err);
+        container.innerHTML = `<p style="color:var(--danger); font-weight:700;">Errore di sistema: ${err.message}</p>`;
     });
 }
 
