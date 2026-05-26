@@ -14,9 +14,19 @@
     <link rel="icon" type="image/png" sizes="32x32" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
 
     <style>
-        /* SICUREZZA PER L'ANIMAZIONE DEL TESTO (nel caso mancasse nel CSS principale) */
+        /* SICUREZZA PER L'ANIMAZIONE DEL TESTO */
         .animated-gradient-text { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 25%, #0ea5e9 50%, #0369a1 75%, #0284c7 100%); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: textPulseColor 5s cubic-bezier(0.25, 1, 0.5, 1) infinite; }
         @keyframes textPulseColor { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        /* GESTIONE SALUTO DINAMICO RESPONSIVE */
+        .greeting-container { font-weight: 900; font-size: 1.15rem; margin-bottom: 2px; text-transform: uppercase; letter-spacing: -0.5px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
+        @media (max-width: 900px) {
+            .greeting-container {
+                font-size: 1.35rem; /* Più grande su mobile */
+                margin-top: 14px;   /* Leggermente più in basso */
+                margin-bottom: 8px; /* Più spazio dal titolo */
+            }
+        }
 
         /* STILI PER LA RICERCA */
         .search-bar { width: 100%; min-width: 250px; padding: 12px 20px; border-radius: 24px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); font-size: 0.95rem; font-weight: 600; color: var(--text-dark); transition: all 0.3s var(--apple-ease); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
@@ -34,10 +44,14 @@
         @keyframes pulseNew { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
         .badge-new { background: var(--success); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; margin-left: 10px; animation: pulseNew 2s infinite; vertical-align: middle; }
 
-        /* PULSANTE CONDIVIDI (MIGLIORATO E PIÙ ELEGANTE) */
+        /* PULSANTI AZIONE (CONDIVIDI E PREFERITI) */
         .action-icon-btn { background: #f8fafc; border: none; color: #64748b; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--apple-ease); }
         .action-icon-btn:hover { background: var(--primary-light); color: var(--primary); transform: scale(1.08); box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15); }
         .action-icon-btn:active { transform: scale(0.95); }
+        .action-icon-btn.fav-active { color: #f59e0b; background: #fffbeb; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15); }
+
+        /* FIX ALLINEAMENTO PREFERITI SU PC */
+        @media (min-width: 901px) { .desktop-mb { margin-bottom: 15px !important; } }
 
         /* NOTIFICHE TOAST (POPUP) */
         .toast-notification { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); opacity: 0; background: #0f172a; color: white; padding: 14px 28px; border-radius: 30px; font-weight: 700; font-size: 0.95rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 99999; display: flex; align-items: center; gap: 10px; pointer-events: none; }
@@ -70,8 +84,13 @@
         
         <div class="sidebar-mobile-wrapper">
             <aside class="sidebar-materie">
-                <h3 class="desktop-only-title" style="font-size: 0.9rem; color: var(--text-light);">Materie 3°A</h3>
+                <h3 class="desktop-only-title" style="font-size: 0.9rem; color: var(--text-light);">Archivio 3°A</h3>
                 <button class="materia-btn active" onclick="filtraMateria('Tutte')">Tutti i file</button>
+                
+                <!-- Preferiti: In linea su mobile, distanziato su PC -->
+                <button class="materia-btn desktop-mb" onclick="filtraMateria('Preferiti')" style="color: #d97706; background: #fffbeb; border: 1px solid #fde68a;">⭐ Preferiti <span class="prof-name">I tuoi appunti salvati</span></button>
+                
+                <h3 class="desktop-only-title" style="margin-top: 10px; font-size: 0.9rem; color: var(--text-light);">Materie</h3>
                 <button class="materia-btn" onclick="filtraMateria('Informatica')">Informatica <span class="prof-name">Folcarelli, Talomo</span></button>
                 <button class="materia-btn" onclick="filtraMateria('Lingua Italiana')">Lingua Italiana <span class="prof-name">Pedio Alessia</span></button>
                 <button class="materia-btn" onclick="filtraMateria('Lingua Inglese')">Lingua Inglese <span class="prof-name">Pallone Mariateresa</span></button>
@@ -88,8 +107,8 @@
             <!-- HEADER INTELLIGENTE CON RICERCA -->
             <div class="dash-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 35px; flex-wrap: wrap; gap: 20px;">
                 <div>
-                    <!-- SALUTO ANIMATO (Stesso font del titolo "Tutti i file") -->
-                    <div id="greetingText" style="font-weight: 900; font-size: 1.15rem; margin-bottom: 2px; text-transform: uppercase; letter-spacing: -0.5px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap;">
+                    <!-- SALUTO ANIMATO E RESPONSIVE -->
+                    <div id="greetingText" class="greeting-container">
                         <span class="animated-gradient-text">Caricamento...</span>
                     </div>
                     <h2 id="titoloMateria" class="dash-title" style="margin-bottom: 0; font-size: 2.8rem; letter-spacing: -1.5px; font-weight: 900;">Tutti i file</h2>
