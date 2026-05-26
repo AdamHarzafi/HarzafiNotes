@@ -15,12 +15,20 @@
 </head>
 <body>
     
-    <!-- NAVBAR -->
+    <!-- NAVBAR CON PROFILO PROFESSIONALE -->
     <nav class="navbar-wrapper glass scrolled" style="display:flex; justify-content:space-between; z-index:100; align-items:center;">
         <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Logo Harzafi" class="nav-logo-img" style="height: 36px; object-fit: contain;">
-        <div style="display:flex; gap:10px; align-items:center;">
+        
+        <div style="display:flex; gap:12px; align-items:center;">
             <button id="btnUploadModal" class="btn-premium nav-btn" style="display:none; padding:8px 16px;">+ Carica File</button>
-            <button id="btnEsci" class="nav-btn-logout" style="background:none; border:none; font-weight:800; color:var(--danger); cursor:pointer; font-size:1rem;">Esci</button>
+            
+            <!-- Widget Profilo Utente (Foto e Nome) -->
+            <div class="user-profile-widget" style="display:flex; align-items:center; gap:8px; background:rgba(255,255,255,0.8); padding:4px 12px 4px 4px; border-radius:30px; border:1px solid var(--border-color); box-shadow:0 2px 8px rgba(0,0,0,0.03);">
+                <img id="userProfilePic" src="IMMAGINI/PROFILO-UTENTE-LOGO.png" alt="Profilo Utente" style="width:32px; height:32px; border-radius:50%; object-fit:cover; background:#f8fafc; border:1px solid rgba(2, 132, 199, 0.15);">
+                <span id="userNameDisplay" style="font-weight:800; font-size:0.85rem; color:var(--text-dark); max-width:90px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Studente</span>
+            </div>
+
+            <button id="btnEsci" class="nav-btn-logout" style="background:none; border:none; font-weight:800; color:var(--danger); cursor:pointer; font-size:0.95rem; margin-left:4px;">Esci</button>
         </div>
     </nav>
 
