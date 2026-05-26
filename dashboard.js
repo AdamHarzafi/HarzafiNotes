@@ -35,14 +35,12 @@ auth.onAuthStateChanged(user => {
         const profilePicEl = document.getElementById('userProfilePic');
         if (profilePicEl) {
             if (user.photoURL) {
-                // Ottimizzazione risoluzione per foto Google (da 96px a 150px)
                 let highResPhoto = user.photoURL;
                 if (highResPhoto.includes("=s96-c")) highResPhoto = highResPhoto.replace("=s96-c", "=s150-c");
                 profilePicEl.src = highResPhoto;
             } else {
                 profilePicEl.src = "IMMAGINI/PROFILO-UTENTE-LOGO.png";
             }
-            // Fallback in caso di blocco di rete
             profilePicEl.onerror = function() { this.src = "IMMAGINI/PROFILO-UTENTE-LOGO.png"; };
         }
 
@@ -56,11 +54,11 @@ auth.onAuthStateChanged(user => {
 
 function impostaSalutoDinamico(user) {
     const hour = new Date().getHours();
-    let greet = "Benvenuto";
-    if (hour >= 5 && hour < 12) greet = "Buongiorno ☀️";
-    else if (hour >= 12 && hour < 18) greet = "Buon pomeriggio ☕";
-    else if (hour >= 18 && hour < 22) greet = "Buonasera 🌙";
-    else greet = "Buonanotte 🦉";
+    let greet = "Buongiorno ☀️";
+    
+    if (hour >= 5 && hour < 13) greet = "Buongiorno ☀️";
+    else if (hour >= 13 && hour < 18) greet = "Buon pomeriggio ☕";
+    else greet = "Buonasera 🌙";
     
     let name = "Studente";
     const sessionName = sessionStorage.getItem('harzafi_user');
@@ -76,14 +74,56 @@ document.getElementById('btnEsci').addEventListener('click', () => {
 });
 
 // ==========================================
-// 2. FUNZIONE RICERCA E FILTRO MATERIA
+// 2. FUNZIONI UTILI (TOAST, PREFERITI, COPIA)
+// ==========================================
+function showToast(message, icon = "✅") {
+    const toast = document.getElementById('globalToast');
+    toast.innerHTML = `${icon} ${message}`;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+window.copiaLink = function(url, ev) {
+    ev.stopPropagation();
+    navigator.clipboard.writeText(url).then(() => {
+        showToast("Link copiato negli appunti!", "🔗");
+    }).catch(() => {
+        showToast("Errore durante la copia.", "⚠️");
+    });
+};
+
+window.togglePreferito = function(docId, ev) {
+    ev.stopPropagation();
+    let favs = JSON.parse(localStorage.getItem('harzafi_favs') || '[]');
+    const btn = ev.currentTarget;
+    
+    if (favs.includes(docId)) {
+        favs = favs.filter(id => id !== docId);
+        btn.classList.remove('active');
+        showToast("Rimosso dai preferiti", "❌");
+        
+        // Se siamo nella scheda preferiti, ricarichiamo la vista
+        if (document.getElementById('titoloMateria').textContent === 'I Miei Preferiti') {
+            caricaAppunti('Preferiti');
+        }
+    } else {
+        favs.push(docId);
+        btn.classList.add('active');
+        showToast("Salvato nei preferiti!", "⭐");
+    }
+    
+    localStorage.setItem('harzafi_favs', JSON.stringify(favs));
+};
+
+// ==========================================
+// 3. FUNZIONE RICERCA E FILTRO MATERIA
 // ==========================================
 window.filtraMateria = function(materia) {
     document.querySelectorAll('.materia-btn').forEach(btn => btn.classList.remove('active'));
     event.currentTarget.classList.add('active');
-    document.getElementById('titoloMateria').textContent = materia === 'Tutte' ? 'Tutti i file' : materia;
     
-    // Reset barra di ricerca quando si cambia materia
+    document.getElementById('titoloMateria').textContent = materia === 'Preferiti' ? 'I Miei Preferiti' : (materia === 'Tutte' ? 'Tutti i file' : materia);
+    
     document.getElementById('searchNotes').value = "";
     document.getElementById('emptySearchState').style.display = 'none';
     
@@ -112,19 +152,34 @@ document.getElementById('searchNotes').addEventListener('input', function(e) {
 });
 
 // ==========================================
-// 3. RECUPERO E RENDER APPUNTI (CON ETICHETTE)
+// 4. RECUPERO E RENDER APPUNTI
 // ==========================================
 function caricaAppunti(materia) {
     const container = document.getElementById('notesContainer');
     container.innerHTML = `<div class="btn-loader" style="justify-content:flex-start; width:100%; grid-column:1/-1;"><div class="btn-spinner"></div><span style="font-weight:800; color:var(--text-gray); font-size:1.1rem; margin-left:10px;">Sincronizzazione archivio...</span></div>`;
     
     let query = db.collection('appunti');
-    if (materia !== "Tutte") query = query.where('materia', '==', materia);
+    
+    // Se non è "Tutte" o "Preferiti", filtriamo da Firestore
+    if (materia !== "Tutte" && materia !== "Preferiti") {
+        query = query.where('materia', '==', materia);
+    }
 
     query.get().then(snap => {
         container.innerHTML = '';
-        if (snap.empty) {
-            container.innerHTML = `<div style="text-align:center; padding: 40px; grid-column: 1 / -1;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--border-color)" stroke-width="1.5" style="width: 80px; margin-bottom: 20px;"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"></path></svg><h3 style="font-size: 1.5rem; color: var(--text-dark); font-weight: 800;">Cartella vuota</h3><p style="color: var(--text-gray); font-weight: 500;">Nessun file presente per questa materia.</p></div>`;
+        
+        let appuntiArray = [];
+        snap.forEach(doc => appuntiArray.push({ id: doc.id, ...doc.data() }));
+
+        // Filtro Locale per "Preferiti"
+        if (materia === "Preferiti") {
+            const favs = JSON.parse(localStorage.getItem('harzafi_favs') || '[]');
+            appuntiArray = appuntiArray.filter(item => favs.includes(item.id));
+        }
+
+        if (appuntiArray.length === 0) {
+            const emptyMsg = materia === "Preferiti" ? "Non hai ancora salvato nessun appunto tra i preferiti." : "Nessun file presente per questa materia.";
+            container.innerHTML = `<div style="text-align:center; padding: 40px; grid-column: 1 / -1;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--border-color)" stroke-width="1.5" style="width: 80px; margin-bottom: 20px;"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"></path></svg><h3 style="font-size: 1.5rem; color: var(--text-dark); font-weight: 800;">Cartella vuota</h3><p style="color: var(--text-gray); font-weight: 500;">${emptyMsg}</p></div>`;
             return;
         }
 
@@ -132,14 +187,15 @@ function caricaAppunti(materia) {
         let indexCard = 0;
         let indexMedia = 0;
         const oraAttuale = Date.now();
+        const favsList = JSON.parse(localStorage.getItem('harzafi_favs') || '[]');
 
-        let appuntiArray = [];
-        snap.forEach(doc => appuntiArray.push({ id: doc.id, ...doc.data() }));
-        appuntiArray.sort((a, b) => b.data - a.data); // Ordine decrescente locale
+        appuntiArray.sort((a, b) => b.data - a.data); // Ordine decrescente locale (dal più recente)
 
         appuntiArray.forEach(data => {
             const docId = data.id; 
             const fName = (data.nomeFile || "").toLowerCase();
+            const isFav = favsList.includes(docId);
+            const favClass = isFav ? 'active' : '';
             
             // Logica Tipi File e Icone
             const iconPDF = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
@@ -156,7 +212,7 @@ function caricaAppunti(materia) {
             else if (fName.match(/\.(mp4|mov|webm|mkv)$/i)) { icon = iconVID; iconClass = 'icon-img'; isVideo = true; badgeType = '<span class="badge-type badge-vid">VIDEO</span>'; }
             else if (fName.match(/\.(zip|rar|7z)$/i)) { icon = iconZIP; iconClass = 'icon-zip'; badgeType = '<span class="badge-type badge-zip">ZIP</span>'; }
 
-            // Verifica se è caricato nelle ultime 24 ore (86400000 ms)
+            // Verifica se è caricato nelle ultime 24 ore
             const isNew = (oraAttuale - data.data) < 86400000;
             const newBadgeHTML = isNew ? `<span class="badge-new">Nuovo</span>` : '';
 
@@ -189,8 +245,16 @@ function caricaAppunti(materia) {
 
             const card = `
                 <div class="note-card" style="animation-delay: ${indexCard * 0.05}s">
-                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start; width: 100%; margin-bottom: 10px;">
                         ${badgeType}
+                        <div style="display:flex; gap:8px;">
+                            <button class="action-icon-btn" onclick="copiaLink('${data.urlFile}', event)" title="Copia Link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
+                            </button>
+                            <button class="action-icon-btn ${favClass}" onclick="togglePreferito('${docId}', event)" title="Salva nei preferiti">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="18"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            </button>
+                        </div>
                     </div>
                     ${visualMedia}
                     <h3 class="note-title">${data.titolo} ${newBadgeHTML}</h3>
@@ -208,20 +272,8 @@ function caricaAppunti(materia) {
     });
 }
 
-// ==========================================
-// 4. MODALITA' STUDIO (FOCUS MODE)
-// ==========================================
-const toggleStudyMode = () => {
-    document.body.classList.toggle('study-mode');
-    const isStudy = document.body.classList.contains('study-mode');
-    window.scrollTo({top: 0, behavior: 'smooth'});
-};
-document.getElementById('btnStudyMode').addEventListener('click', toggleStudyMode);
-document.getElementById('btnExitStudyMode').addEventListener('click', toggleStudyMode);
-
-
 window.eliminaFile = function(docId) {
-    if(confirm("Sei sicuro di voler eliminare questo appunto per tutta la classe?")) {
+    if(confirm("Sei sicuro di voler eliminare questo file dall'archivio dell'intera classe?")) {
         db.collection('appunti').doc(docId).delete().then(() => {
             const materiaAttuale = document.getElementById('titoloMateria').innerText === 'Tutti i file' ? 'Tutte' : document.getElementById('titoloMateria').innerText;
             caricaAppunti(materiaAttuale);
@@ -325,6 +377,8 @@ document.getElementById('btnSalva').addEventListener('click', () => {
                 document.getElementById('upTitolo').value = '';
                 document.getElementById('upFile').value = '';
                 document.getElementById('fileNameText').innerText = "📁 Clicca qui per scegliere un file...";
+                
+                showToast("File caricato con successo!", "☁️");
                 caricaAppunti('Tutte');
             }).catch((error) => {
                 console.error("Firestore error:", error);
