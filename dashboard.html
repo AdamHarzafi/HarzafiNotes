@@ -27,7 +27,6 @@
     <!-- DASHBOARD -->
     <div class="dash-layout">
         
-        <!-- WRAPPER CON EFFETTO DISSOLVENZA (MASK) -->
         <div class="sidebar-mobile-wrapper">
             <aside class="sidebar-materie">
                 <h3 class="desktop-only-title">Materie 3°A</h3>
@@ -50,6 +49,51 @@
             </div>
         </main>
     </div>
+
+    <!-- ==========================================
+         FOOTER AVANZATO
+         ========================================== -->
+    <footer id="footer" class="footer-wrapper content-lazy">
+        <div class="mim-footer-wrap reveal">
+            <a href="https://www.miur.gov.it/" target="_blank" rel="noopener noreferrer">
+                <img src="IMMAGINI/LOGO-MIM.png" loading="lazy" decoding="async" class="footer-logo-mim" alt="Logo Ministero">
+            </a>
+        </div>
+        <div class="grid-infos">
+            <div class="col-info reveal" style="transition-delay: 0.1s;">
+                <h4><svg viewBox="0 0 24 24"><path d="M12,3L2,12H5V20H19V12H22L12,3M12,7.7C14.1,7.7 15.8,9.4 15.8,11.5C15.8,13.6 14.1,15.3 12,15.3C9.9,15.3 8.2,13.6 8.2,11.5C8.2,9.4 9.9,7.7 12,7.7Z"/></svg>Struttura Operativa Scuola</h4>
+                <p>ITIS Amedeo Avogadro</p>
+                <p><a href="#" id="btn-open-maps" class="address-link">Corso San Maurizio, 8 - 10124 Torino</a></p>
+                <p>Tel: <a href="tel:+390118153611" class="tel-link">+39 011 815 3611</a></p>
+            </div>
+            <div class="col-info reveal" style="transition-delay: 0.2s;">
+                <h4><svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/></svg>Servizi Dati & Finanziari</h4>
+                <p>Email Segreteria:<br> <a href="mailto:tois05100c@istruzione.it" class="hi">tois05100c@istruzione.it</a></p>
+                <p>Rete PEC:<br> <a href="mailto:tois05100c@pec.istruzione.it" class="hi">tois05100c@pec.istruzione.it</a></p>
+            </div>
+            <div class="col-info reveal" style="transition-delay: 0.3s;">
+                <h4><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Informazioni Contatto</h4>
+                <p>Il sito è gestito da Harzafi Adam</p>
+                <p>Classe 3°A Informatica</p>
+                <p>Anno di Corso: 2025/2026</p>
+                <p>Richiesta di assistenza:<br> <a href="mailto:harzafi.support@gmail.com" class="hi">harzafi.support@gmail.com</a></p>
+            </div>
+        </div>
+        <div class="bottom-branding reveal" style="transition-delay: 0.4s;">
+            <div class="badge-views">
+                <svg style="width:20px; fill:currentColor;" viewBox="0 0 24 24"><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/></svg> 
+                Letture Tracciate: <strong id="dynamic-counter-tracker">...</strong>
+            </div>
+            <p class="copyright-text">Harzafi Notes - Portale Ufficiale © - Tutti i diritti riservati</p>
+            <div class="legal-links">
+                <a href="accessibilita.html">Dichiarazione di Accessibilità</a>
+                <span class="desktop-divider">|</span>
+                <a href="privacy-account.html">Privacy Policy</a>
+                <span class="desktop-divider">|</span>
+                <a href="termini.html">Termini di Servizio</a>
+            </div>
+        </div>
+    </footer>
 
     <!-- MODALE UPLOAD -->
     <div id="uploadModal" class="modal-overlay">
@@ -101,6 +145,47 @@
             <div id="mediaContainer" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative;"></div>
         </div>
     </div>
+
+    <!-- Modale Mappa -->
+    <div id="maps-modal" class="modal-overlay bottom-sheet">
+        <div class="modal-content">
+            <button class="close-btn" aria-label="Chiudi">&times;</button>
+            <div class="bottom-sheet-body">
+                <h2 style="font-size: 1.4rem; margin-bottom: 25px; color: var(--text-dark); text-align:center; font-weight: 900;">Scegli un'app per aprire.</h2>
+                <div style="display: flex; justify-content: space-around; align-items: flex-start;">
+                    <a href="https://www.google.com/maps/search/?api=1&query=Corso+San+Maurizio,+8+-+10124+Torino" target="_blank" class="map-app-btn">
+                        <img src="IMMAGINI/GOOGLE-MAPS-LOGO.png" loading="lazy" decoding="async" alt="Google Maps">
+                        <span>Google Maps</span>
+                    </a>
+                    <a href="http://maps.apple.com/?q=Corso+San+Maurizio+8+Torino" target="_blank" class="map-app-btn">
+                        <img src="IMMAGINI/APPLE-MAPS-LOGO.png" loading="lazy" decoding="async" alt="Apple Mappe">
+                        <span>Apple Mappe</span>
+                    </a>
+                    <a href="https://waze.com/ul?q=Corso+San+Maurizio+8+Torino" target="_blank" class="map-app-btn">
+                        <img src="IMMAGINI/WAZE-LOGO.png" loading="lazy" decoding="async" alt="Waze">
+                        <span>Waze</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const btnOpenMaps = document.getElementById('btn-open-maps');
+            const mapsModal = document.getElementById('maps-modal');
+            if(btnOpenMaps && mapsModal) {
+                btnOpenMaps.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    mapsModal.classList.add('active');
+                });
+                const closeBtn = mapsModal.querySelector('.close-btn');
+                if(closeBtn) {
+                    closeBtn.addEventListener('click', () => mapsModal.classList.remove('active'));
+                }
+            }
+        });
+    </script>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
