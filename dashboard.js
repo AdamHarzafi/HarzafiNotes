@@ -67,10 +67,10 @@ function impostaSalutoDinamico(user) {
     if (sessionName && sessionName !== "Utente") name = sessionName.split(" ")[0];
     else if (user && user.displayName) name = user.displayName.split(" ")[0];
     
-    // Applica l'effetto gradient diviso per mantenere visibile l'emoji
+    // Applica l'effetto gradient mantenendo l'emoji intatta
     document.getElementById('greetingText').innerHTML = `
         <span class="animated-gradient-text">${greetText}</span>
-        <span style="font-size: 1.1rem; line-height: 1;">${greetEmoji}</span>
+        <span style="font-size: 1.1em; line-height: 1;">${greetEmoji}</span>
         <span class="animated-gradient-text">, ${name}</span>
     `;
     
@@ -82,7 +82,7 @@ document.getElementById('btnEsci').addEventListener('click', () => {
 });
 
 // ==========================================
-// 2. FUNZIONI UTILI (TOAST, COPIA LINK)
+// 2. FUNZIONI UTILI (TOAST, COPIA, PREFERITI)
 // ==========================================
 function showToast(message, icon = "✅") {
     const toast = document.getElementById('globalToast');
@@ -100,6 +100,29 @@ window.copiaLink = function(url, ev) {
     });
 };
 
+window.togglePreferito = function(docId, ev) {
+    ev.stopPropagation();
+    let favs = JSON.parse(localStorage.getItem('harzafi_favs') || '[]');
+    const btn = ev.currentTarget;
+    
+    if (favs.includes(docId)) {
+        favs = favs.filter(id => id !== docId);
+        btn.classList.remove('fav-active');
+        showToast("Rimosso dai preferiti", "❌");
+        
+        // Ricarica se siamo nella schermata Preferiti
+        if (document.getElementById('titoloMateria').textContent === 'I Miei Preferiti') {
+            caricaAppunti('Preferiti');
+        }
+    } else {
+        favs.push(docId);
+        btn.classList.add('fav-active');
+        showToast("Salvato nei preferiti!", "⭐");
+    }
+    
+    localStorage.setItem('harzafi_favs', JSON.stringify(favs));
+};
+
 // ==========================================
 // 3. FUNZIONE RICERCA E FILTRO MATERIA
 // ==========================================
@@ -107,7 +130,7 @@ window.filtraMateria = function(materia) {
     document.querySelectorAll('.materia-btn').forEach(btn => btn.classList.remove('active'));
     event.currentTarget.classList.add('active');
     
-    document.getElementById('titoloMateria').textContent = materia === 'Tutte' ? 'Tutti i file' : materia;
+    document.getElementById('titoloMateria').textContent = materia === 'Preferiti' ? 'I Miei Preferiti' : (materia === 'Tutte' ? 'Tutti i file' : materia);
     
     document.getElementById('searchNotes').value = "";
     document.getElementById('emptySearchState').style.display = 'none';
@@ -115,7 +138,7 @@ window.filtraMateria = function(materia) {
     caricaAppunti(materia);
 };
 
-// Ricerca Istantanea Intelligente
+// Ricerca Istantanea
 document.getElementById('searchNotes').addEventListener('input', function(e) {
     const term = e.target.value.toLowerCase().trim();
     const cards = document.querySelectorAll('.note-card');
@@ -145,7 +168,7 @@ function caricaAppunti(materia) {
     
     let query = db.collection('appunti');
     
-    if (materia !== "Tutte") {
+    if (materia !== "Tutte" && materia !== "Preferiti") {
         query = query.where('materia', '==', materia);
     }
 
@@ -155,8 +178,15 @@ function caricaAppunti(materia) {
         let appuntiArray = [];
         snap.forEach(doc => appuntiArray.push({ id: doc.id, ...doc.data() }));
 
+        // Filtro Locale per Preferiti
+        if (materia === "Preferiti") {
+            const favs = JSON.parse(localStorage.getItem('harzafi_favs') || '[]');
+            appuntiArray = appuntiArray.filter(item => favs.includes(item.id));
+        }
+
         if (appuntiArray.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding: 40px; grid-column: 1 / -1;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--border-color)" stroke-width="1.5" style="width: 80px; margin-bottom: 20px;"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"></path></svg><h3 style="font-size: 1.5rem; color: var(--text-dark); font-weight: 800;">Cartella vuota</h3><p style="color: var(--text-gray); font-weight: 500;">Nessun file presente per questa materia.</p></div>`;
+            const emptyMsg = materia === "Preferiti" ? "Non hai ancora salvato nessun appunto tra i preferiti." : "Nessun file presente per questa materia.";
+            container.innerHTML = `<div style="text-align:center; padding: 40px; grid-column: 1 / -1;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--border-color)" stroke-width="1.5" style="width: 80px; margin-bottom: 20px;"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"></path></svg><h3 style="font-size: 1.5rem; color: var(--text-dark); font-weight: 800;">Cartella vuota</h3><p style="color: var(--text-gray); font-weight: 500;">${emptyMsg}</p></div>`;
             return;
         }
 
@@ -164,12 +194,15 @@ function caricaAppunti(materia) {
         let indexCard = 0;
         let indexMedia = 0;
         const oraAttuale = Date.now();
+        const favsList = JSON.parse(localStorage.getItem('harzafi_favs') || '[]');
 
         appuntiArray.sort((a, b) => b.data - a.data); // Ordine decrescente locale (dal più recente)
 
         appuntiArray.forEach(data => {
             const docId = data.id; 
             const fName = (data.nomeFile || "").toLowerCase();
+            const isFav = favsList.includes(docId);
+            const favClass = isFav ? 'fav-active' : '';
             
             // Logica Tipi File e Icone
             const iconPDF = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
@@ -221,15 +254,20 @@ function caricaAppunti(materia) {
                 <div class="note-card" style="animation-delay: ${indexCard * 0.05}s">
                     <div style="display:flex; justify-content:space-between; align-items:center; width: 100%; margin-bottom: 12px;">
                         ${badgeType}
-                        
-                        <!-- Pulsante Condividi Stile iOS Share -->
-                        <button class="action-icon-btn" onclick="copiaLink('${data.urlFile}', event)" title="Condividi Link">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18">
-                                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-                                <polyline points="16 6 12 2 8 6"/>
-                                <line x1="12" y1="2" x2="12" y2="15"/>
-                            </svg>
-                        </button>
+                        <div style="display:flex; gap:8px;">
+                            <!-- Pulsante Condividi Stile iOS Share -->
+                            <button class="action-icon-btn" onclick="copiaLink('${data.urlFile}', event)" title="Condividi Link">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18">
+                                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                                    <polyline points="16 6 12 2 8 6"/>
+                                    <line x1="12" y1="2" x2="12" y2="15"/>
+                                </svg>
+                            </button>
+                            <!-- Pulsante Preferiti -->
+                            <button class="action-icon-btn ${favClass}" onclick="togglePreferito('${docId}', event)" title="Salva nei preferiti">
+                                <svg viewBox="0 0 24 24" fill="currentColor" width="18"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                            </button>
+                        </div>
                     </div>
                     ${visualMedia}
                     <h3 class="note-title">${data.titolo} ${newBadgeHTML}</h3>
