@@ -54,19 +54,26 @@ auth.onAuthStateChanged(user => {
 
 function impostaSalutoDinamico(user) {
     const hour = new Date().getHours();
-    let greet = "Buongiorno ☀️";
+    let greetText = "Buongiorno";
+    let greetEmoji = "☀️";
     
-    // Togliamo il "Buonanotte". Da Mezzanotte a mezzogiorno = Buongiorno.
-    if (hour >= 5 && hour < 13) greet = "Buongiorno ☀️";
-    else if (hour >= 13 && hour < 18) greet = "Buon pomeriggio ☕";
-    else greet = "Buonasera 🌙";
+    // Niente più buonanotte. 
+    if (hour >= 5 && hour < 13) { greetText = "Buongiorno"; greetEmoji = "☀️"; }
+    else if (hour >= 13 && hour < 18) { greetText = "Buon pomeriggio"; greetEmoji = "☕"; }
+    else { greetText = "Buonasera"; greetEmoji = "🌙"; }
     
     let name = "Studente";
     const sessionName = sessionStorage.getItem('harzafi_user');
     if (sessionName && sessionName !== "Utente") name = sessionName.split(" ")[0];
     else if (user && user.displayName) name = user.displayName.split(" ")[0];
     
-    document.getElementById('greetingText').innerText = `${greet}, ${name}`;
+    // Applica l'effetto gradient diviso per mantenere visibile l'emoji
+    document.getElementById('greetingText').innerHTML = `
+        <span class="animated-gradient-text">${greetText}</span>
+        <span style="font-size: 1.1rem; line-height: 1;">${greetEmoji}</span>
+        <span class="animated-gradient-text">, ${name}</span>
+    `;
+    
     document.getElementById('userNameDisplay').textContent = name;
 }
 
@@ -214,8 +221,9 @@ function caricaAppunti(materia) {
                 <div class="note-card" style="animation-delay: ${indexCard * 0.05}s">
                     <div style="display:flex; justify-content:space-between; align-items:center; width: 100%; margin-bottom: 12px;">
                         ${badgeType}
-                        <!-- Pulsante Condividi iOS Style -->
-                        <button class="action-icon-btn" onclick="copiaLink('${data.urlFile}', event)" title="Copia Link">
+                        
+                        <!-- Pulsante Condividi Stile iOS Share -->
+                        <button class="action-icon-btn" onclick="copiaLink('${data.urlFile}', event)" title="Condividi Link">
                             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18">
                                 <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
                                 <polyline points="16 6 12 2 8 6"/>
@@ -380,45 +388,4 @@ function aggiornaMediaViewer() {
     
     setTimeout(() => {
         if (item.isVideo) {
-            container.innerHTML = `<video src="${item.url}" controls autoplay class="viewer-media-item viewer-video"></video>`;
-        } else {
-            container.innerHTML = `<img src="${item.url}" class="viewer-media-item" alt="${item.titolo}">`;
-        }
-    }, 10);
-
-    const mostraFrecce = window.mediaGallery.length > 1 ? 'flex' : 'none';
-    document.getElementById('btnPrevMedia').style.display = mostraFrecce;
-    document.getElementById('btnNextMedia').style.display = mostraFrecce;
-}
-
-window.cambiaMedia = function(direzione) {
-    const container = document.getElementById('mediaContainer');
-    const elemento = container.querySelector('.viewer-media-item');
-    
-    if(elemento) elemento.classList.add('media-switching');
-
-    setTimeout(() => {
-        if (direzione === 'next') {
-            currentMediaIndex = (currentMediaIndex + 1) % window.mediaGallery.length;
-        } else {
-            currentMediaIndex = (currentMediaIndex - 1 + window.mediaGallery.length) % window.mediaGallery.length;
-        }
-        aggiornaMediaViewer();
-    }, 250); 
-};
-
-document.getElementById('btnNextMedia').addEventListener('click', () => cambiaMedia('next'));
-document.getElementById('btnPrevMedia').addEventListener('click', () => cambiaMedia('prev'));
-
-document.addEventListener('keydown', (e) => {
-    if (document.getElementById('mediaViewerModal').classList.contains('active')) {
-        if (e.key === 'ArrowRight' && window.mediaGallery.length > 1) cambiaMedia('next');
-        if (e.key === 'ArrowLeft' && window.mediaGallery.length > 1) cambiaMedia('prev');
-        if (e.key === 'Escape') document.getElementById('btnChiudiViewer').click();
-    }
-});
-
-document.getElementById('btnChiudiViewer').addEventListener('click', () => {
-    document.getElementById('mediaContainer').innerHTML = ''; 
-    document.getElementById('mediaViewerModal').classList.remove('active');
-});
+            container.innerHTML = `<video src="${item.url}" controls autoplay class="viewer-media-item viewer-vide
