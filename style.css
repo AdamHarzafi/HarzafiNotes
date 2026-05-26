@@ -44,7 +44,7 @@ p { color: var(--text-gray); font-size: 1.05rem; }
 .nav-links { display: flex; gap: 35px; align-items: center; }
 .nav-links a { text-decoration: none; color: var(--text-dark); font-weight: 700; font-size: 0.95rem; transition: color 0.3s; }
 
-/* BOTTONI (Effetti Touch Base - Si attivano solo premendo) */
+/* BOTTONI */
 .btn-premium { background: var(--primary-light); color: var(--primary); border: none; padding: 12px 24px; border-radius: 30px; font-size: 0.95rem; font-weight: 700; cursor: pointer; transition: transform 0.2s var(--apple-ease), background 0.4s, box-shadow 0.4s; display: inline-flex; align-items: center; justify-content: center;}
 .btn-premium:active { transform: scale(0.95); }
 
@@ -224,7 +224,7 @@ p { color: var(--text-gray); font-size: 1.05rem; }
 .scroll-top-btn.visible { opacity: 1; visibility: visible; transform: translateY(0); }
 
 /* ================================================================= */
-/* ANIMAZIONI HOVER SOLO PER MOUSE (Risolve il bug su Mobile) */
+/* ANIMAZIONI HOVER SOLO PER MOUSE */
 /* ================================================================= */
 @media (hover: hover) and (pointer: fine) {
     .btn-premium:hover { transform: scale(1.04); background: var(--primary); color: white; box-shadow: 0 10px 20px rgba(2, 132, 199, 0.2); }
@@ -258,14 +258,24 @@ p { color: var(--text-gray); font-size: 1.05rem; }
     .scroll-top-btn:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 35px rgba(2, 132, 199, 0.3); }
 }
 
-/* OTTIMIZZAZIONE MOBILE DEFINITIVA */
+
+/* ================================================================= */
+/* FIX PRINCIPALE OTTIMIZZAZIONE MOBILE (SCROLL MATERIE E GRIGLIA) */
+/* ================================================================= */
 @media (max-width: 900px) {
     .nav-links { display: none; } 
     .bento-grid { grid-template-columns: 1fr; } 
     .bento-card.large { grid-column: span 1; }
     .bento-card { padding: 30px 20px; }
     
-    .dash-layout { grid-template-columns: 1fr; margin-top: 90px; padding: 0 15px; gap: 0; }
+    /* MODIFICA: Da grid a display block per evitare che l'overflow di flex-wrap rompa le dimensioni della pagina */
+    .dash-layout { 
+        display: block; 
+        margin-top: 90px; 
+        padding: 0 15px; 
+        width: 100%;
+        max-width: 100vw;
+    }
     .dash-title { display: block !important; font-size: 1.8rem !important; margin-top: 25px !important; margin-bottom: 20px !important; text-align: left; }
     
     .modal-content { padding: 35px 20px 25px !important; width: 92%; max-width: 100%; border-radius: 26px; }
@@ -274,20 +284,64 @@ p { color: var(--text-gray); font-size: 1.05rem; }
     
     .navbar-wrapper { width: 92%; padding: 12px 18px; top: 15px; }
     .navbar-wrapper.scrolled { width: 100%; padding: 12px 20px; top: 0; }
-    .nav-logo img { height: 28px !important; }
     
-    .sidebar-mobile-wrapper { position: relative; width: calc(100% + 30px); margin-left: -15px; -webkit-mask-image: linear-gradient(to right, #000 85%, transparent 100%); mask-image: linear-gradient(to right, #000 85%, transparent 100%); }
-    .sidebar-materie { display: flex; flex-wrap: nowrap; overflow-x: auto; padding: 5px 40px 10px 15px; border-radius: 0; gap: 12px; box-shadow: none; border: none; background: transparent; position: relative; top: 0; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+    /* Piccoli aggiustamenti per i bottoni navbar su mobile */
+    .nav-logo img, .nav-logo-img { height: 28px !important; }
+    .nav-btn { padding: 8px 12px !important; font-size: 0.85rem !important; }
+    .nav-btn-logout { font-size: 0.9rem !important; }
+    
+    /* Configurazione per permettere lo scorrimento perfetto dei bottoni materia */
+    .sidebar-mobile-wrapper { 
+        position: relative; 
+        width: calc(100% + 30px); 
+        margin-left: -15px; 
+        display: block;
+        max-width: 100vw;
+        -webkit-mask-image: linear-gradient(to right, #000 85%, transparent 100%); 
+        mask-image: linear-gradient(to right, #000 85%, transparent 100%); 
+    }
+    
+    .sidebar-materie { 
+        display: flex; 
+        flex-wrap: nowrap; 
+        overflow-x: auto; 
+        width: 100%;
+        padding: 5px 40px 10px 15px; 
+        border-radius: 0; 
+        gap: 12px; 
+        box-shadow: none; 
+        border: none; 
+        background: transparent; 
+        position: relative; 
+        top: 0; 
+        -webkit-overflow-scrolling: touch; 
+        scrollbar-width: none; 
+        box-sizing: border-box;
+    }
     .sidebar-materie::-webkit-scrollbar { display: none; }
     
     .desktop-only-title { display: none; }
     .prof-name { display: none; }
     
-    .materia-btn { flex: 0 0 auto; width: auto; padding: 10px 20px; margin: 0; background: var(--surface-solid); border: 1px solid var(--border-color); box-shadow: 0 4px 12px rgba(0,0,0,0.04); border-radius: 20px; font-size: 0.95rem; white-space: nowrap; }
+    .materia-btn { 
+        flex: 0 0 auto; 
+        width: auto; 
+        padding: 10px 20px; 
+        margin: 0; 
+        background: var(--surface-solid); 
+        border: 1px solid var(--border-color); 
+        box-shadow: 0 4px 12px rgba(0,0,0,0.04); 
+        border-radius: 20px; 
+        font-size: 0.95rem; 
+        white-space: nowrap; 
+        -webkit-user-select: none;
+        user-select: none;
+    }
     .materia-btn.active { background: var(--primary-light); border-color: var(--primary-light); color: var(--primary); transform: none;}
     
-    .notes-grid { grid-template-columns: 1fr; gap: 16px; }
-    .note-card { padding: 20px; }
+    /* Configurazione della griglia file, in modo che stia centrata nei bordi */
+    .notes-grid { display: grid; grid-template-columns: 1fr; gap: 16px; width: 100%; }
+    .note-card { padding: 20px; width: 100%; box-sizing: border-box; }
     
     .scroll-top-btn { bottom: 20px; right: 20px; width: 45px; height: 45px; }
 
