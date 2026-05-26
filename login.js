@@ -277,6 +277,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     // ── LOGIN GOOGLE CON POPUP (authDomain su harzafi-notes.web.app) ──
+    // ── LOGIN GOOGLE CON POPUP ──
     const googleBtn      = document.getElementById('custom-google-btn');
     const googleErrorMsg = document.getElementById('google-login-error');
 
@@ -305,21 +306,31 @@ document.addEventListener("DOMContentLoaded", function () {
         const targetDomain = selectedRole === 'studente'
             ? 'studenti.itisavogadro.it'
             : 'itisavogadro.it';
-        provider.setCustomParameters({ hd: targetDomain });
+            
+        // FORZIAMO LA SCELTA DELL'ACCOUNT OGNI VOLTA
+        provider.setCustomParameters({ 
+            hd: targetDomain,
+            prompt: 'select_account' 
+        });
 
         window.auth.signInWithPopup(provider)
             .then(async result => {
-                const email = (result.user.email || "").toLowerCase();
-                if (email.endsWith("@" + targetDomain)) {
+                const email = (result.user.email || "").trim().toLowerCase();
+                
+                // Controlliamo che l'email contenga il dominio corretto
+                if (email.includes("@" + targetDomain)) {
                     inviaEmail(email, 7, {
                         nome_utente:    result.user.displayName,
                         email_utente:   email,
                         orario_accesso: new Date().toLocaleString('it-IT')
                     }).catch(e => console.log(e));
-                    entraNelPortale(result.user.displayName || "Utente");
+                    
+                    entraNelPortale(result.user.displayName || email.split('@')[0]);
                 } else {
                     await window.auth.signOut();
-                    googleErrorMsg.innerText = `Usa l'email corretta (@${targetDomain}).`;
+                    
+                    // MOSTRA ESATTAMENTE QUALE EMAIL È STATA USATA PER SBAGLIO
+                    googleErrorMsg.innerText = `Hai usato: ${email}\nDevi usare un account @${targetDomain}`;
                     googleErrorMsg.style.display = 'block';
                     googleBtn.innerHTML = originalHTML;
                     googleBtn.disabled  = false;
@@ -333,7 +344,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 googleBtn.disabled  = false;
             });
     });
-
     // ── HARZAFI ID ──
     document.getElementById('btn-harzafi-id').addEventListener('click', () => { document.getElementById('hid-modal').classList.add('active'); });
     document.getElementById('hid-close-btn').addEventListener('click',  () => document.getElementById('hid-modal').classList.remove('active'));
