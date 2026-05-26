@@ -27,6 +27,43 @@ auth.onAuthStateChanged(user => {
         if (user.email === ADMIN_EMAIL) {
             document.getElementById('btnUploadModal').style.display = 'block';
         }
+        
+        // ==========================================
+        // GESTIONE PROFILO UTENTE (FOTO & NOME)
+        // ==========================================
+        const profilePicEl = document.getElementById('userProfilePic');
+        if (profilePicEl) {
+            if (user.photoURL) {
+                // Ottimizzazione risoluzione per le foto provenienti da Google (da 96px a 150px)
+                let highResPhoto = user.photoURL;
+                if (highResPhoto.includes("=s96-c")) {
+                    highResPhoto = highResPhoto.replace("=s96-c", "=s150-c");
+                }
+                profilePicEl.src = highResPhoto;
+            } else {
+                profilePicEl.src = "IMMAGINI/PROFILO-UTENTE-LOGO.png"; // Fallback account non Google
+            }
+            
+            // Fallback in caso di errore di caricamento (Es. blocco da rete scolastica o permessi negati)
+            profilePicEl.onerror = function() {
+                this.src = "IMMAGINI/PROFILO-UTENTE-LOGO.png";
+            };
+        }
+
+        const userNameEl = document.getElementById('userNameDisplay');
+        if (userNameEl) {
+            const sessionName = sessionStorage.getItem('harzafi_user');
+            if (sessionName && sessionName !== "Utente") {
+                // Mostra solo il nome di battesimo separandolo dallo spazio
+                userNameEl.textContent = sessionName.split(" ")[0];
+            } else if (user.displayName) {
+                // Anche qui prende solo il primo nome fornito da Google
+                userNameEl.textContent = user.displayName.split(" ")[0];
+            } else {
+                userNameEl.textContent = "Studente";
+            }
+        }
+
         caricaAppunti('Tutte');
     }
 });
