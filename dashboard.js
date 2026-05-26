@@ -1,5 +1,5 @@
 /* ============================================================
-   dashboard.js — Dashboard Harzafi Notes
+   dashboard.js — Dashboard Harzafi Notes (PRO Edition)
    ============================================================ */
 
 const firebaseConfig = {
@@ -20,6 +20,9 @@ const ADMIN_EMAIL = "s11205413d@studenti.itisavogadro.it";
 
 let materiaUploadSelezionata = "Informatica";
 
+// ==========================================
+// 1. GESTIONE AUTENTICAZIONE E PROFILO
+// ==========================================
 auth.onAuthStateChanged(user => {
     if (!user) {
         window.location.href = "login.html";
@@ -28,107 +31,134 @@ auth.onAuthStateChanged(user => {
             document.getElementById('btnUploadModal').style.display = 'block';
         }
         
-        // ==========================================
-        // GESTIONE PROFILO UTENTE (FOTO & NOME)
-        // ==========================================
+        // Setup Profilo Utente (Foto & Nome)
         const profilePicEl = document.getElementById('userProfilePic');
         if (profilePicEl) {
             if (user.photoURL) {
-                // Ottimizzazione risoluzione per le foto provenienti da Google (da 96px a 150px)
+                // Ottimizzazione risoluzione per foto Google (da 96px a 150px)
                 let highResPhoto = user.photoURL;
-                if (highResPhoto.includes("=s96-c")) {
-                    highResPhoto = highResPhoto.replace("=s96-c", "=s150-c");
-                }
+                if (highResPhoto.includes("=s96-c")) highResPhoto = highResPhoto.replace("=s96-c", "=s150-c");
                 profilePicEl.src = highResPhoto;
             } else {
-                profilePicEl.src = "IMMAGINI/PROFILO-UTENTE-LOGO.png"; // Fallback account non Google
+                profilePicEl.src = "IMMAGINI/PROFILO-UTENTE-LOGO.png";
             }
-            
-            // Fallback in caso di errore di caricamento (Es. blocco da rete scolastica o permessi negati)
-            profilePicEl.onerror = function() {
-                this.src = "IMMAGINI/PROFILO-UTENTE-LOGO.png";
-            };
+            // Fallback in caso di blocco di rete
+            profilePicEl.onerror = function() { this.src = "IMMAGINI/PROFILO-UTENTE-LOGO.png"; };
         }
 
-        const userNameEl = document.getElementById('userNameDisplay');
-        if (userNameEl) {
-            const sessionName = sessionStorage.getItem('harzafi_user');
-            if (sessionName && sessionName !== "Utente") {
-                // Mostra solo il nome di battesimo separandolo dallo spazio
-                userNameEl.textContent = sessionName.split(" ")[0];
-            } else if (user.displayName) {
-                // Anche qui prende solo il primo nome fornito da Google
-                userNameEl.textContent = user.displayName.split(" ")[0];
-            } else {
-                userNameEl.textContent = "Studente";
-            }
-        }
-
+        // Setup Saluto Dinamico
+        impostaSalutoDinamico(user);
+        
+        // Carica Appunti
         caricaAppunti('Tutte');
     }
 });
 
+function impostaSalutoDinamico(user) {
+    const hour = new Date().getHours();
+    let greet = "Benvenuto";
+    if (hour >= 5 && hour < 12) greet = "Buongiorno ☀️";
+    else if (hour >= 12 && hour < 18) greet = "Buon pomeriggio ☕";
+    else if (hour >= 18 && hour < 22) greet = "Buonasera 🌙";
+    else greet = "Buonanotte 🦉";
+    
+    let name = "Studente";
+    const sessionName = sessionStorage.getItem('harzafi_user');
+    if (sessionName && sessionName !== "Utente") name = sessionName.split(" ")[0];
+    else if (user && user.displayName) name = user.displayName.split(" ")[0];
+    
+    document.getElementById('greetingText').innerText = `${greet}, ${name}`;
+    document.getElementById('userNameDisplay').textContent = name;
+}
+
 document.getElementById('btnEsci').addEventListener('click', () => {
-    auth.signOut().then(() => {
-        window.location.href = "login.html";
-    });
+    auth.signOut().then(() => window.location.href = "login.html");
 });
 
+// ==========================================
+// 2. FUNZIONE RICERCA E FILTRO MATERIA
+// ==========================================
 window.filtraMateria = function(materia) {
     document.querySelectorAll('.materia-btn').forEach(btn => btn.classList.remove('active'));
     event.currentTarget.classList.add('active');
     document.getElementById('titoloMateria').textContent = materia === 'Tutte' ? 'Tutti i file' : materia;
+    
+    // Reset barra di ricerca quando si cambia materia
+    document.getElementById('searchNotes').value = "";
+    document.getElementById('emptySearchState').style.display = 'none';
+    
     caricaAppunti(materia);
 };
 
+// Ricerca Istantanea Intelligente
+document.getElementById('searchNotes').addEventListener('input', function(e) {
+    const term = e.target.value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.note-card');
+    let hasVisible = false;
+
+    cards.forEach(card => {
+        const title = card.querySelector('.note-title').textContent.toLowerCase();
+        const meta = card.querySelector('.note-meta').textContent.toLowerCase();
+        
+        if (title.includes(term) || meta.includes(term)) {
+            card.style.display = 'flex';
+            hasVisible = true;
+        } else {
+            card.style.display = 'none';
+        }
+    });
+
+    document.getElementById('emptySearchState').style.display = (!hasVisible && cards.length > 0) ? 'block' : 'none';
+});
+
+// ==========================================
+// 3. RECUPERO E RENDER APPUNTI (CON ETICHETTE)
+// ==========================================
 function caricaAppunti(materia) {
     const container = document.getElementById('notesContainer');
-    container.innerHTML = '<div class="btn-loader" style="justify-content:flex-start; margin-top:20px;"><div class="btn-spinner"></div><span style="font-weight:700; color:var(--text-gray);">Sincronizzazione file...</span></div>';
+    container.innerHTML = `<div class="btn-loader" style="justify-content:flex-start; width:100%; grid-column:1/-1;"><div class="btn-spinner"></div><span style="font-weight:800; color:var(--text-gray); font-size:1.1rem; margin-left:10px;">Sincronizzazione archivio...</span></div>`;
     
-    // NESSUN ORDERBY SU FIRESTORE (Evita l'errore degli indici)
     let query = db.collection('appunti');
-    if (materia !== "Tutte") {
-        query = query.where('materia', '==', materia);
-    }
+    if (materia !== "Tutte") query = query.where('materia', '==', materia);
 
     query.get().then(snap => {
         container.innerHTML = '';
         if (snap.empty) {
-            container.innerHTML = '<p style="color:var(--text-light); font-weight:700;">Nessun file presente per questa materia.</p>';
+            container.innerHTML = `<div style="text-align:center; padding: 40px; grid-column: 1 / -1;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--border-color)" stroke-width="1.5" style="width: 80px; margin-bottom: 20px;"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"></path></svg><h3 style="font-size: 1.5rem; color: var(--text-dark); font-weight: 800;">Cartella vuota</h3><p style="color: var(--text-gray); font-weight: 500;">Nessun file presente per questa materia.</p></div>`;
             return;
         }
 
         window.mediaGallery = []; 
         let indexCard = 0;
         let indexMedia = 0;
+        const oraAttuale = Date.now();
 
-        // 1. Estraiamo tutti i documenti in un array
         let appuntiArray = [];
-        snap.forEach(doc => {
-            appuntiArray.push({ id: doc.id, ...doc.data() });
-        });
+        snap.forEach(doc => appuntiArray.push({ id: doc.id, ...doc.data() }));
+        appuntiArray.sort((a, b) => b.data - a.data); // Ordine decrescente locale
 
-        // 2. Ordinamento locale in JavaScript (dal più recente)
-        appuntiArray.sort((a, b) => b.data - a.data);
-
-        // 3. Generiamo le card HTML
         appuntiArray.forEach(data => {
             const docId = data.id; 
             const fName = (data.nomeFile || "").toLowerCase();
             
+            // Logica Tipi File e Icone
             const iconPDF = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
             const iconIMG = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`;
             const iconZIP = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-1 8h-4v4h-2v-4H9v-2h4V8h2v4h4v2z"/></svg>`;
             const iconDOC = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`;
             const iconVID = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>`;
 
-            let icon = iconDOC; let iconClass = 'icon-doc';
+            let icon = iconDOC; let iconClass = 'icon-doc'; let badgeType = '<span class="badge-type badge-doc">DOC</span>';
             let isImage = false; let isVideo = false;
             
-            if (fName.includes('.pdf')) { icon = iconPDF; iconClass = 'icon-pdf'; }
-            else if (fName.match(/\.(png|jpg|jpeg|gif|webp)$/i)) { icon = iconIMG; iconClass = 'icon-img'; isImage = true; }
-            else if (fName.match(/\.(mp4|mov|webm|mkv)$/i)) { icon = iconVID; iconClass = 'icon-img'; isVideo = true; }
-            else if (fName.match(/\.(zip|rar|7z)$/i)) { icon = iconZIP; iconClass = 'icon-zip'; }
+            if (fName.includes('.pdf')) { icon = iconPDF; iconClass = 'icon-pdf'; badgeType = '<span class="badge-type badge-pdf">PDF</span>'; }
+            else if (fName.match(/\.(png|jpg|jpeg|gif|webp)$/i)) { icon = iconIMG; iconClass = 'icon-img'; isImage = true; badgeType = '<span class="badge-type badge-img">IMG</span>'; }
+            else if (fName.match(/\.(mp4|mov|webm|mkv)$/i)) { icon = iconVID; iconClass = 'icon-img'; isVideo = true; badgeType = '<span class="badge-type badge-vid">VIDEO</span>'; }
+            else if (fName.match(/\.(zip|rar|7z)$/i)) { icon = iconZIP; iconClass = 'icon-zip'; badgeType = '<span class="badge-type badge-zip">ZIP</span>'; }
+
+            // Verifica se è caricato nelle ultime 24 ore (86400000 ms)
+            const isNew = (oraAttuale - data.data) < 86400000;
+            const newBadgeHTML = isNew ? `<span class="badge-new">Nuovo</span>` : '';
 
             let currentItemMediaIndex = -1;
             if (isImage || isVideo) {
@@ -144,25 +174,27 @@ function caricaAppunti(materia) {
 
             let visualMedia = '';
             if (isImage) {
-                visualMedia = `<img src="${data.urlFile}" class="img-preview" alt="${data.titolo}" onclick="apriMediaViewer(${currentItemMediaIndex})" style="cursor:pointer; transition:transform 0.3s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">`;
+                visualMedia = `<img src="${data.urlFile}" class="img-preview" alt="${data.titolo}" onclick="apriMediaViewer(${currentItemMediaIndex})" style="cursor:pointer; transition:transform 0.4s var(--apple-ease);" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">`;
             } else if (isVideo) {
                 visualMedia = `<video src="${data.urlFile}" preload="metadata" class="img-preview" style="cursor:pointer; background:#000; object-fit:cover;" onclick="apriMediaViewer(${currentItemMediaIndex})"></video>`;
             } else {
-                visualMedia = `<div class="note-icon ${iconClass}">${icon}</div>`;
+                visualMedia = `<div class="note-icon ${iconClass}" style="margin-bottom:15px;">${icon}</div>`;
             }
 
-            let actionBtn = '';
-            if (isImage || isVideo) {
-                actionBtn = `<button class="btn-download" onclick="apriMediaViewer(${currentItemMediaIndex})" style="width:100%; border:none; cursor:pointer; background: var(--primary-light); color: var(--primary);">Apri</button>`;
-            } else {
-                actionBtn = `<a href="${data.urlFile}" target="_blank" rel="noopener noreferrer" class="btn-download" style="display:block;">↓ Scarica File</a>`;
-            }
+            let actionBtn = (isImage || isVideo) 
+                ? `<button class="btn-download" onclick="apriMediaViewer(${currentItemMediaIndex})" style="width:100%; border:none; cursor:pointer; background: var(--primary-light); color: var(--primary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px; margin-right:6px; vertical-align:text-bottom;"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> Espandi</button>` 
+                : `<a href="${data.urlFile}" target="_blank" rel="noopener noreferrer" class="btn-download" style="display:block;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px; margin-right:6px; vertical-align:text-bottom;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Scarica</a>`;
+
+            const dataFormat = new Date(data.data).toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' });
 
             const card = `
                 <div class="note-card" style="animation-delay: ${indexCard * 0.05}s">
+                    <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                        ${badgeType}
+                    </div>
                     ${visualMedia}
-                    <h3 class="note-title">${data.titolo}</h3>
-                    <p class="note-meta">${data.materia} • ${new Date(data.data).toLocaleDateString('it-IT')}</p>
+                    <h3 class="note-title">${data.titolo} ${newBadgeHTML}</h3>
+                    <p class="note-meta">${data.materia} • ${dataFormat}</p>
                     ${actionBtn}
                     ${deleteBtnHTML}
                 </div>
@@ -176,6 +208,18 @@ function caricaAppunti(materia) {
     });
 }
 
+// ==========================================
+// 4. MODALITA' STUDIO (FOCUS MODE)
+// ==========================================
+const toggleStudyMode = () => {
+    document.body.classList.toggle('study-mode');
+    const isStudy = document.body.classList.contains('study-mode');
+    window.scrollTo({top: 0, behavior: 'smooth'});
+};
+document.getElementById('btnStudyMode').addEventListener('click', toggleStudyMode);
+document.getElementById('btnExitStudyMode').addEventListener('click', toggleStudyMode);
+
+
 window.eliminaFile = function(docId) {
     if(confirm("Sei sicuro di voler eliminare questo appunto per tutta la classe?")) {
         db.collection('appunti').doc(docId).delete().then(() => {
@@ -185,6 +229,9 @@ window.eliminaFile = function(docId) {
     }
 };
 
+// ==========================================
+// 5. GESTIONE UPLOAD
+// ==========================================
 document.addEventListener('DOMContentLoaded', () => {
     const trigger = document.querySelector('#upload-materia-select .custom-select-trigger');
     const options = document.querySelectorAll('#upload-materia-options .custom-option');
@@ -294,7 +341,7 @@ document.getElementById('btnSalva').addEventListener('click', () => {
 });
 
 // ==========================================
-// LETTORE MULTIMEDIALE & GALLERIA 
+// 6. LETTORE MULTIMEDIALE & GALLERIA 
 // ==========================================
 let currentMediaIndex = -1;
 
