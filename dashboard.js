@@ -388,4 +388,45 @@ function aggiornaMediaViewer() {
     
     setTimeout(() => {
         if (item.isVideo) {
-            container.innerHTML = `<video src="${item.url}" controls autoplay class="viewer-media-item viewer-vide
+            container.innerHTML = `<video src="${item.url}" controls autoplay class="viewer-media-item viewer-video"></video>`;
+        } else {
+            container.innerHTML = `<img src="${item.url}" class="viewer-media-item" alt="${item.titolo}">`;
+        }
+    }, 10);
+
+    const mostraFrecce = window.mediaGallery.length > 1 ? 'flex' : 'none';
+    document.getElementById('btnPrevMedia').style.display = mostraFrecce;
+    document.getElementById('btnNextMedia').style.display = mostraFrecce;
+}
+
+window.cambiaMedia = function(direzione) {
+    const container = document.getElementById('mediaContainer');
+    const elemento = container.querySelector('.viewer-media-item');
+    
+    if(elemento) elemento.classList.add('media-switching');
+
+    setTimeout(() => {
+        if (direzione === 'next') {
+            currentMediaIndex = (currentMediaIndex + 1) % window.mediaGallery.length;
+        } else {
+            currentMediaIndex = (currentMediaIndex - 1 + window.mediaGallery.length) % window.mediaGallery.length;
+        }
+        aggiornaMediaViewer();
+    }, 250); 
+};
+
+document.getElementById('btnNextMedia').addEventListener('click', () => cambiaMedia('next'));
+document.getElementById('btnPrevMedia').addEventListener('click', () => cambiaMedia('prev'));
+
+document.addEventListener('keydown', (e) => {
+    if (document.getElementById('mediaViewerModal').classList.contains('active')) {
+        if (e.key === 'ArrowRight' && window.mediaGallery.length > 1) cambiaMedia('next');
+        if (e.key === 'ArrowLeft' && window.mediaGallery.length > 1) cambiaMedia('prev');
+        if (e.key === 'Escape') document.getElementById('btnChiudiViewer').click();
+    }
+});
+
+document.getElementById('btnChiudiViewer').addEventListener('click', () => {
+    document.getElementById('mediaContainer').innerHTML = ''; 
+    document.getElementById('mediaViewerModal').classList.remove('active');
+});
