@@ -1,5 +1,5 @@
 /* ============================================================
-   dashboard.js — Dashboard Harzafi Notes (PRO Edition with OCR & PDF Fix)
+   dashboard.js — Dashboard Harzafi Notes (PRO Edition with OCR & ADOBE ACROBAT)
    ============================================================ */
 
 const firebaseConfig = {
@@ -397,7 +397,7 @@ document.getElementById('btnSalva').addEventListener('click', () => {
 });
 
 // ==========================================
-// 6. ANTEPRIMA MULTIMEDIALE, DOCUMENTI & OCR
+// 6. ANTEPRIMA MULTIMEDIALE, ADOBE ACROBAT & OCR
 // ==========================================
 let currentMediaIndex = -1;
 
@@ -413,7 +413,6 @@ function aggiornaMediaViewer() {
     
     container.innerHTML = '<div class="btn-loader" style="color:white;"><div class="btn-spinner" style="border-top-color:#fff;"></div></div>'; 
     
-    // Gestione Pulsante Estrazione Testo
     const ocrBtn = document.getElementById('btnEstraiTesto');
     if (item.isImage || item.docType === 'pdf' || item.docType === 'text' || item.docType === 'office') {
         ocrBtn.style.display = 'flex';
@@ -431,10 +430,45 @@ function aggiornaMediaViewer() {
             container.innerHTML = `<img src="${item.url}" class="viewer-media-item" alt="${item.titolo}" crossorigin="anonymous">`;
         } else if (item.isDocument) {
             if (item.docType === 'pdf') {
-                // FIX: Utilizzo di Google Docs Viewer per bypassare il blocco iFrame di Chrome
-                container.innerHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(item.url)}&embedded=true" class="viewer-media-item" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5);"></iframe>`;
+                
+                // INTEGRATO ADOBE ACROBAT PDF EMBED API
+                container.innerHTML = `<div id="adobe-dc-view" style="width: 100%; height: 85vh; max-width: 1200px; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); overflow: hidden; background-color: #fff;"></div>`;
+                
+                const loadAdobeViewer = () => {
+                    var adobeDCView = new AdobeDC.View({
+                        // Questo è un Client ID pubblico/gratuito generico per sviluppatori, se smette di funzionare creane uno gratuito sul portale Adobe per il tuo sito.
+                        clientId: "3923eb4fce3248c89b27ba9e4dfc9497", 
+                        divId: "adobe-dc-view"
+                    });
+                    adobeDCView.previewFile({
+                        content: { location: { url: item.url } },
+                        metaData: { fileName: item.titolo + ".pdf" }
+                    }, {
+                        embedMode: "SIZED_CONTAINER",
+                        showDownloadPDF: true,
+                        showPrintPDF: true,
+                        showFullScreen: true
+                    });
+                };
+
+                // Attendi che la libreria Adobe sia pronta per essere istanziata
+                setTimeout(() => {
+                    if (window.AdobeDC) {
+                        loadAdobeViewer();
+                    } else {
+                        document.addEventListener("adobe_dc_view_sdk.ready", () => {
+                            loadAdobeViewer();
+                        });
+                        // Fallback se ci si dimentica di inserire lo script in HTML
+                        setTimeout(() => {
+                            if(!window.AdobeDC) {
+                                container.innerHTML = `<div style="color: white; font-weight: 800; text-align:center; padding: 20px;">Libreria Adobe Acrobat non trovata!<br>Assicurati di aver aggiunto lo script in dashboard.html.</div>`;
+                            }
+                        }, 3000);
+                    }
+                }, 100);
+                
             } else if (item.docType === 'office') {
-                // Utilizzo di Office Live Viewer per documenti Office
                 container.innerHTML = `<iframe src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(item.url)}" class="viewer-media-item" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5);"></iframe>`;
             } else if (item.docType === 'text') {
                 fetch(item.url).then(res => res.text()).then(txt => {
@@ -452,7 +486,7 @@ function aggiornaMediaViewer() {
     document.getElementById('btnNextMedia').style.display = mostraFrecce;
 }
 
-// LOGICA ESTRAZIONE TESTO (AI E OCR)
+// LOGICA ESTRAZIONE TESTO (AI E OCR) - Lavora in background senza interferire con Adobe
 window.eseguiEstrazioneTesto = async function(url, isImage, isDocument, docType) {
     const ocrBtn = document.getElementById('btnEstraiTesto');
     const origHtml = ocrBtn.innerHTML;
