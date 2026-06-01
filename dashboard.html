@@ -18,13 +18,10 @@
         @keyframes textPulseColor { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
 
         .greeting-container { font-weight: 900; font-size: 1.15rem; margin-bottom: 2px; text-transform: uppercase; letter-spacing: -0.5px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-        @media (max-width: 900px) {
-            .greeting-container { font-size: 1.35rem; margin-top: 14px; margin-bottom: 8px; }
-        }
+        @media (max-width: 900px) { .greeting-container { font-size: 1.35rem; margin-top: 14px; margin-bottom: 8px; } }
 
         .search-bar { width: 100%; min-width: 250px; padding: 12px 20px; border-radius: 24px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); font-size: 0.95rem; font-weight: 600; color: var(--text-dark); transition: all 0.3s var(--apple-ease); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
         .search-bar:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15); background: #fff; }
-        .search-bar::placeholder { color: var(--text-light); font-weight: 500; }
         
         .badge-type { display: inline-block; padding: 4px 10px; border-radius: 12px; font-size: 0.7rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
         .badge-pdf { background: #fee2e2; color: #dc2626; }
@@ -38,20 +35,20 @@
 
         .action-icon-btn { background: #f8fafc; border: none; color: #64748b; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--apple-ease); }
         .action-icon-btn:hover { background: var(--primary-light); color: var(--primary); transform: scale(1.08); box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15); }
-        .action-icon-btn:active { transform: scale(0.95); }
         .action-icon-btn.fav-active { color: #f59e0b; background: #fffbeb; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15); }
 
         @media (min-width: 901px) { .desktop-mb { margin-bottom: 15px !important; } }
 
-        .toast-notification { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); opacity: 0; background: #0f172a; color: white; padding: 14px 28px; border-radius: 30px; font-weight: 700; font-size: 0.95rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 99999; display: flex; align-items: center; gap: 10px; pointer-events: none; }
-        .toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+        .toast-notification { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); opacity: 0; background: #0f172a; color: white; padding: 14px 28px; border-radius: 30px; font-weight: 700; font-size: 0.95rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 999999; display: flex; align-items: center; gap: 10px; pointer-events: none; }
+        .toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; }
 
-        @keyframes popUpCenter {
-            0% { opacity: 0; transform: translate(-50%, 20px) scale(0.95); }
-            100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
-        }
+        @keyframes popUpCenter { 0% { opacity: 0; transform: translate(-50%, 20px) scale(0.95); } 100% { opacity: 1; transform: translate(-50%, 0) scale(1); } }
 
-        /* Ottimizzazione bottone Gemini su piccoli schermi */
+        /* Stili Sicurezza Modali per Click */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.85); backdrop-filter: blur(15px); z-index: 99999; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: 0.3s ease; }
+        .modal-overlay.active { opacity: 1; pointer-events: auto; }
+        .modal-overlay * { pointer-events: auto; }
+
         @media (max-width: 480px) {
             .gemini-text-hide-mobile { display: none; }
             #btnGemini { width: 44px !important; height: 44px !important; padding: 0 !important; justify-content: center !important; }
@@ -133,7 +130,7 @@
 
     <!-- MODALE UPLOAD -->
     <div id="uploadModal" class="modal-overlay">
-        <div class="modal-content">
+        <div class="modal-content" style="max-width: 600px; padding: 40px;">
             <button id="btnChiudiUpload" class="close-btn">×</button>
             <h2 class="modal-title">Carica nuovo file</h2>
             
@@ -171,40 +168,41 @@
         </div>
     </div>
 
-    <!-- MODALE LETTORE MULTIMEDIALE CON X E GEMINI FISSI -->
+    <!-- MODALE LETTORE MULTIMEDIALE (CON PDF NATIVO E GEMINI AI) -->
     <div id="mediaViewerModal" class="modal-overlay">
         
         <button id="btnPrevMedia" class="media-nav-btn left" style="display:none; z-index:1000000;">❮</button>
         <button id="btnNextMedia" class="media-nav-btn right" style="display:none; z-index:1000000;">❯</button>
 
-        <!-- Pulsante Chiedi a Gemini (FISSO IN ALTO A SINISTRA) -->
+        <!-- Pulsante Gemini -->
         <button id="btnGemini" class="btn-premium" style="position:absolute; top: 20px; left: 20px; z-index: 1000000; display: none; align-items: center; gap: 8px; background: rgba(255,255,255,0.95); color: #8b5cf6; font-weight: 800; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transition: all 0.3s ease; border:none; cursor:pointer;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px;"><path d="M12 2l3 6 6 3-6 3-3 6-3-6-6-3 6-3z"></path></svg>
-            <span class="gemini-text-hide-mobile">Chiedi a Gemini</span>
+            <span class="gemini-text-hide-mobile">Chiedi a Gemini AI</span>
         </button>
 
-        <!-- Pulsante Chiudi X (FISSO IN ALTO A DESTRA) -->
+        <!-- Chiudi X -->
         <button id="btnChiudiViewer" class="close-btn" style="position:absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); width: 44px; height: 44px; font-size: 26px; z-index: 1000000; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; cursor: pointer;">×</button>
 
         <!-- CONTENITORE MEDIA -->
         <div id="mediaContainer" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: absolute; top:0; left:0; padding: 80px 20px 40px; pointer-events: none;"></div>
         
-        <!-- Box per risultato Gemini -->
-        <div id="geminiResultContainer" style="display: none; position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 800px; background: #ffffff; border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); z-index: 1000001; animation: popUpCenter 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <!-- RISPOSTA GEMINI AI IN-APP -->
+        <div id="geminiResultContainer" style="display: none; position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 800px; background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); border-radius: 20px; padding: 24px; box-shadow: 0 30px 60px rgba(0,0,0,0.4); z-index: 1000001; animation: popUpCenter 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #e2e8f0; padding-bottom: 15px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
-                    <div style="background: #ede9fe; color: #8b5cf6; padding: 8px; border-radius: 12px;">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 20px;"><path d="M12 2l3 6 6 3-6 3-3 6-3-6-6-3 6-3z"></path></svg>
+                    <div style="background: linear-gradient(135deg, #8b5cf6, #c084fc); color: white; padding: 8px; border-radius: 12px; box-shadow: 0 4px 10px rgba(139,92,246,0.3);">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 22px;"><path d="M12 2l3 6 6 3-6 3-3 6-3-6-6-3 6-3z"></path></svg>
                     </div>
-                    <h3 style="margin: 0; font-size: 1.15rem; color: var(--text-dark); font-weight: 900;">Testo pronto per <span style="color:#8b5cf6;">Gemini</span></h3>
+                    <h3 style="margin: 0; font-size: 1.25rem; color: var(--text-dark); font-weight: 900;">Gemini <span style="color:#8b5cf6;">AI</span></h3>
                 </div>
-                <div style="display: flex; gap: 10px;">
-                    <button onclick="copiaEApriGemini()" class="btn-premium" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 12px; background: #8b5cf6; color: white;">Copia e Apri Gemini</button>
-                    <button onclick="document.getElementById('geminiResultContainer').style.display='none'" class="btn-delete" style="padding: 8px 16px; margin: 0; width: auto; font-size: 0.9rem; border-radius: 12px; background: #f1f5f9; color: var(--text-dark);">Chiudi</button>
-                </div>
+                <button onclick="document.getElementById('geminiResultContainer').style.display='none'" class="close-btn" style="position:relative; top:0; right:0; background:#f1f5f9; color:var(--text-dark); width: 32px; height: 32px;">×</button>
             </div>
-            <textarea id="geminiResultText" class="apple-input" style="width: 100%; height: 200px; resize: none; font-size: 0.95rem; line-height: 1.6; padding: 15px; border: 1px solid var(--border-color); border-radius: 14px; background: #f8fafc;" readonly></textarea>
-            <p style="font-size: 0.8rem; color: var(--text-gray); margin-top: 10px; font-weight: 500;">Il testo è stato estratto in automatico. Clicca il pulsante qui sopra per copiarlo e incollarlo su Gemini.</p>
+            
+            <div id="geminiResultText" style="width: 100%; height: 300px; overflow-y: auto; font-size: 1.05rem; line-height: 1.6; color: var(--text-gray); padding-right: 10px;"></div>
+            
+            <div style="margin-top: 15px; display:flex; justify-content: flex-end;">
+                <button onclick="copiaRispostaGemini()" class="btn-premium" style="background: #8b5cf6; color: white; padding: 10px 20px; font-size: 0.95rem; border-radius: 14px; box-shadow: 0 4px 15px rgba(139,92,246,0.3);">📋 Copia Risposta</button>
+            </div>
         </div>
     </div>
 
