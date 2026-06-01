@@ -21,11 +21,7 @@
         /* GESTIONE SALUTO DINAMICO RESPONSIVE */
         .greeting-container { font-weight: 900; font-size: 1.15rem; margin-bottom: 2px; text-transform: uppercase; letter-spacing: -0.5px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
         @media (max-width: 900px) {
-            .greeting-container {
-                font-size: 1.35rem; /* Più grande su mobile */
-                margin-top: 14px;   /* Leggermente più in basso */
-                margin-bottom: 8px; /* Più spazio dal titolo */
-            }
+            .greeting-container { font-size: 1.35rem; margin-top: 14px; margin-bottom: 8px; }
         }
 
         /* STILI PER LA RICERCA */
@@ -44,18 +40,23 @@
         @keyframes pulseNew { 0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4); } 70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); } 100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); } }
         .badge-new { background: var(--success); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.65rem; font-weight: 900; text-transform: uppercase; margin-left: 10px; animation: pulseNew 2s infinite; vertical-align: middle; }
 
-        /* PULSANTI AZIONE (CONDIVIDI E PREFERITI) */
+        /* PULSANTI AZIONE */
         .action-icon-btn { background: #f8fafc; border: none; color: #64748b; width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s var(--apple-ease); }
         .action-icon-btn:hover { background: var(--primary-light); color: var(--primary); transform: scale(1.08); box-shadow: 0 4px 12px rgba(2, 132, 199, 0.15); }
         .action-icon-btn:active { transform: scale(0.95); }
         .action-icon-btn.fav-active { color: #f59e0b; background: #fffbeb; box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15); }
 
-        /* FIX ALLINEAMENTO PREFERITI SU PC */
         @media (min-width: 901px) { .desktop-mb { margin-bottom: 15px !important; } }
 
-        /* NOTIFICHE TOAST (POPUP) */
+        /* NOTIFICHE TOAST */
         .toast-notification { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); opacity: 0; background: #0f172a; color: white; padding: 14px 28px; border-radius: 30px; font-weight: 700; font-size: 0.95rem; box-shadow: 0 10px 30px rgba(0,0,0,0.2); transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 99999; display: flex; align-items: center; gap: 10px; pointer-events: none; }
         .toast-notification.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+        /* ANIMAZIONE RISULTATO OCR */
+        @keyframes popUpCenter {
+            0% { opacity: 0; transform: translate(-50%, 20px) scale(0.95); }
+            100% { opacity: 1; transform: translate(-50%, 0) scale(1); }
+        }
     </style>
 </head>
 <body>
@@ -67,7 +68,6 @@
         <div style="display:flex; gap:12px; align-items:center;">
             <button id="btnUploadModal" class="btn-premium nav-btn" style="display:none; padding:8px 16px; box-shadow: 0 4px 12px rgba(2,132,199,0.15);">+ Nuovo Appunto</button>
             
-            <!-- Widget Profilo Utente (Foto e Nome) -->
             <div class="user-profile-widget" style="display:flex; align-items:center; gap:10px; background:rgba(255,255,255,0.9); padding:4px 14px 4px 4px; border-radius:30px; border:1px solid rgba(2,132,199,0.1); box-shadow:0 4px 15px rgba(0,0,0,0.04);">
                 <img id="userProfilePic" src="IMMAGINI/PROFILO-UTENTE-LOGO.png" alt="Profilo Utente" style="width:34px; height:34px; border-radius:50%; object-fit:cover; background:#f1f5f9; border:2px solid #ffffff; box-shadow:0 2px 6px rgba(0,0,0,0.08);">
                 <span id="userNameDisplay" style="font-weight:800; font-size:0.9rem; color:var(--text-dark); max-width:100px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Studente</span>
@@ -86,8 +86,6 @@
             <aside class="sidebar-materie">
                 <h3 class="desktop-only-title" style="font-size: 0.9rem; color: var(--text-light);">Archivio 3°A</h3>
                 <button class="materia-btn active" onclick="filtraMateria('Tutte')">Tutti i file</button>
-                
-                <!-- Preferiti: In linea su mobile, distanziato su PC -->
                 <button class="materia-btn desktop-mb" onclick="filtraMateria('Preferiti')" style="color: #d97706; background: #fffbeb; border: 1px solid #fde68a;">⭐ Preferiti <span class="prof-name">I tuoi appunti salvati</span></button>
                 
                 <h3 class="desktop-only-title" style="margin-top: 10px; font-size: 0.9rem; color: var(--text-light);">Materie</h3>
@@ -104,10 +102,8 @@
 
         <main class="main-content">
             
-            <!-- HEADER INTELLIGENTE CON RICERCA -->
             <div class="dash-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 35px; flex-wrap: wrap; gap: 20px;">
                 <div>
-                    <!-- SALUTO ANIMATO E RESPONSIVE -->
                     <div id="greetingText" class="greeting-container">
                         <span class="animated-gradient-text">Caricamento...</span>
                     </div>
@@ -128,7 +124,6 @@
                 </div>
             </div>
             
-            <!-- EMPTY STATE NASCOSTO PER LA RICERCA -->
             <div id="emptySearchState" style="display:none; text-align:center; padding: 60px 20px; grid-column: 1 / -1;">
                 <svg viewBox="0 0 24 24" fill="none" stroke="var(--border-color)" stroke-width="1.5" style="width: 80px; margin-bottom: 20px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line><line x1="8" y1="11" x2="14" y2="11"></line></svg>
                 <h3 style="font-size: 1.5rem; color: var(--text-dark); font-weight: 800;">Nessun risultato trovato</h3>
@@ -137,7 +132,7 @@
         </main>
     </div>
 
-    <!-- NOTIFICA A SCOMPARSA (TOAST) -->
+    <!-- NOTIFICA A SCOMPARSA -->
     <div id="globalToast" class="toast-notification">✅ Operazione completata</div>
 
     <!-- MODALE UPLOAD -->
@@ -180,20 +175,50 @@
         </div>
     </div>
 
-    <!-- MODALE LETTORE MULTIMEDIALE CON GALLERIA -->
+    <!-- MODALE LETTORE MULTIMEDIALE CON ANTEPRIMA DOCUMENTI E OCR -->
     <div id="mediaViewerModal" class="modal-overlay">
         <button id="btnPrevMedia" class="media-nav-btn left" style="display:none;">❮</button>
         <button id="btnNextMedia" class="media-nav-btn right" style="display:none;">❯</button>
 
-        <div class="modal-content">
+        <!-- Pulsante Estrai Testo -->
+        <button id="btnEstraiTesto" class="btn-premium" style="position:absolute; top: 25px; left: 25px; z-index: 1000000; display: none; align-items: center; gap: 8px; background: rgba(255,255,255,0.95); color: var(--primary); font-weight: 800; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transition: all 0.3s ease;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 18px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+            Estrai Testo
+        </button>
+
+        <div class="modal-content" style="max-width: 1200px; background: transparent; box-shadow: none;">
             <button id="btnChiudiViewer" class="close-btn" style="position:absolute; top: 25px; right: 25px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.2); width: 44px; height: 44px; font-size: 24px; z-index: 1000000; backdrop-filter: blur(10px);">×</button>
             <div id="mediaContainer" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative;"></div>
+            
+            <!-- Box per risultato Estrazione Testo -->
+            <div id="ocrResultContainer" style="display: none; position: absolute; bottom: 30px; left: 50%; width: 90%; max-width: 800px; background: #ffffff; border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); z-index: 1000001; animation: popUpCenter 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="background: var(--primary-light); color: var(--primary); padding: 8px; border-radius: 12px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width: 20px;"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        </div>
+                        <h3 style="margin: 0; font-size: 1.15rem; color: var(--text-dark); font-weight: 900;">Testo Estratto <span style="color:var(--primary);">con AI</span></h3>
+                    </div>
+                    <div style="display: flex; gap: 10px;">
+                        <button onclick="copiaTestoOCR()" class="btn-premium" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 12px;">Copia Testo</button>
+                        <button onclick="document.getElementById('ocrResultContainer').style.display='none'" class="btn-delete" style="padding: 8px 16px; margin: 0; width: auto; font-size: 0.9rem; border-radius: 12px; background: #f1f5f9; color: var(--text-dark);">Chiudi</button>
+                    </div>
+                </div>
+                <textarea id="ocrResultText" class="apple-input" style="width: 100%; height: 200px; resize: none; font-size: 0.95rem; line-height: 1.6; padding: 15px; border: 1px solid var(--border-color); border-radius: 14px; background: #f8fafc;" readonly></textarea>
+            </div>
         </div>
     </div>
 
+    <!-- Firebase Scripts -->
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    
+    <!-- Librerie per AI OCR ed Estrazione Documenti -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+    <!-- Il tuo JS Principale -->
     <script src="dashboard.js"></script>
 </body>
 </html>
