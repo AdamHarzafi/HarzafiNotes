@@ -171,44 +171,40 @@
         </div>
     </div>
 
-    <!-- MODALE LETTORE MULTIMEDIALE CON X E GEMINI FISSI AI BORDI -->
+    <!-- MODALE LETTORE MULTIMEDIALE CON X E GEMINI FISSI -->
     <div id="mediaViewerModal" class="modal-overlay">
         
-        <!-- Frecce Navigazione -->
-        <button id="btnPrevMedia" class="media-nav-btn left" style="display:none;">❮</button>
-        <button id="btnNextMedia" class="media-nav-btn right" style="display:none;">❯</button>
+        <button id="btnPrevMedia" class="media-nav-btn left" style="display:none; z-index:1000000;">❮</button>
+        <button id="btnNextMedia" class="media-nav-btn right" style="display:none; z-index:1000000;">❯</button>
 
-        <!-- Pulsante Chiedi a Gemini (FISSO in alto a SINISTRA dello schermo) -->
-        <button id="btnGemini" class="btn-premium" style="position:absolute; top: 20px; left: 20px; z-index: 1000000; display: none; align-items: center; gap: 8px; background: rgba(255,255,255,0.95); color: #8b5cf6; font-weight: 800; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transition: all 0.3s ease;">
+        <!-- Pulsante Chiedi a Gemini (FISSO IN ALTO A SINISTRA) -->
+        <button id="btnGemini" class="btn-premium" style="position:absolute; top: 20px; left: 20px; z-index: 1000000; display: none; align-items: center; gap: 8px; background: rgba(255,255,255,0.95); color: #8b5cf6; font-weight: 800; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transition: all 0.3s ease; border:none; cursor:pointer;">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 18px;"><path d="M12 2l3 6 6 3-6 3-3 6-3-6-6-3 6-3z"></path></svg>
             <span class="gemini-text-hide-mobile">Chiedi a Gemini</span>
         </button>
 
-        <!-- Pulsante Chiudi X (FISSO in alto a DESTRA dello schermo) -->
-        <button id="btnChiudiViewer" class="close-btn" style="position:absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); width: 44px; height: 44px; font-size: 26px; z-index: 1000000; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; box-sizing: border-box;">×</button>
+        <!-- Pulsante Chiudi X (FISSO IN ALTO A DESTRA) -->
+        <button id="btnChiudiViewer" class="close-btn" style="position:absolute; top: 20px; right: 20px; background: rgba(255,255,255,0.15); color: white; border: 1px solid rgba(255,255,255,0.3); width: 44px; height: 44px; font-size: 26px; z-index: 1000000; backdrop-filter: blur(10px); display: flex; align-items: center; justify-content: center; padding: 0; margin: 0; cursor: pointer;">×</button>
 
-        <!-- Contenitore centrale documenti (non influenza più i bottoni) -->
-        <div class="modal-content" style="max-width: 1200px; width: 100%; height: 100vh; background: transparent; box-shadow: none; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 80px 20px 40px; margin: 0 auto; position: relative; pointer-events: none;">
-            
-            <div id="mediaContainer" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: relative; pointer-events: auto;"></div>
-            
-            <!-- Box per risultato Gemini -->
-            <div id="geminiResultContainer" style="display: none; position: absolute; bottom: 30px; left: 50%; width: 90%; max-width: 800px; background: #ffffff; border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); z-index: 1000001; animation: popUpCenter 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards; pointer-events: auto;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <div style="background: #ede9fe; color: #8b5cf6; padding: 8px; border-radius: 12px;">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 20px;"><path d="M12 2l3 6 6 3-6 3-3 6-3-6-6-3 6-3z"></path></svg>
-                        </div>
-                        <h3 style="margin: 0; font-size: 1.15rem; color: var(--text-dark); font-weight: 900;">Testo pronto per <span style="color:#8b5cf6;">Gemini</span></h3>
+        <!-- CONTENITORE MEDIA -->
+        <div id="mediaContainer" style="width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; position: absolute; top:0; left:0; padding: 80px 20px 40px; pointer-events: none;"></div>
+        
+        <!-- Box per risultato Gemini -->
+        <div id="geminiResultContainer" style="display: none; position: absolute; bottom: 30px; left: 50%; transform: translateX(-50%); width: 90%; max-width: 800px; background: #ffffff; border-radius: 20px; padding: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); z-index: 1000001; animation: popUpCenter 0.4s cubic-bezier(0.32, 0.72, 0, 1) forwards;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div style="background: #ede9fe; color: #8b5cf6; padding: 8px; border-radius: 12px;">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 20px;"><path d="M12 2l3 6 6 3-6 3-3 6-3-6-6-3 6-3z"></path></svg>
                     </div>
-                    <div style="display: flex; gap: 10px;">
-                        <button onclick="copiaEApriGemini()" class="btn-premium" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 12px; background: #8b5cf6; color: white;">Copia e Apri Gemini</button>
-                        <button onclick="document.getElementById('geminiResultContainer').style.display='none'" class="btn-delete" style="padding: 8px 16px; margin: 0; width: auto; font-size: 0.9rem; border-radius: 12px; background: #f1f5f9; color: var(--text-dark);">Chiudi</button>
-                    </div>
+                    <h3 style="margin: 0; font-size: 1.15rem; color: var(--text-dark); font-weight: 900;">Testo pronto per <span style="color:#8b5cf6;">Gemini</span></h3>
                 </div>
-                <textarea id="geminiResultText" class="apple-input" style="width: 100%; height: 200px; resize: none; font-size: 0.95rem; line-height: 1.6; padding: 15px; border: 1px solid var(--border-color); border-radius: 14px; background: #f8fafc;" readonly></textarea>
-                <p style="font-size: 0.8rem; color: var(--text-gray); margin-top: 10px; font-weight: 500;">Il testo è stato letto dal documento. Clicca il pulsante qui sopra per copiarlo e incollarlo in Gemini e chiedergli riassunti, spiegazioni o domande.</p>
+                <div style="display: flex; gap: 10px;">
+                    <button onclick="copiaEApriGemini()" class="btn-premium" style="padding: 8px 16px; font-size: 0.9rem; border-radius: 12px; background: #8b5cf6; color: white;">Copia e Apri Gemini</button>
+                    <button onclick="document.getElementById('geminiResultContainer').style.display='none'" class="btn-delete" style="padding: 8px 16px; margin: 0; width: auto; font-size: 0.9rem; border-radius: 12px; background: #f1f5f9; color: var(--text-dark);">Chiudi</button>
+                </div>
             </div>
+            <textarea id="geminiResultText" class="apple-input" style="width: 100%; height: 200px; resize: none; font-size: 0.95rem; line-height: 1.6; padding: 15px; border: 1px solid var(--border-color); border-radius: 14px; background: #f8fafc;" readonly></textarea>
+            <p style="font-size: 0.8rem; color: var(--text-gray); margin-top: 10px; font-weight: 500;">Il testo è stato estratto in automatico. Clicca il pulsante qui sopra per copiarlo e incollarlo su Gemini.</p>
         </div>
     </div>
 
@@ -217,7 +213,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
     
-    <!-- Librerie per Lettura Testo da Immagini e PDF -->
+    <!-- Librerie per Lettura Testo da Immagini e PDF (Native) -->
     <script src="https://cdn.jsdelivr.net/npm/tesseract.js@4/dist/tesseract.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
