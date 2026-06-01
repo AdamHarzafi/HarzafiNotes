@@ -2,8 +2,6 @@
    dashboard.js — Dashboard Harzafi Notes (PRO Edition w/ Blob PDF & Gemini AI)
    ============================================================ */
 
-// ⚠️ INSERISCI QUI LA TUA CHIAVE API DI GOOGLE GEMINI!
-// (Puoi ottenerla gratis su: https://aistudio.google.com/app/apikey)
 const GEMINI_API_KEY = "AQ.Ab8RN6LWwKcNQNo3j5WngHW2NAlTgiGf6B4XYgrYf0Tmx3ByyA";
 
 const firebaseConfig = {
@@ -62,11 +60,15 @@ function impostaSalutoDinamico(user) {
     if (sessionName && sessionName !== "Utente") name = sessionName.split(" ")[0];
     else if (user && user.displayName) name = user.displayName.split(" ")[0];
     
-    document.getElementById('greetingText').innerHTML = `<span class="animated-gradient-text">${greetText}</span><span style="font-size: 1.1em; line-height: 1;">${greetEmoji}</span><span class="animated-gradient-text">, ${name}</span>`;
-    document.getElementById('userNameDisplay').textContent = name;
+    const greetingTextEl = document.getElementById('greetingText');
+    if(greetingTextEl) greetingTextEl.innerHTML = `<span class="animated-gradient-text">${greetText}</span><span style="font-size: 1.1em; line-height: 1;">${greetEmoji}</span><span class="animated-gradient-text">, ${name}</span>`;
+    
+    const userNameDisplayEl = document.getElementById('userNameDisplay');
+    if(userNameDisplayEl) userNameDisplayEl.textContent = name;
 }
 
-document.getElementById('btnEsci').addEventListener('click', () => { auth.signOut().then(() => window.location.href = "login.html"); });
+const btnEsci = document.getElementById('btnEsci');
+if(btnEsci) btnEsci.addEventListener('click', () => { auth.signOut().then(() => window.location.href = "login.html"); });
 
 // ==========================================
 // 2. FUNZIONI UTILI (TOAST, COPIA, PREFERITI)
@@ -80,12 +82,12 @@ function showToast(message, icon = "✅") {
 }
 
 window.copiaLink = function(url, ev) {
-    ev.stopPropagation();
+    if(ev) { ev.preventDefault(); ev.stopPropagation(); }
     navigator.clipboard.writeText(url).then(() => showToast("Link copiato negli appunti!", "🔗")).catch(() => showToast("Errore durante la copia.", "⚠️"));
 };
 
 window.togglePreferito = function(docId, ev) {
-    ev.stopPropagation();
+    if(ev) { ev.preventDefault(); ev.stopPropagation(); }
     let favs = JSON.parse(localStorage.getItem('harzafi_favs') || '[]');
     const btn = ev.currentTarget;
     if (favs.includes(docId)) {
@@ -104,27 +106,39 @@ window.togglePreferito = function(docId, ev) {
 // ==========================================
 // 3. RICERCA E FILTRO
 // ==========================================
-window.filtraMateria = function(materia) {
+window.filtraMateria = function(materia, e) {
+    const ev = e || window.event;
     document.querySelectorAll('.materia-btn').forEach(btn => btn.classList.remove('active'));
-    if(event && event.currentTarget) event.currentTarget.classList.add('active');
-    document.getElementById('titoloMateria').textContent = materia === 'Preferiti' ? 'I Miei Preferiti' : (materia === 'Tutte' ? 'Tutti i file' : materia);
-    document.getElementById('searchNotes').value = "";
-    document.getElementById('emptySearchState').style.display = 'none';
+    if(ev && ev.currentTarget) ev.currentTarget.classList.add('active');
+    
+    const titoloEl = document.getElementById('titoloMateria');
+    if(titoloEl) titoloEl.textContent = materia === 'Preferiti' ? 'I Miei Preferiti' : (materia === 'Tutte' ? 'Tutti i file' : materia);
+    
+    const searchEl = document.getElementById('searchNotes');
+    if(searchEl) searchEl.value = "";
+    
+    const emptyEl = document.getElementById('emptySearchState');
+    if(emptyEl) emptyEl.style.display = 'none';
+    
     caricaAppunti(materia);
 };
 
-document.getElementById('searchNotes').addEventListener('input', function(e) {
-    const term = e.target.value.toLowerCase().trim();
-    const cards = document.querySelectorAll('.note-card');
-    let hasVisible = false;
-    cards.forEach(card => {
-        const title = card.querySelector('.note-title').textContent.toLowerCase();
-        const meta = card.querySelector('.note-meta').textContent.toLowerCase();
-        if (title.includes(term) || meta.includes(term)) { card.style.display = 'flex'; hasVisible = true; } 
-        else { card.style.display = 'none'; }
+const searchNotesEl = document.getElementById('searchNotes');
+if(searchNotesEl) {
+    searchNotesEl.addEventListener('input', function(e) {
+        const term = e.target.value.toLowerCase().trim();
+        const cards = document.querySelectorAll('.note-card');
+        let hasVisible = false;
+        cards.forEach(card => {
+            const title = card.querySelector('.note-title').textContent.toLowerCase();
+            const meta = card.querySelector('.note-meta').textContent.toLowerCase();
+            if (title.includes(term) || meta.includes(term)) { card.style.display = 'flex'; hasVisible = true; } 
+            else { card.style.display = 'none'; }
+        });
+        const emptyState = document.getElementById('emptySearchState');
+        if(emptyState) emptyState.style.display = (!hasVisible && cards.length > 0) ? 'block' : 'none';
     });
-    document.getElementById('emptySearchState').style.display = (!hasVisible && cards.length > 0) ? 'block' : 'none';
-});
+}
 
 // ==========================================
 // 4. RECUPERO APPUNTI DA DATABASE
@@ -169,7 +183,7 @@ function caricaAppunti(materia) {
             let isImage = false; let isVideo = false; let isDocument = false; let docType = '';
             let icon = '📄';
             
-            if (fName.includes('.pdf')) { icon = '📕'; iconClass = 'icon-pdf'; badgeType = '<span class="badge-type badge-pdf">PDF</span>'; isDocument = true; docType = 'pdf'; }
+            if (fName.match(/\.pdf$/i)) { icon = '📕'; iconClass = 'icon-pdf'; badgeType = '<span class="badge-type badge-pdf">PDF</span>'; isDocument = true; docType = 'pdf'; }
             else if (fName.match(/\.(png|jpg|jpeg|gif|webp)$/i)) { icon = '🖼️'; iconClass = 'icon-img'; isImage = true; badgeType = '<span class="badge-type badge-img">IMG</span>'; }
             else if (fName.match(/\.(mp4|mov|webm|mkv)$/i)) { icon = '🎥'; iconClass = 'icon-img'; isVideo = true; badgeType = '<span class="badge-type badge-vid">VIDEO</span>'; }
             else if (fName.match(/\.(doc|docx|ppt|pptx|xls|xlsx)$/i)) { icon = '📘'; iconClass = 'icon-doc'; badgeType = '<span class="badge-type badge-doc">OFFICE</span>'; isDocument = true; docType = 'office'; }
@@ -186,13 +200,13 @@ function caricaAppunti(materia) {
                 indexMedia++;
             }
 
-            let deleteBtnHTML = (auth.currentUser && auth.currentUser.email === ADMIN_EMAIL) ? `<button class="btn-delete" onclick="eliminaFile('${docId}')">Elimina</button>` : '';
+            let deleteBtnHTML = (auth.currentUser && auth.currentUser.email === ADMIN_EMAIL) ? `<button class="btn-delete" onclick="eliminaFile('${docId}', event)">Elimina</button>` : '';
 
-            let visualMedia = `<div class="note-icon ${iconClass}" style="margin-bottom:15px; width:100%; transition:transform 0.2s; font-size:28px;" ${currentItemMediaIndex !== -1 ? `onclick="apriMediaViewer(${currentItemMediaIndex})" style="cursor:pointer;"` : ''}>${icon}</div>`;
-            if (isImage) visualMedia = `<img src="${data.urlFile}" class="img-preview" alt="${data.titolo}" onclick="apriMediaViewer(${currentItemMediaIndex})" style="cursor:pointer; transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">`;
-            else if (isVideo) visualMedia = `<video src="${data.urlFile}" preload="metadata" class="img-preview" style="cursor:pointer; background:#000; object-fit:cover;" onclick="apriMediaViewer(${currentItemMediaIndex})"></video>`;
+            let visualMedia = `<div class="note-icon ${iconClass}" style="margin-bottom:15px; width:100%; transition:transform 0.2s; font-size:28px;" ${currentItemMediaIndex !== -1 ? `onclick="apriMediaViewer(${currentItemMediaIndex}, event)" style="cursor:pointer;"` : ''}>${icon}</div>`;
+            if (isImage) visualMedia = `<img src="${data.urlFile}" class="img-preview" alt="${data.titolo}" onclick="apriMediaViewer(${currentItemMediaIndex}, event)" style="cursor:pointer; transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">`;
+            else if (isVideo) visualMedia = `<video src="${data.urlFile}" preload="metadata" class="img-preview" style="cursor:pointer; background:#000; object-fit:cover;" onclick="apriMediaViewer(${currentItemMediaIndex}, event)"></video>`;
 
-            let actionBtn = (isImage || isVideo || isDocument) ? `<button class="btn-download" onclick="apriMediaViewer(${currentItemMediaIndex})" style="width:100%; border:none; cursor:pointer; background: var(--primary-light); color: var(--primary);">Apri e Visualizza</button>` : `<a href="${data.urlFile}" target="_blank" class="btn-download" style="display:block;">Scarica File</a>`;
+            let actionBtn = (isImage || isVideo || isDocument) ? `<button class="btn-download" onclick="apriMediaViewer(${currentItemMediaIndex}, event)" style="width:100%; border:none; cursor:pointer; background: var(--primary-light); color: var(--primary);">Apri e Visualizza</button>` : `<a href="${data.urlFile}" target="_blank" class="btn-download" style="display:block;">Scarica File</a>`;
             const dataFormat = new Date(data.data).toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' });
 
             const card = `
@@ -219,65 +233,176 @@ function caricaAppunti(materia) {
     });
 }
 
-window.eliminaFile = function(docId) {
-    if(confirm("Sei sicuro di voler eliminare questo file?")) {
-        db.collection('appunti').doc(docId).delete().then(() => caricaAppunti('Tutte'));
+window.eliminaFile = function(docId, ev) {
+    if(ev) { ev.preventDefault(); ev.stopPropagation(); }
+    if(confirm("Sei sicuro di voler eliminare questo file? L'azione è irreversibile.")) {
+        db.collection('appunti').doc(docId).delete().then(() => {
+            showToast("File eliminato con successo", "🗑️");
+            const currentMateria = document.getElementById('titoloMateria').textContent;
+            caricaAppunti(currentMateria === 'I Miei Preferiti' ? 'Preferiti' : (currentMateria === 'Tutti i file' ? 'Tutte' : currentMateria));
+        }).catch(err => {
+            showToast("Errore durante l'eliminazione", "❌");
+            console.error(err);
+        });
     }
 };
 
 // ==========================================
 // 5. GESTIONE UPLOAD
 // ==========================================
-document.getElementById('btnSalva').addEventListener('click', () => {
-    const file = document.getElementById('upFile').files[0];
-    const titolo = document.getElementById('upTitolo').value.trim();
-    if (!file || !titolo) return;
 
-    document.getElementById('progressContainer').style.display = 'block';
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-    
-    const xhr = new XMLHttpRequest();
-    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, true);
-    xhr.upload.onprogress = (e) => {
-        if (e.lengthComputable) {
-            document.getElementById('progressBar').style.width = Math.round((e.loaded / e.total) * 100) + '%';
-        }
-    };
-    xhr.onload = () => {
-        if (xhr.status === 200) {
-            const downloadURL = JSON.parse(xhr.responseText).secure_url;
-            db.collection('appunti').add({ titolo, materia: materiaUploadSelezionata, nomeFile: file.name, urlFile: downloadURL, data: Date.now() })
-            .then(() => {
-                document.getElementById('uploadModal').classList.remove('active');
-                showToast("File caricato!", "☁️");
-                caricaAppunti('Tutte');
-            });
-        }
-    };
-    xhr.send(formData);
+const btnUploadModal = document.getElementById('btnUploadModal');
+if (btnUploadModal) {
+    btnUploadModal.addEventListener('click', () => {
+        const uploadModal = document.getElementById('uploadModal');
+        if(uploadModal) uploadModal.classList.add('active');
+        
+        const progContainer = document.getElementById('progressContainer');
+        if(progContainer) progContainer.style.display = 'none';
+        
+        const progBar = document.getElementById('progressBar');
+        if(progBar) progBar.style.width = '0%';
+        
+        const statusEl = document.getElementById('uploadStatus');
+        if(statusEl) statusEl.innerText = '';
+        
+        const fileInp = document.getElementById('upFile');
+        if(fileInp) fileInp.value = '';
+        
+        const titInp = document.getElementById('upTitolo');
+        if(titInp) titInp.value = '';
+        
+        const fnText = document.getElementById('fileNameText');
+        if(fnText) fnText.innerText = '📁 Clicca qui per scegliere un file...';
+        
+        // Reset custom select
+        materiaUploadSelezionata = "Informatica";
+        const displayEl = document.getElementById('upload-materia-display');
+        if(displayEl) displayEl.textContent = materiaUploadSelezionata;
+    });
+}
+
+const btnChiudiUpload = document.getElementById('btnChiudiUpload');
+if(btnChiudiUpload) {
+    btnChiudiUpload.addEventListener('click', () => {
+        const uploadModal = document.getElementById('uploadModal');
+        if(uploadModal) uploadModal.classList.remove('active');
+    });
+}
+
+const selectTrigger = document.querySelector('#upload-materia-select .custom-select-trigger');
+if(selectTrigger) {
+    selectTrigger.addEventListener('click', function(e) {
+        e.stopPropagation();
+        document.getElementById('upload-materia-select').classList.toggle('open');
+    });
+}
+
+document.querySelectorAll('#upload-materia-options .custom-option').forEach(opt => {
+    opt.addEventListener('click', function(e) {
+        e.stopPropagation();
+        materiaUploadSelezionata = this.textContent.trim();
+        document.getElementById('upload-materia-display').textContent = materiaUploadSelezionata;
+        document.getElementById('upload-materia-select').classList.remove('open');
+    });
 });
+
+document.addEventListener('click', () => {
+    const select = document.getElementById('upload-materia-select');
+    if(select) select.classList.remove('open');
+});
+
+const fileInput = document.getElementById('upFile');
+if(fileInput) {
+    fileInput.addEventListener('change', (e) => {
+        const fileName = e.target.files[0] ? e.target.files[0].name : "📁 Clicca qui per scegliere un file...";
+        document.getElementById('fileNameText').innerText = fileName;
+    });
+}
+
+const btnSalva = document.getElementById('btnSalva');
+if(btnSalva) {
+    btnSalva.addEventListener('click', () => {
+        const fileInp = document.getElementById('upFile');
+        const titInp = document.getElementById('upTitolo');
+        if(!fileInp || !titInp) return;
+        
+        const file = fileInp.files[0];
+        const titolo = titInp.value.trim();
+        if (!file || !titolo) {
+            showToast("Inserisci titolo e seleziona un file", "⚠️");
+            return;
+        }
+
+        document.getElementById('progressContainer').style.display = 'block';
+        document.getElementById('uploadStatus').innerText = "Inizializzazione caricamento...";
+        
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+        
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, true);
+        xhr.upload.onprogress = (e) => {
+            if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                document.getElementById('progressBar').style.width = percent + '%';
+                document.getElementById('uploadStatus').innerText = `Caricamento: ${percent}%`;
+            }
+        };
+        xhr.onload = () => {
+            if (xhr.status === 200) {
+                document.getElementById('uploadStatus').innerText = "Salvataggio nel database...";
+                const downloadURL = JSON.parse(xhr.responseText).secure_url;
+                db.collection('appunti').add({ 
+                    titolo, 
+                    materia: materiaUploadSelezionata, 
+                    nomeFile: file.name, 
+                    urlFile: downloadURL, 
+                    data: Date.now() 
+                })
+                .then(() => {
+                    document.getElementById('uploadModal').classList.remove('active');
+                    showToast("File caricato con successo!", "☁️");
+                    const currentMateria = document.getElementById('titoloMateria').textContent;
+                    caricaAppunti(currentMateria === 'I Miei Preferiti' ? 'Preferiti' : (currentMateria === 'Tutti i file' ? 'Tutte' : currentMateria));
+                }).catch(err => {
+                    document.getElementById('uploadStatus').innerText = "Errore database.";
+                    console.error(err);
+                });
+            } else {
+                document.getElementById('uploadStatus').innerText = "Errore caricamento Cloudinary.";
+            }
+        };
+        xhr.onerror = () => {
+            document.getElementById('uploadStatus').innerText = "Errore di rete durante il caricamento.";
+        };
+        xhr.send(formData);
+    });
+}
 
 // ==========================================
 // 6. ANTEPRIMA MEDIA & BYPASS PDF NATIVO
 // ==========================================
 let currentMediaIndex = -1;
 
-// Funzione magica per scaricare il file aggirando i blocchi CORS di Cloudinary usando un Proxy
-async function fetchSafeBlob(url) {
+// Funzione Sicura per Bypass CORS e Formattazione File (MimeType)
+async function fetchSafeBlob(url, mimeType = null) {
     try {
         let res = await fetch(url);
         if(!res.ok) throw new Error("Fetch failed");
-        return await res.blob();
+        let blob = await res.blob();
+        return mimeType ? new Blob([blob], { type: mimeType }) : blob;
     } catch(e) {
         let proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
         let res = await fetch(proxyUrl);
-        return await res.blob();
+        let blob = await res.blob();
+        return mimeType ? new Blob([blob], { type: mimeType }) : blob;
     }
 }
 
-window.apriMediaViewer = function(index) {
+window.apriMediaViewer = function(index, ev) {
+    if(ev) { ev.preventDefault(); ev.stopPropagation(); }
     currentMediaIndex = index;
     aggiornaMediaViewer();
     document.getElementById('mediaViewerModal').classList.add('active');
@@ -290,13 +415,16 @@ async function aggiornaMediaViewer() {
     container.innerHTML = '<div class="btn-loader" style="color:white; z-index:1000;"><div class="btn-spinner" style="border-top-color:#fff;"></div><span style="font-weight:bold; margin-left:10px;">Caricamento file...</span></div>'; 
     
     const geminiBtn = document.getElementById('btnGemini');
-    if (item.isImage || item.docType === 'pdf' || item.docType === 'text') {
-        geminiBtn.style.display = 'flex';
-        geminiBtn.onclick = () => chiediAGeminiAI(item);
-    } else {
-        geminiBtn.style.display = 'none';
+    if (geminiBtn) {
+        if (item.isImage || item.docType === 'pdf' || item.docType === 'text') {
+            geminiBtn.style.display = 'flex';
+            geminiBtn.onclick = () => chiediAGeminiAI(item);
+        } else {
+            geminiBtn.style.display = 'none';
+        }
     }
-    document.getElementById('geminiResultContainer').style.display = 'none';
+    const geminiResContainer = document.getElementById('geminiResultContainer');
+    if(geminiResContainer) geminiResContainer.style.display = 'none';
 
     if (item.isVideo) {
         container.innerHTML = `<video src="${item.url}" controls autoplay class="viewer-media-item" style="box-shadow: 0 30px 60px rgba(0,0,0,0.5); border-radius: 16px; pointer-events:auto; max-width:900px; width:100%;"></video>`;
@@ -304,32 +432,36 @@ async function aggiornaMediaViewer() {
         container.innerHTML = `<img src="${item.url}" class="viewer-media-item" alt="${item.titolo}" style="pointer-events:auto; box-shadow: 0 30px 60px rgba(0,0,0,0.5); border-radius: 16px; max-height:85vh; max-width:90vw; object-fit:contain;">`;
     } else if (item.isDocument) {
         if (item.docType === 'pdf') {
-            // METODO INFALLIBILE: SCARICHIAMO IL PDF COME BLOB E LO MOSTRIAMO TRAMITE OBJECT URL
             try {
                 let blobUrl = item.blobUrl;
                 if(!blobUrl) {
-                    const blob = await fetchSafeBlob(item.url);
+                    const blob = await fetchSafeBlob(item.url, 'application/pdf'); // BLINDATO PER IL TIPO PDF (Previene download forzati)
                     blobUrl = URL.createObjectURL(blob);
                     window.mediaGallery[currentMediaIndex].blobUrl = blobUrl;
                 }
-                container.innerHTML = `<iframe src="${blobUrl}" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); pointer-events:auto;"></iframe>`;
+                container.innerHTML = `<iframe src="${blobUrl}#view=FitH" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); pointer-events:auto;"></iframe>`;
             } catch(e) {
-                // Se proprio anche il proxy fallisce (rarissimo), fallback a Google Docs
                 container.innerHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(item.url)}&embedded=true" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); pointer-events:auto;"></iframe>`;
             }
         } else if (item.docType === 'office') {
             container.innerHTML = `<iframe src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(item.url)}" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); pointer-events:auto;"></iframe>`;
         } else if (item.docType === 'text') {
-            fetchSafeBlob(item.url).then(b => b.text()).then(txt => {
+            try {
+                const b = await fetchSafeBlob(item.url);
+                const txt = await b.text();
                 const safeTxt = txt.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 container.innerHTML = `<div style="width: 100%; height: 85vh; max-width: 1000px; background: #1e293b; border-radius: 16px; padding: 25px; overflow-y: auto; text-align: left; box-sizing: border-box; box-shadow: 0 30px 60px rgba(0,0,0,0.5); pointer-events:auto;"><pre style="white-space: pre-wrap; font-family: monospace; color: #f8fafc; font-size: 1rem; line-height: 1.5; margin: 0;">${safeTxt}</pre></div>`;
-            });
+            } catch(e) {
+                container.innerHTML = `<div style="color:white;">Errore nel caricamento del file di testo.</div>`;
+            }
         }
     }
 
     const mostraFrecce = window.mediaGallery.length > 1 ? 'flex' : 'none';
-    document.getElementById('btnPrevMedia').style.display = mostraFrecce;
-    document.getElementById('btnNextMedia').style.display = mostraFrecce;
+    const btnPrev = document.getElementById('btnPrevMedia');
+    const btnNext = document.getElementById('btnNextMedia');
+    if(btnPrev) btnPrev.style.display = mostraFrecce;
+    if(btnNext) btnNext.style.display = mostraFrecce;
 }
 
 // ==========================================
@@ -353,7 +485,6 @@ window.chiediAGeminiAI = async function(item) {
     try {
         let extractedText = "";
 
-        // 1. Estrazione Testo
         if (item.isImage) {
             const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(item.url);
             const result = await Tesseract.recognize(proxyUrl, 'ita+eng', { logger: m => { if (m.status === 'recognizing text') geminiBtn.innerHTML = `<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:#8b5cf6; margin-right:8px;"></div> Scansione Foto ${Math.round(m.progress * 100)}%`; }});
@@ -363,7 +494,7 @@ window.chiediAGeminiAI = async function(item) {
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
             const pdfUrlToUse = item.blobUrl || "https://api.allorigins.win/raw?url=" + encodeURIComponent(item.url);
             const pdf = await pdfjsLib.getDocument(pdfUrlToUse).promise;
-            for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) { // Leggiamo max 10 pagine per non intasare l'API
+            for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) { 
                 geminiBtn.innerHTML = `<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:#8b5cf6; margin-right:8px;"></div> Lettura PDF Pag. ${i}/${pdf.numPages}`;
                 const page = await pdf.getPage(i);
                 const content = await page.getTextContent();
@@ -374,9 +505,8 @@ window.chiediAGeminiAI = async function(item) {
             extractedText = await b.text();
         }
 
-        if (!extractedText || extractedText.trim() === '') throw new Error("Testo vuoto.");
+        if (!extractedText || extractedText.trim() === '') throw new Error("Testo vuoto o illeggibile.");
 
-        // 2. Chiamata API Ufficiale a Gemini
         geminiBtn.innerHTML = '<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:#8b5cf6; margin-right:8px;"></div> Gemini sta scrivendo...';
         
         const promptPersonale = "Sei un tutor avanzato per studenti dell'ITIS Amedeo Avogadro. Di seguito ti fornisco un testo estratto dai miei appunti scolastici. Analizzalo attentamente, fanne un riassunto chiaro, spiegami i concetti principali in modo facile da capire e usa grassetti e liste puntate per formattare la tua risposta. Ecco gli appunti:\n\n" + extractedText;
@@ -392,7 +522,6 @@ window.chiediAGeminiAI = async function(item) {
 
         let aiText = data.candidates[0].content.parts[0].text;
         
-        // Conversione Markdown a HTML per mostrarlo bene nella chat
         aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         aiText = aiText.replace(/\*(.*?)\*/g, '<em>$1</em>');
         aiText = aiText.replace(/\n/g, '<br>');
@@ -402,7 +531,7 @@ window.chiediAGeminiAI = async function(item) {
 
     } catch (err) {
         console.error("Errore AI:", err);
-        showToast("Errore di comunicazione con l'IA", "⚠️");
+        showToast("Errore di comunicazione con l'IA o file illeggibile.", "⚠️");
     } finally {
         geminiBtn.innerHTML = origHtml;
         geminiBtn.disabled = false;
@@ -423,19 +552,29 @@ window.cambiaMedia = function(direzione) {
     aggiornaMediaViewer();
 };
 
-document.getElementById('btnNextMedia').addEventListener('click', () => cambiaMedia('next'));
-document.getElementById('btnPrevMedia').addEventListener('click', () => cambiaMedia('prev'));
+const btnNextMedia = document.getElementById('btnNextMedia');
+if(btnNextMedia) btnNextMedia.addEventListener('click', () => cambiaMedia('next'));
+
+const btnPrevMedia = document.getElementById('btnPrevMedia');
+if(btnPrevMedia) btnPrevMedia.addEventListener('click', () => cambiaMedia('prev'));
 
 document.addEventListener('keydown', (e) => {
-    if (document.getElementById('mediaViewerModal').classList.contains('active')) {
+    const modal = document.getElementById('mediaViewerModal');
+    if (modal && modal.classList.contains('active')) {
         if (e.key === 'ArrowRight' && window.mediaGallery.length > 1) cambiaMedia('next');
         if (e.key === 'ArrowLeft' && window.mediaGallery.length > 1) cambiaMedia('prev');
-        if (e.key === 'Escape') document.getElementById('btnChiudiViewer').click();
+        if (e.key === 'Escape') {
+            const btnChiudi = document.getElementById('btnChiudiViewer');
+            if(btnChiudi) btnChiudi.click();
+        }
     }
 });
 
-document.getElementById('btnChiudiViewer').addEventListener('click', () => {
-    document.getElementById('mediaContainer').innerHTML = ''; 
-    document.getElementById('mediaViewerModal').classList.remove('active');
-    document.getElementById('geminiResultContainer').style.display = 'none';
-});
+const btnChiudiViewer = document.getElementById('btnChiudiViewer');
+if(btnChiudiViewer) {
+    btnChiudiViewer.addEventListener('click', () => {
+        document.getElementById('mediaContainer').innerHTML = ''; 
+        document.getElementById('mediaViewerModal').classList.remove('active');
+        document.getElementById('geminiResultContainer').style.display = 'none';
+    });
+}
