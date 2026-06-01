@@ -1,5 +1,5 @@
 /* ============================================================
-   dashboard.js — Dashboard Harzafi Notes (PRO Edition with OCR & ADOBE ACROBAT)
+   dashboard.js — Dashboard Harzafi Notes (PRO Edition w/ Gemini)
    ============================================================ */
 
 const firebaseConfig = {
@@ -397,7 +397,7 @@ document.getElementById('btnSalva').addEventListener('click', () => {
 });
 
 // ==========================================
-// 6. ANTEPRIMA MULTIMEDIALE, ADOBE ACROBAT & OCR
+// 6. ANTEPRIMA MULTIMEDIALE & INTEGRAZIONE GEMINI
 // ==========================================
 let currentMediaIndex = -1;
 
@@ -413,15 +413,16 @@ function aggiornaMediaViewer() {
     
     container.innerHTML = '<div class="btn-loader" style="color:white;"><div class="btn-spinner" style="border-top-color:#fff;"></div></div>'; 
     
-    const ocrBtn = document.getElementById('btnEstraiTesto');
+    // Gestione Pulsante Gemini
+    const geminiBtn = document.getElementById('btnGemini');
     if (item.isImage || item.docType === 'pdf' || item.docType === 'text' || item.docType === 'office') {
-        ocrBtn.style.display = 'flex';
-        ocrBtn.onclick = () => eseguiEstrazioneTesto(item.url, item.isImage, item.isDocument, item.docType);
+        geminiBtn.style.display = 'flex';
+        geminiBtn.onclick = () => preparaPerGemini(item.url, item.isImage, item.isDocument, item.docType);
     } else {
-        ocrBtn.style.display = 'none';
+        geminiBtn.style.display = 'none';
     }
     
-    document.getElementById('ocrResultContainer').style.display = 'none';
+    document.getElementById('geminiResultContainer').style.display = 'none';
 
     setTimeout(() => {
         if (item.isVideo) {
@@ -430,44 +431,8 @@ function aggiornaMediaViewer() {
             container.innerHTML = `<img src="${item.url}" class="viewer-media-item" alt="${item.titolo}" crossorigin="anonymous">`;
         } else if (item.isDocument) {
             if (item.docType === 'pdf') {
-                
-                // INTEGRATO ADOBE ACROBAT PDF EMBED API
-                container.innerHTML = `<div id="adobe-dc-view" style="width: 100%; height: 85vh; max-width: 1200px; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); overflow: hidden; background-color: #fff;"></div>`;
-                
-                const loadAdobeViewer = () => {
-                    var adobeDCView = new AdobeDC.View({
-                        // Questo è un Client ID pubblico/gratuito generico per sviluppatori, se smette di funzionare creane uno gratuito sul portale Adobe per il tuo sito.
-                        clientId: "fa319229b2af42b08447b64538799de3", 
-                        divId: "adobe-dc-view"
-                    });
-                    adobeDCView.previewFile({
-                        content: { location: { url: item.url } },
-                        metaData: { fileName: item.titolo + ".pdf" }
-                    }, {
-                        embedMode: "SIZED_CONTAINER",
-                        showDownloadPDF: true,
-                        showPrintPDF: true,
-                        showFullScreen: true
-                    });
-                };
-
-                // Attendi che la libreria Adobe sia pronta per essere istanziata
-                setTimeout(() => {
-                    if (window.AdobeDC) {
-                        loadAdobeViewer();
-                    } else {
-                        document.addEventListener("adobe_dc_view_sdk.ready", () => {
-                            loadAdobeViewer();
-                        });
-                        // Fallback se ci si dimentica di inserire lo script in HTML
-                        setTimeout(() => {
-                            if(!window.AdobeDC) {
-                                container.innerHTML = `<div style="color: white; font-weight: 800; text-align:center; padding: 20px;">Libreria Adobe Acrobat non trovata!<br>Assicurati di aver aggiunto lo script in dashboard.html.</div>`;
-                            }
-                        }, 3000);
-                    }
-                }, 100);
-                
+                // Rimosso Adobe. Ripristinato Visualizzatore Google Drive per i PDF
+                container.innerHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(item.url)}&embedded=true" class="viewer-media-item" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5);"></iframe>`;
             } else if (item.docType === 'office') {
                 container.innerHTML = `<iframe src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(item.url)}" class="viewer-media-item" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5);"></iframe>`;
             } else if (item.docType === 'text') {
@@ -486,12 +451,12 @@ function aggiornaMediaViewer() {
     document.getElementById('btnNextMedia').style.display = mostraFrecce;
 }
 
-// LOGICA ESTRAZIONE TESTO (AI E OCR) - Lavora in background senza interferire con Adobe
-window.eseguiEstrazioneTesto = async function(url, isImage, isDocument, docType) {
-    const ocrBtn = document.getElementById('btnEstraiTesto');
-    const origHtml = ocrBtn.innerHTML;
-    ocrBtn.innerHTML = '<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:var(--primary); margin-right:8px;"></div> Analisi AI in corso...';
-    ocrBtn.disabled = true;
+// LOGICA LETTURA TESTO PER GEMINI
+window.preparaPerGemini = async function(url, isImage, isDocument, docType) {
+    const geminiBtn = document.getElementById('btnGemini');
+    const origHtml = geminiBtn.innerHTML;
+    geminiBtn.innerHTML = '<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:#8b5cf6; margin-right:8px;"></div> Lettura in corso...';
+    geminiBtn.disabled = true;
 
     try {
         let extractedText = "";
@@ -500,7 +465,7 @@ window.eseguiEstrazioneTesto = async function(url, isImage, isDocument, docType)
             const result = await Tesseract.recognize(url, 'ita+eng', {
                 logger: m => {
                     if (m.status === 'recognizing text') {
-                        ocrBtn.innerHTML = `<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:var(--primary); margin-right:8px;"></div> ${Math.round(m.progress * 100)}%`;
+                        geminiBtn.innerHTML = `<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:#8b5cf6; margin-right:8px;"></div> ${Math.round(m.progress * 100)}%`;
                     }
                 }
             });
@@ -510,7 +475,7 @@ window.eseguiEstrazioneTesto = async function(url, isImage, isDocument, docType)
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
             const pdf = await pdfjsLib.getDocument(url).promise;
             for (let i = 1; i <= pdf.numPages; i++) {
-                ocrBtn.innerHTML = `<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:var(--primary); margin-right:8px;"></div> Pagina ${i}/${pdf.numPages}`;
+                geminiBtn.innerHTML = `<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:#8b5cf6; margin-right:8px;"></div> Pagina ${i}/${pdf.numPages}`;
                 const page = await pdf.getPage(i);
                 const content = await page.getTextContent();
                 extractedText += content.items.map(item => item.str).join(' ') + '\n\n';
@@ -519,33 +484,36 @@ window.eseguiEstrazioneTesto = async function(url, isImage, isDocument, docType)
             const res = await fetch(url);
             extractedText = await res.text();
         } else if (isDocument && docType === 'office') {
-            alert("Per i file di Word, Excel o PowerPoint, usa il cursore per selezionare tutto il testo che desideri direttamente dal visualizzatore che vedi a schermo, quindi premi Tasto Destro -> Copia (o Ctrl+C).");
-            ocrBtn.innerHTML = origHtml;
-            ocrBtn.disabled = false;
+            alert("Per i file Word o PowerPoint, seleziona il testo dal visualizzatore, copialo (Ctrl+C) e incollalo su Gemini.");
+            geminiBtn.innerHTML = origHtml;
+            geminiBtn.disabled = false;
             return;
         }
 
         if (!extractedText || extractedText.trim() === '') {
-            extractedText = "Nessun testo rilevato nel documento dall'AI.";
+            extractedText = "Nessun testo rilevato nel documento.";
         }
 
-        document.getElementById('ocrResultText').value = extractedText;
-        document.getElementById('ocrResultContainer').style.display = 'block';
+        document.getElementById('geminiResultText').value = extractedText;
+        document.getElementById('geminiResultContainer').style.display = 'block';
 
     } catch (err) {
-        console.error("Errore estrazione:", err);
-        showToast("Errore durante l'estrazione del testo", "⚠️");
+        console.error("Errore lettura:", err);
+        showToast("Errore durante la lettura del documento", "⚠️");
     } finally {
-        ocrBtn.innerHTML = origHtml;
-        ocrBtn.disabled = false;
+        geminiBtn.innerHTML = origHtml;
+        geminiBtn.disabled = false;
     }
 }
 
-window.copiaTestoOCR = function() {
-    const text = document.getElementById('ocrResultText').value;
+window.copiaEApriGemini = function() {
+    const text = document.getElementById('geminiResultText').value;
     navigator.clipboard.writeText(text).then(() => {
-        showToast("Testo copiato con successo!", "📋");
-        document.getElementById('ocrResultContainer').style.display = 'none';
+        showToast("Testo copiato! Incollalo in Gemini.", "✨");
+        document.getElementById('geminiResultContainer').style.display = 'none';
+        
+        // Apre Gemini in una nuova scheda
+        window.open('https://gemini.google.com/app', '_blank');
     }).catch(() => {
         showToast("Impossibile copiare il testo", "⚠️");
     });
@@ -581,5 +549,5 @@ document.addEventListener('keydown', (e) => {
 document.getElementById('btnChiudiViewer').addEventListener('click', () => {
     document.getElementById('mediaContainer').innerHTML = ''; 
     document.getElementById('mediaViewerModal').classList.remove('active');
-    document.getElementById('ocrResultContainer').style.display = 'none';
+    document.getElementById('geminiResultContainer').style.display = 'none';
 });
