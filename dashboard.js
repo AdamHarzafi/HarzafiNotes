@@ -437,7 +437,7 @@ function aggiornaMediaViewer() {
                 const loadAdobeViewer = () => {
                     var adobeDCView = new AdobeDC.View({
                         // Questo è un Client ID pubblico/gratuito generico per sviluppatori, se smette di funzionare creane uno gratuito sul portale Adobe per il tuo sito.
-                        clientId: "3923eb4fce3248c89b27ba9e4dfc9497", 
+                        clientId: "fa319229b2af42b08447b64538799de3", 
                         divId: "adobe-dc-view"
                     });
                     adobeDCView.previewFile({
