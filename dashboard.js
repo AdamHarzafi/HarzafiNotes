@@ -1,5 +1,5 @@
 /* ============================================================
-   dashboard.js — Dashboard Harzafi Notes (PRO Edition with OCR)
+   dashboard.js — Dashboard Harzafi Notes (PRO Edition with OCR & PDF Fix)
    ============================================================ */
 
 const firebaseConfig = {
@@ -431,8 +431,10 @@ function aggiornaMediaViewer() {
             container.innerHTML = `<img src="${item.url}" class="viewer-media-item" alt="${item.titolo}" crossorigin="anonymous">`;
         } else if (item.isDocument) {
             if (item.docType === 'pdf') {
-                container.innerHTML = `<iframe src="${item.url}" class="viewer-media-item" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5);"></iframe>`;
+                // FIX: Utilizzo di Google Docs Viewer per bypassare il blocco iFrame di Chrome
+                container.innerHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(item.url)}&embedded=true" class="viewer-media-item" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5);"></iframe>`;
             } else if (item.docType === 'office') {
+                // Utilizzo di Office Live Viewer per documenti Office
                 container.innerHTML = `<iframe src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(item.url)}" class="viewer-media-item" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5);"></iframe>`;
             } else if (item.docType === 'text') {
                 fetch(item.url).then(res => res.text()).then(txt => {
