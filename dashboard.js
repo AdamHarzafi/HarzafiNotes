@@ -1,5 +1,5 @@
 /* ============================================================
-   dashboard.js — Dashboard Harzafi Notes (PRO Edition)
+   dashboard.js — Dashboard Harzafi Notes (PRO Edition with OCR)
    ============================================================ */
 
 const firebaseConfig = {
@@ -31,7 +31,6 @@ auth.onAuthStateChanged(user => {
             document.getElementById('btnUploadModal').style.display = 'block';
         }
         
-        // Setup Profilo Utente (Foto & Nome)
         const profilePicEl = document.getElementById('userProfilePic');
         if (profilePicEl) {
             if (user.photoURL) {
@@ -44,10 +43,7 @@ auth.onAuthStateChanged(user => {
             profilePicEl.onerror = function() { this.src = "IMMAGINI/PROFILO-UTENTE-LOGO.png"; };
         }
 
-        // Setup Saluto Dinamico
         impostaSalutoDinamico(user);
-        
-        // Carica Appunti
         caricaAppunti('Tutte');
     }
 });
@@ -57,7 +53,6 @@ function impostaSalutoDinamico(user) {
     let greetText = "Buongiorno";
     let greetEmoji = "☀️";
     
-    // Niente più buonanotte. 
     if (hour >= 5 && hour < 13) { greetText = "Buongiorno"; greetEmoji = "☀️"; }
     else if (hour >= 13 && hour < 18) { greetText = "Buon pomeriggio"; greetEmoji = "☕"; }
     else { greetText = "Buonasera"; greetEmoji = "🌙"; }
@@ -67,7 +62,6 @@ function impostaSalutoDinamico(user) {
     if (sessionName && sessionName !== "Utente") name = sessionName.split(" ")[0];
     else if (user && user.displayName) name = user.displayName.split(" ")[0];
     
-    // Applica l'effetto gradient mantenendo l'emoji intatta
     document.getElementById('greetingText').innerHTML = `
         <span class="animated-gradient-text">${greetText}</span>
         <span style="font-size: 1.1em; line-height: 1;">${greetEmoji}</span>
@@ -109,8 +103,6 @@ window.togglePreferito = function(docId, ev) {
         favs = favs.filter(id => id !== docId);
         btn.classList.remove('fav-active');
         showToast("Rimosso dai preferiti", "❌");
-        
-        // Ricarica se siamo nella schermata Preferiti
         if (document.getElementById('titoloMateria').textContent === 'I Miei Preferiti') {
             caricaAppunti('Preferiti');
         }
@@ -138,7 +130,6 @@ window.filtraMateria = function(materia) {
     caricaAppunti(materia);
 };
 
-// Ricerca Istantanea
 document.getElementById('searchNotes').addEventListener('input', function(e) {
     const term = e.target.value.toLowerCase().trim();
     const cards = document.querySelectorAll('.note-card');
@@ -178,7 +169,6 @@ function caricaAppunti(materia) {
         let appuntiArray = [];
         snap.forEach(doc => appuntiArray.push({ id: doc.id, ...doc.data() }));
 
-        // Filtro Locale per Preferiti
         if (materia === "Preferiti") {
             const favs = JSON.parse(localStorage.getItem('harzafi_favs') || '[]');
             appuntiArray = appuntiArray.filter(item => favs.includes(item.id));
@@ -196,7 +186,7 @@ function caricaAppunti(materia) {
         const oraAttuale = Date.now();
         const favsList = JSON.parse(localStorage.getItem('harzafi_favs') || '[]');
 
-        appuntiArray.sort((a, b) => b.data - a.data); // Ordine decrescente locale (dal più recente)
+        appuntiArray.sort((a, b) => b.data - a.data);
 
         appuntiArray.forEach(data => {
             const docId = data.id; 
@@ -204,7 +194,6 @@ function caricaAppunti(materia) {
             const isFav = favsList.includes(docId);
             const favClass = isFav ? 'fav-active' : '';
             
-            // Logica Tipi File e Icone
             const iconPDF = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
             const iconIMG = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`;
             const iconZIP = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-1 8h-4v4h-2v-4H9v-2h4V8h2v4h4v2z"/></svg>`;
@@ -212,21 +201,22 @@ function caricaAppunti(materia) {
             const iconVID = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>`;
 
             let icon = iconDOC; let iconClass = 'icon-doc'; let badgeType = '<span class="badge-type badge-doc">DOC</span>';
-            let isImage = false; let isVideo = false;
+            let isImage = false; let isVideo = false; let isDocument = false; let docType = '';
             
-            if (fName.includes('.pdf')) { icon = iconPDF; iconClass = 'icon-pdf'; badgeType = '<span class="badge-type badge-pdf">PDF</span>'; }
+            if (fName.includes('.pdf')) { icon = iconPDF; iconClass = 'icon-pdf'; badgeType = '<span class="badge-type badge-pdf">PDF</span>'; isDocument = true; docType = 'pdf'; }
             else if (fName.match(/\.(png|jpg|jpeg|gif|webp)$/i)) { icon = iconIMG; iconClass = 'icon-img'; isImage = true; badgeType = '<span class="badge-type badge-img">IMG</span>'; }
             else if (fName.match(/\.(mp4|mov|webm|mkv)$/i)) { icon = iconVID; iconClass = 'icon-img'; isVideo = true; badgeType = '<span class="badge-type badge-vid">VIDEO</span>'; }
+            else if (fName.match(/\.(doc|docx|ppt|pptx|xls|xlsx)$/i)) { icon = iconDOC; iconClass = 'icon-doc'; badgeType = '<span class="badge-type badge-doc">OFFICE</span>'; isDocument = true; docType = 'office'; }
+            else if (fName.match(/\.(txt|csv|md|js|html|css|json)$/i)) { icon = iconDOC; iconClass = 'icon-doc'; badgeType = '<span class="badge-type badge-doc" style="background:#e2e8f0; color:#0f172a;">TXT / CODE</span>'; isDocument = true; docType = 'text'; }
             else if (fName.match(/\.(zip|rar|7z)$/i)) { icon = iconZIP; iconClass = 'icon-zip'; badgeType = '<span class="badge-type badge-zip">ZIP</span>'; }
 
-            // Verifica se è caricato nelle ultime 24 ore
             const isNew = (oraAttuale - data.data) < 86400000;
             const newBadgeHTML = isNew ? `<span class="badge-new">Nuovo</span>` : '';
 
             let currentItemMediaIndex = -1;
-            if (isImage || isVideo) {
+            if (isImage || isVideo || isDocument) {
                 currentItemMediaIndex = indexMedia;
-                window.mediaGallery.push({ url: data.urlFile, isVideo: isVideo, titolo: data.titolo });
+                window.mediaGallery.push({ url: data.urlFile, isVideo: isVideo, isImage: isImage, isDocument: isDocument, docType: docType, titolo: data.titolo });
                 indexMedia++;
             }
 
@@ -241,12 +231,13 @@ function caricaAppunti(materia) {
             } else if (isVideo) {
                 visualMedia = `<video src="${data.urlFile}" preload="metadata" class="img-preview" style="cursor:pointer; background:#000; object-fit:cover;" onclick="apriMediaViewer(${currentItemMediaIndex})"></video>`;
             } else {
-                visualMedia = `<div class="note-icon ${iconClass}" style="margin-bottom:15px;">${icon}</div>`;
+                const clickable = currentItemMediaIndex !== -1 ? `onclick="apriMediaViewer(${currentItemMediaIndex})" style="cursor:pointer;"` : '';
+                visualMedia = `<div class="note-icon ${iconClass}" style="margin-bottom:15px; width:100%; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" ${clickable}>${icon}</div>`;
             }
 
-            let actionBtn = (isImage || isVideo) 
-                ? `<button class="btn-download" onclick="apriMediaViewer(${currentItemMediaIndex})" style="width:100%; border:none; cursor:pointer; background: var(--primary-light); color: var(--primary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px; margin-right:6px; vertical-align:text-bottom;"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> Espandi</button>` 
-                : `<a href="${data.urlFile}" target="_blank" rel="noopener noreferrer" class="btn-download" style="display:block;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px; margin-right:6px; vertical-align:text-bottom;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Scarica</a>`;
+            let actionBtn = (isImage || isVideo || isDocument) 
+                ? `<button class="btn-download" onclick="apriMediaViewer(${currentItemMediaIndex})" style="width:100%; border:none; cursor:pointer; background: var(--primary-light); color: var(--primary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px; margin-right:6px; vertical-align:text-bottom;"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> Apri e Visualizza</button>` 
+                : `<a href="${data.urlFile}" target="_blank" rel="noopener noreferrer" class="btn-download" style="display:block;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px; margin-right:6px; vertical-align:text-bottom;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Scarica File</a>`;
 
             const dataFormat = new Date(data.data).toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' });
 
@@ -255,7 +246,6 @@ function caricaAppunti(materia) {
                     <div style="display:flex; justify-content:space-between; align-items:center; width: 100%; margin-bottom: 12px;">
                         ${badgeType}
                         <div style="display:flex; gap:8px;">
-                            <!-- Pulsante Condividi Stile iOS Share -->
                             <button class="action-icon-btn" onclick="copiaLink('${data.urlFile}', event)" title="Condividi Link">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18">
                                     <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
@@ -263,7 +253,6 @@ function caricaAppunti(materia) {
                                     <line x1="12" y1="2" x2="12" y2="15"/>
                                 </svg>
                             </button>
-                            <!-- Pulsante Preferiti -->
                             <button class="action-icon-btn ${favClass}" onclick="togglePreferito('${docId}', event)" title="Salva nei preferiti">
                                 <svg viewBox="0 0 24 24" fill="currentColor" width="18"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
                             </button>
@@ -408,7 +397,7 @@ document.getElementById('btnSalva').addEventListener('click', () => {
 });
 
 // ==========================================
-// 6. LETTORE MULTIMEDIALE & GALLERIA 
+// 6. ANTEPRIMA MULTIMEDIALE, DOCUMENTI & OCR
 // ==========================================
 let currentMediaIndex = -1;
 
@@ -422,20 +411,109 @@ function aggiornaMediaViewer() {
     const container = document.getElementById('mediaContainer');
     const item = window.mediaGallery[currentMediaIndex];
     
-    container.innerHTML = ''; 
+    container.innerHTML = '<div class="btn-loader" style="color:white;"><div class="btn-spinner" style="border-top-color:#fff;"></div></div>'; 
     
+    // Gestione Pulsante Estrazione Testo
+    const ocrBtn = document.getElementById('btnEstraiTesto');
+    if (item.isImage || item.docType === 'pdf' || item.docType === 'text' || item.docType === 'office') {
+        ocrBtn.style.display = 'flex';
+        ocrBtn.onclick = () => eseguiEstrazioneTesto(item.url, item.isImage, item.isDocument, item.docType);
+    } else {
+        ocrBtn.style.display = 'none';
+    }
+    
+    document.getElementById('ocrResultContainer').style.display = 'none';
+
     setTimeout(() => {
         if (item.isVideo) {
-            container.innerHTML = `<video src="${item.url}" controls autoplay class="viewer-media-item viewer-video"></video>`;
-        } else {
-            container.innerHTML = `<img src="${item.url}" class="viewer-media-item" alt="${item.titolo}">`;
+            container.innerHTML = `<video src="${item.url}" controls autoplay class="viewer-media-item viewer-video" style="box-shadow: 0 30px 60px rgba(0,0,0,0.5); border-radius: 16px;"></video>`;
+        } else if (item.isImage) {
+            container.innerHTML = `<img src="${item.url}" class="viewer-media-item" alt="${item.titolo}" crossorigin="anonymous">`;
+        } else if (item.isDocument) {
+            if (item.docType === 'pdf') {
+                container.innerHTML = `<iframe src="${item.url}" class="viewer-media-item" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5);"></iframe>`;
+            } else if (item.docType === 'office') {
+                container.innerHTML = `<iframe src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(item.url)}" class="viewer-media-item" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5);"></iframe>`;
+            } else if (item.docType === 'text') {
+                fetch(item.url).then(res => res.text()).then(txt => {
+                    const safeTxt = txt.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                    container.innerHTML = `<div class="viewer-media-item" style="width: 100%; height: 85vh; max-width: 1000px; background: #1e293b; border-radius: 16px; padding: 25px; overflow-y: auto; text-align: left; box-sizing: border-box; box-shadow: 0 30px 60px rgba(0,0,0,0.5);"><pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; color: #f8fafc; font-size: 1rem; line-height: 1.5; margin: 0;">${safeTxt}</pre></div>`;
+                }).catch(err => {
+                    container.innerHTML = `<div style="color: white; font-weight: 800;">Errore nel caricamento del file di testo.</div>`;
+                });
+            }
         }
-    }, 10);
+    }, 100);
 
     const mostraFrecce = window.mediaGallery.length > 1 ? 'flex' : 'none';
     document.getElementById('btnPrevMedia').style.display = mostraFrecce;
     document.getElementById('btnNextMedia').style.display = mostraFrecce;
 }
+
+// LOGICA ESTRAZIONE TESTO (AI E OCR)
+window.eseguiEstrazioneTesto = async function(url, isImage, isDocument, docType) {
+    const ocrBtn = document.getElementById('btnEstraiTesto');
+    const origHtml = ocrBtn.innerHTML;
+    ocrBtn.innerHTML = '<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:var(--primary); margin-right:8px;"></div> Analisi AI in corso...';
+    ocrBtn.disabled = true;
+
+    try {
+        let extractedText = "";
+
+        if (isImage) {
+            const result = await Tesseract.recognize(url, 'ita+eng', {
+                logger: m => {
+                    if (m.status === 'recognizing text') {
+                        ocrBtn.innerHTML = `<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:var(--primary); margin-right:8px;"></div> ${Math.round(m.progress * 100)}%`;
+                    }
+                }
+            });
+            extractedText = result.data.text;
+        } else if (isDocument && docType === 'pdf') {
+            const pdfjsLib = window['pdfjs-dist/build/pdf'];
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+            const pdf = await pdfjsLib.getDocument(url).promise;
+            for (let i = 1; i <= pdf.numPages; i++) {
+                ocrBtn.innerHTML = `<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:var(--primary); margin-right:8px;"></div> Pagina ${i}/${pdf.numPages}`;
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                extractedText += content.items.map(item => item.str).join(' ') + '\n\n';
+            }
+        } else if (isDocument && docType === 'text') {
+            const res = await fetch(url);
+            extractedText = await res.text();
+        } else if (isDocument && docType === 'office') {
+            alert("Per i file di Word, Excel o PowerPoint, usa il cursore per selezionare tutto il testo che desideri direttamente dal visualizzatore che vedi a schermo, quindi premi Tasto Destro -> Copia (o Ctrl+C).");
+            ocrBtn.innerHTML = origHtml;
+            ocrBtn.disabled = false;
+            return;
+        }
+
+        if (!extractedText || extractedText.trim() === '') {
+            extractedText = "Nessun testo rilevato nel documento dall'AI.";
+        }
+
+        document.getElementById('ocrResultText').value = extractedText;
+        document.getElementById('ocrResultContainer').style.display = 'block';
+
+    } catch (err) {
+        console.error("Errore estrazione:", err);
+        showToast("Errore durante l'estrazione del testo", "⚠️");
+    } finally {
+        ocrBtn.innerHTML = origHtml;
+        ocrBtn.disabled = false;
+    }
+}
+
+window.copiaTestoOCR = function() {
+    const text = document.getElementById('ocrResultText').value;
+    navigator.clipboard.writeText(text).then(() => {
+        showToast("Testo copiato con successo!", "📋");
+        document.getElementById('ocrResultContainer').style.display = 'none';
+    }).catch(() => {
+        showToast("Impossibile copiare il testo", "⚠️");
+    });
+};
 
 window.cambiaMedia = function(direzione) {
     const container = document.getElementById('mediaContainer');
@@ -467,4 +545,5 @@ document.addEventListener('keydown', (e) => {
 document.getElementById('btnChiudiViewer').addEventListener('click', () => {
     document.getElementById('mediaContainer').innerHTML = ''; 
     document.getElementById('mediaViewerModal').classList.remove('active');
+    document.getElementById('ocrResultContainer').style.display = 'none';
 });
