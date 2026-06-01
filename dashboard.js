@@ -1,6 +1,10 @@
 /* ============================================================
-   dashboard.js — Dashboard Harzafi Notes (PDF Custom + Gemini)
+   dashboard.js — Dashboard Harzafi Notes (PRO Edition w/ Blob PDF & Gemini AI)
    ============================================================ */
+
+// ⚠️ INSERISCI QUI LA TUA CHIAVE API DI GOOGLE GEMINI!
+// (Puoi ottenerla gratis su: https://aistudio.google.com/app/apikey)
+const GEMINI_API_KEY = "AQ.Ab8RN6LWwKcNQNo3j5WngHW2NAlTgiGf6B4XYgrYf0Tmx3ByyA";
 
 const firebaseConfig = {
     apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
@@ -10,9 +14,7 @@ const firebaseConfig = {
     appId: "1:35834921638:web:cb5d8d612b4a2936126a67"
 };
 
-try {
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-} catch(e) { console.error("Firebase Auth Error"); }
+try { if (!firebase.apps.length) firebase.initializeApp(firebaseConfig); } catch(e) {}
 
 const auth = firebase.auth();
 const db = firebase.firestore();
@@ -31,9 +33,7 @@ auth.onAuthStateChanged(user => {
         window.location.href = "login.html";
     } else {
         const btnUpload = document.getElementById('btnUploadModal');
-        if (user.email === ADMIN_EMAIL && btnUpload) {
-            btnUpload.style.display = 'block';
-        }
+        if (user.email === ADMIN_EMAIL && btnUpload) btnUpload.style.display = 'block';
         
         const profilePicEl = document.getElementById('userProfilePic');
         if (profilePicEl) {
@@ -44,9 +44,7 @@ auth.onAuthStateChanged(user => {
             } else {
                 profilePicEl.src = "IMMAGINI/PROFILO-UTENTE-LOGO.png";
             }
-            profilePicEl.onerror = function() { this.src = "IMMAGINI/PROFILO-UTENTE-LOGO.png"; };
         }
-
         impostaSalutoDinamico(user);
         caricaAppunti('Tutte');
     }
@@ -54,9 +52,7 @@ auth.onAuthStateChanged(user => {
 
 function impostaSalutoDinamico(user) {
     const hour = new Date().getHours();
-    let greetText = "Buongiorno";
-    let greetEmoji = "☀️";
-    
+    let greetText = "Buongiorno"; let greetEmoji = "☀️";
     if (hour >= 5 && hour < 13) { greetText = "Buongiorno"; greetEmoji = "☀️"; }
     else if (hour >= 13 && hour < 18) { greetText = "Buon pomeriggio"; greetEmoji = "☕"; }
     else { greetText = "Buonasera"; greetEmoji = "🌙"; }
@@ -66,23 +62,11 @@ function impostaSalutoDinamico(user) {
     if (sessionName && sessionName !== "Utente") name = sessionName.split(" ")[0];
     else if (user && user.displayName) name = user.displayName.split(" ")[0];
     
-    const greetContainer = document.getElementById('greetingText');
-    if(greetContainer) {
-        greetContainer.innerHTML = `
-            <span class="animated-gradient-text">${greetText}</span>
-            <span style="font-size: 1.1em; line-height: 1;">${greetEmoji}</span>
-            <span class="animated-gradient-text">, ${name}</span>
-        `;
-    }
-    
-    const nameDisplay = document.getElementById('userNameDisplay');
-    if(nameDisplay) nameDisplay.textContent = name;
+    document.getElementById('greetingText').innerHTML = `<span class="animated-gradient-text">${greetText}</span><span style="font-size: 1.1em; line-height: 1;">${greetEmoji}</span><span class="animated-gradient-text">, ${name}</span>`;
+    document.getElementById('userNameDisplay').textContent = name;
 }
 
-const btnEsci = document.getElementById('btnEsci');
-if(btnEsci) btnEsci.addEventListener('click', () => {
-    auth.signOut().then(() => window.location.href = "login.html");
-});
+document.getElementById('btnEsci').addEventListener('click', () => { auth.signOut().then(() => window.location.href = "login.html"); });
 
 // ==========================================
 // 2. FUNZIONI UTILI (TOAST, COPIA, PREFERITI)
@@ -97,74 +81,53 @@ function showToast(message, icon = "✅") {
 
 window.copiaLink = function(url, ev) {
     ev.stopPropagation();
-    navigator.clipboard.writeText(url).then(() => {
-        showToast("Link copiato negli appunti!", "🔗");
-    }).catch(() => {
-        showToast("Errore durante la copia.", "⚠️");
-    });
+    navigator.clipboard.writeText(url).then(() => showToast("Link copiato negli appunti!", "🔗")).catch(() => showToast("Errore durante la copia.", "⚠️"));
 };
 
 window.togglePreferito = function(docId, ev) {
     ev.stopPropagation();
     let favs = JSON.parse(localStorage.getItem('harzafi_favs') || '[]');
     const btn = ev.currentTarget;
-    
     if (favs.includes(docId)) {
         favs = favs.filter(id => id !== docId);
         btn.classList.remove('fav-active');
         showToast("Rimosso dai preferiti", "❌");
-        if (document.getElementById('titoloMateria').textContent === 'I Miei Preferiti') {
-            caricaAppunti('Preferiti');
-        }
+        if (document.getElementById('titoloMateria').textContent === 'I Miei Preferiti') caricaAppunti('Preferiti');
     } else {
         favs.push(docId);
         btn.classList.add('fav-active');
         showToast("Salvato nei preferiti!", "⭐");
     }
-    
     localStorage.setItem('harzafi_favs', JSON.stringify(favs));
 };
 
 // ==========================================
-// 3. FUNZIONE RICERCA E FILTRO MATERIA
+// 3. RICERCA E FILTRO
 // ==========================================
 window.filtraMateria = function(materia) {
     document.querySelectorAll('.materia-btn').forEach(btn => btn.classList.remove('active'));
     if(event && event.currentTarget) event.currentTarget.classList.add('active');
-    
     document.getElementById('titoloMateria').textContent = materia === 'Preferiti' ? 'I Miei Preferiti' : (materia === 'Tutte' ? 'Tutti i file' : materia);
-    
     document.getElementById('searchNotes').value = "";
     document.getElementById('emptySearchState').style.display = 'none';
-    
     caricaAppunti(materia);
 };
 
-const searchInput = document.getElementById('searchNotes');
-if(searchInput) {
-    searchInput.addEventListener('input', function(e) {
-        const term = e.target.value.toLowerCase().trim();
-        const cards = document.querySelectorAll('.note-card');
-        let hasVisible = false;
-
-        cards.forEach(card => {
-            const title = card.querySelector('.note-title').textContent.toLowerCase();
-            const meta = card.querySelector('.note-meta').textContent.toLowerCase();
-            
-            if (title.includes(term) || meta.includes(term)) {
-                card.style.display = 'flex';
-                hasVisible = true;
-            } else {
-                card.style.display = 'none';
-            }
-        });
-
-        document.getElementById('emptySearchState').style.display = (!hasVisible && cards.length > 0) ? 'block' : 'none';
+document.getElementById('searchNotes').addEventListener('input', function(e) {
+    const term = e.target.value.toLowerCase().trim();
+    const cards = document.querySelectorAll('.note-card');
+    let hasVisible = false;
+    cards.forEach(card => {
+        const title = card.querySelector('.note-title').textContent.toLowerCase();
+        const meta = card.querySelector('.note-meta').textContent.toLowerCase();
+        if (title.includes(term) || meta.includes(term)) { card.style.display = 'flex'; hasVisible = true; } 
+        else { card.style.display = 'none'; }
     });
-}
+    document.getElementById('emptySearchState').style.display = (!hasVisible && cards.length > 0) ? 'block' : 'none';
+});
 
 // ==========================================
-// 4. RECUPERO E RENDER APPUNTI
+// 4. RECUPERO APPUNTI DA DATABASE
 // ==========================================
 function caricaAppunti(materia) {
     const container = document.getElementById('notesContainer');
@@ -172,14 +135,10 @@ function caricaAppunti(materia) {
     container.innerHTML = `<div class="btn-loader" style="justify-content:flex-start; width:100%; grid-column:1/-1;"><div class="btn-spinner"></div><span style="font-weight:800; color:var(--text-gray); font-size:1.1rem; margin-left:10px;">Sincronizzazione archivio...</span></div>`;
     
     let query = db.collection('appunti');
-    
-    if (materia !== "Tutte" && materia !== "Preferiti") {
-        query = query.where('materia', '==', materia);
-    }
+    if (materia !== "Tutte" && materia !== "Preferiti") query = query.where('materia', '==', materia);
 
     query.get().then(snap => {
         container.innerHTML = '';
-        
         let appuntiArray = [];
         snap.forEach(doc => appuntiArray.push({ id: doc.id, ...doc.data() }));
 
@@ -189,14 +148,12 @@ function caricaAppunti(materia) {
         }
 
         if (appuntiArray.length === 0) {
-            const emptyMsg = materia === "Preferiti" ? "Non hai ancora salvato nessun appunto tra i preferiti." : "Nessun file presente per questa materia.";
-            container.innerHTML = `<div style="text-align:center; padding: 40px; grid-column: 1 / -1;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--border-color)" stroke-width="1.5" style="width: 80px; margin-bottom: 20px;"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2z"></path></svg><h3 style="font-size: 1.5rem; color: var(--text-dark); font-weight: 800;">Cartella vuota</h3><p style="color: var(--text-gray); font-weight: 500;">${emptyMsg}</p></div>`;
+            container.innerHTML = `<div style="text-align:center; padding: 40px; grid-column: 1 / -1;"><h3 style="font-size: 1.5rem; color: var(--text-dark); font-weight: 800;">Cartella vuota</h3><p style="color: var(--text-gray); font-weight: 500;">Nessun file presente qui.</p></div>`;
             return;
         }
 
         window.mediaGallery = []; 
-        let indexCard = 0;
-        let indexMedia = 0;
+        let indexCard = 0; let indexMedia = 0;
         const oraAttuale = Date.now();
         const favsList = JSON.parse(localStorage.getItem('harzafi_favs') || '[]');
 
@@ -208,21 +165,16 @@ function caricaAppunti(materia) {
             const isFav = favsList.includes(docId);
             const favClass = isFav ? 'fav-active' : '';
             
-            const iconPDF = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15h-2v-2h2v2zm0-4h-2V7h2v6z"/></svg>`;
-            const iconIMG = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>`;
-            const iconZIP = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M20 6h-8l-2-2H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm-1 8h-4v4h-2v-4H9v-2h4V8h2v4h4v2z"/></svg>`;
-            const iconDOC = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>`;
-            const iconVID = `<svg viewBox="0 0 24 24" fill="currentColor" width="28"><path d="M10 16.5l6-4.5-6-4.5v9zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/></svg>`;
-
-            let icon = iconDOC; let iconClass = 'icon-doc'; let badgeType = '<span class="badge-type badge-doc">DOC</span>';
+            let iconClass = 'icon-doc'; let badgeType = '<span class="badge-type badge-doc">DOC</span>';
             let isImage = false; let isVideo = false; let isDocument = false; let docType = '';
+            let icon = '📄';
             
-            if (fName.includes('.pdf')) { icon = iconPDF; iconClass = 'icon-pdf'; badgeType = '<span class="badge-type badge-pdf">PDF</span>'; isDocument = true; docType = 'pdf'; }
-            else if (fName.match(/\.(png|jpg|jpeg|gif|webp)$/i)) { icon = iconIMG; iconClass = 'icon-img'; isImage = true; badgeType = '<span class="badge-type badge-img">IMG</span>'; }
-            else if (fName.match(/\.(mp4|mov|webm|mkv)$/i)) { icon = iconVID; iconClass = 'icon-img'; isVideo = true; badgeType = '<span class="badge-type badge-vid">VIDEO</span>'; }
-            else if (fName.match(/\.(doc|docx|ppt|pptx|xls|xlsx)$/i)) { icon = iconDOC; iconClass = 'icon-doc'; badgeType = '<span class="badge-type badge-doc">OFFICE</span>'; isDocument = true; docType = 'office'; }
-            else if (fName.match(/\.(txt|csv|md|js|html|css|json)$/i)) { icon = iconDOC; iconClass = 'icon-doc'; badgeType = '<span class="badge-type badge-doc" style="background:#e2e8f0; color:#0f172a;">TXT / CODE</span>'; isDocument = true; docType = 'text'; }
-            else if (fName.match(/\.(zip|rar|7z)$/i)) { icon = iconZIP; iconClass = 'icon-zip'; badgeType = '<span class="badge-type badge-zip">ZIP</span>'; }
+            if (fName.includes('.pdf')) { icon = '📕'; iconClass = 'icon-pdf'; badgeType = '<span class="badge-type badge-pdf">PDF</span>'; isDocument = true; docType = 'pdf'; }
+            else if (fName.match(/\.(png|jpg|jpeg|gif|webp)$/i)) { icon = '🖼️'; iconClass = 'icon-img'; isImage = true; badgeType = '<span class="badge-type badge-img">IMG</span>'; }
+            else if (fName.match(/\.(mp4|mov|webm|mkv)$/i)) { icon = '🎥'; iconClass = 'icon-img'; isVideo = true; badgeType = '<span class="badge-type badge-vid">VIDEO</span>'; }
+            else if (fName.match(/\.(doc|docx|ppt|pptx|xls|xlsx)$/i)) { icon = '📘'; iconClass = 'icon-doc'; badgeType = '<span class="badge-type badge-doc">OFFICE</span>'; isDocument = true; docType = 'office'; }
+            else if (fName.match(/\.(txt|csv|md|js|html|css|json)$/i)) { icon = '📝'; iconClass = 'icon-doc'; badgeType = '<span class="badge-type badge-doc" style="background:#e2e8f0; color:#0f172a;">TXT / CODE</span>'; isDocument = true; docType = 'text'; }
+            else if (fName.match(/\.(zip|rar|7z)$/i)) { icon = '📦'; iconClass = 'icon-zip'; badgeType = '<span class="badge-type badge-zip">ZIP</span>'; }
 
             const isNew = (oraAttuale - data.data) < 86400000;
             const newBadgeHTML = isNew ? `<span class="badge-new">Nuovo</span>` : '';
@@ -230,29 +182,17 @@ function caricaAppunti(materia) {
             let currentItemMediaIndex = -1;
             if (isImage || isVideo || isDocument) {
                 currentItemMediaIndex = indexMedia;
-                window.mediaGallery.push({ url: data.urlFile, isVideo: isVideo, isImage: isImage, isDocument: isDocument, docType: docType, titolo: data.titolo });
+                window.mediaGallery.push({ url: data.urlFile, isVideo, isImage, isDocument, docType, titolo: data.titolo, blobUrl: null });
                 indexMedia++;
             }
 
-            let deleteBtnHTML = '';
-            if (auth.currentUser && auth.currentUser.email === ADMIN_EMAIL) {
-                deleteBtnHTML = `<button class="btn-delete" onclick="eliminaFile('${docId}')">Elimina Appunto</button>`;
-            }
+            let deleteBtnHTML = (auth.currentUser && auth.currentUser.email === ADMIN_EMAIL) ? `<button class="btn-delete" onclick="eliminaFile('${docId}')">Elimina</button>` : '';
 
-            let visualMedia = '';
-            if (isImage) {
-                visualMedia = `<img src="${data.urlFile}" class="img-preview" alt="${data.titolo}" onclick="apriMediaViewer(${currentItemMediaIndex})" style="cursor:pointer; transition:transform 0.4s var(--apple-ease);" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">`;
-            } else if (isVideo) {
-                visualMedia = `<video src="${data.urlFile}" preload="metadata" class="img-preview" style="cursor:pointer; background:#000; object-fit:cover;" onclick="apriMediaViewer(${currentItemMediaIndex})"></video>`;
-            } else {
-                const clickable = currentItemMediaIndex !== -1 ? `onclick="apriMediaViewer(${currentItemMediaIndex})" style="cursor:pointer;"` : '';
-                visualMedia = `<div class="note-icon ${iconClass}" style="margin-bottom:15px; width:100%; transition:transform 0.2s;" onmouseover="this.style.transform='scale(1.02)'" onmouseout="this.style.transform='scale(1)'" ${clickable}>${icon}</div>`;
-            }
+            let visualMedia = `<div class="note-icon ${iconClass}" style="margin-bottom:15px; width:100%; transition:transform 0.2s; font-size:28px;" ${currentItemMediaIndex !== -1 ? `onclick="apriMediaViewer(${currentItemMediaIndex})" style="cursor:pointer;"` : ''}>${icon}</div>`;
+            if (isImage) visualMedia = `<img src="${data.urlFile}" class="img-preview" alt="${data.titolo}" onclick="apriMediaViewer(${currentItemMediaIndex})" style="cursor:pointer; transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">`;
+            else if (isVideo) visualMedia = `<video src="${data.urlFile}" preload="metadata" class="img-preview" style="cursor:pointer; background:#000; object-fit:cover;" onclick="apriMediaViewer(${currentItemMediaIndex})"></video>`;
 
-            let actionBtn = (isImage || isVideo || isDocument) 
-                ? `<button class="btn-download" onclick="apriMediaViewer(${currentItemMediaIndex})" style="width:100%; border:none; cursor:pointer; background: var(--primary-light); color: var(--primary);"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px; margin-right:6px; vertical-align:text-bottom;"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg> Apri e Visualizza</button>` 
-                : `<a href="${data.urlFile}" target="_blank" rel="noopener noreferrer" class="btn-download" style="display:block;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px; margin-right:6px; vertical-align:text-bottom;"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg> Scarica File</a>`;
-
+            let actionBtn = (isImage || isVideo || isDocument) ? `<button class="btn-download" onclick="apriMediaViewer(${currentItemMediaIndex})" style="width:100%; border:none; cursor:pointer; background: var(--primary-light); color: var(--primary);">Apri e Visualizza</button>` : `<a href="${data.urlFile}" target="_blank" class="btn-download" style="display:block;">Scarica File</a>`;
             const dataFormat = new Date(data.data).toLocaleDateString('it-IT', { day: '2-digit', month: 'short', year: 'numeric' });
 
             const card = `
@@ -260,16 +200,8 @@ function caricaAppunti(materia) {
                     <div style="display:flex; justify-content:space-between; align-items:center; width: 100%; margin-bottom: 12px;">
                         ${badgeType}
                         <div style="display:flex; gap:8px;">
-                            <button class="action-icon-btn" onclick="copiaLink('${data.urlFile}', event)" title="Condividi Link">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" width="18">
-                                    <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-                                    <polyline points="16 6 12 2 8 6"/>
-                                    <line x1="12" y1="2" x2="12" y2="15"/>
-                                </svg>
-                            </button>
-                            <button class="action-icon-btn ${favClass}" onclick="togglePreferito('${docId}', event)" title="Salva nei preferiti">
-                                <svg viewBox="0 0 24 24" fill="currentColor" width="18"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
-                            </button>
+                            <button class="action-icon-btn" onclick="copiaLink('${data.urlFile}', event)" title="Condividi Link">🔗</button>
+                            <button class="action-icon-btn ${favClass}" onclick="togglePreferito('${docId}', event)" title="Salva">⭐</button>
                         </div>
                     </div>
                     ${visualMedia}
@@ -283,204 +215,66 @@ function caricaAppunti(materia) {
             indexCard++;
         });
     }).catch(err => {
-        console.error("ERRORE FIRESTORE:", err);
-        container.innerHTML = `<p style="color:var(--danger); font-weight:700;">Errore di sistema: ${err.message}</p>`;
+        container.innerHTML = `<p style="color:var(--danger); font-weight:700;">Errore: ${err.message}</p>`;
     });
 }
 
 window.eliminaFile = function(docId) {
-    if(confirm("Sei sicuro di voler eliminare questo file dall'archivio dell'intera classe?")) {
-        db.collection('appunti').doc(docId).delete().then(() => {
-            const materiaAttuale = document.getElementById('titoloMateria').innerText === 'Tutti i file' ? 'Tutte' : document.getElementById('titoloMateria').innerText;
-            caricaAppunti(materiaAttuale);
-        }).catch(err => alert("Errore durante l'eliminazione"));
+    if(confirm("Sei sicuro di voler eliminare questo file?")) {
+        db.collection('appunti').doc(docId).delete().then(() => caricaAppunti('Tutte'));
     }
 };
 
 // ==========================================
 // 5. GESTIONE UPLOAD
 // ==========================================
-document.addEventListener('DOMContentLoaded', () => {
-    const trigger = document.querySelector('#upload-materia-select .custom-select-trigger');
-    const options = document.querySelectorAll('#upload-materia-options .custom-option');
-    const display = document.getElementById('upload-materia-display');
-    const customSelect = document.getElementById('upload-materia-select');
+document.getElementById('btnSalva').addEventListener('click', () => {
+    const file = document.getElementById('upFile').files[0];
+    const titolo = document.getElementById('upTitolo').value.trim();
+    if (!file || !titolo) return;
 
-    if(trigger) {
-        trigger.addEventListener('click', (e) => {
-            e.stopPropagation();
-            customSelect.classList.toggle('open');
-        });
-
-        options.forEach(opt => {
-            opt.addEventListener('click', (e) => {
-                e.stopPropagation();
-                display.innerText = opt.innerText;
-                materiaUploadSelezionata = opt.innerText; 
-                customSelect.classList.remove('open');
-            });
-        });
-
-        document.addEventListener('click', () => customSelect.classList.remove('open'));
-    }
-
-    const btnUpM = document.getElementById('btnUploadModal');
-    if(btnUpM) btnUpM.addEventListener('click', () => {
-        document.getElementById('uploadModal').classList.add('active');
-        document.getElementById('progressContainer').style.display = 'none';
-        document.getElementById('progressBar').style.width = '0%';
-        document.getElementById('uploadStatus').innerText = '';
-    });
-
-    const btnChiudiUp = document.getElementById('btnChiudiUpload');
-    if(btnChiudiUp) btnChiudiUp.addEventListener('click', () => {
-        document.getElementById('uploadModal').classList.remove('active');
-    });
-
-    const fileInput = document.getElementById('upFile');
-    if (fileInput) {
-        fileInput.addEventListener('change', (e) => {
-            const fileName = e.target.files[0] ? e.target.files[0].name : "📁 Clicca qui per scegliere un file...";
-            document.getElementById('fileNameText').innerText = fileName;
-        });
-    }
-
-    const btnSalva = document.getElementById('btnSalva');
-    if(btnSalva) btnSalva.addEventListener('click', () => {
-        const file = document.getElementById('upFile').files[0];
-        const titolo = document.getElementById('upTitolo').value.trim();
-        const materia = materiaUploadSelezionata; 
-        const status = document.getElementById('uploadStatus');
-        const progressContainer = document.getElementById('progressContainer');
-        const progressBar = document.getElementById('progressBar');
-
-        if (!file || !titolo) {
-            status.innerText = "Inserisci un titolo e seleziona un file!";
-            return;
+    document.getElementById('progressContainer').style.display = 'block';
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+    
+    const xhr = new XMLHttpRequest();
+    xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, true);
+    xhr.upload.onprogress = (e) => {
+        if (e.lengthComputable) {
+            document.getElementById('progressBar').style.width = Math.round((e.loaded / e.total) * 100) + '%';
         }
-
-        progressContainer.style.display = 'block';
-        status.innerText = "Connessione al Cloud...";
-        
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-        
-        const xhr = new XMLHttpRequest();
-        xhr.open('POST', `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/auto/upload`, true);
-
-        xhr.upload.onprogress = (e) => {
-            if (e.lengthComputable) {
-                const percent = Math.round((e.loaded / e.total) * 100);
-                progressBar.style.width = percent + '%';
-                status.innerText = `Caricamento: ${percent}%`;
-            }
-        };
-
-        xhr.onload = () => {
-            if (xhr.status === 200) {
-                const response = JSON.parse(xhr.responseText);
-                const downloadURL = response.secure_url;
-                
-                status.innerText = "Salvataggio in corso nel Database...";
-
-                db.collection('appunti').add({
-                    titolo: titolo,
-                    materia: materia,
-                    nomeFile: file.name,
-                    urlFile: downloadURL,
-                    data: Date.now()
-                }).then(() => {
-                    document.getElementById('uploadModal').classList.remove('active');
-                    document.getElementById('upTitolo').value = '';
-                    document.getElementById('upFile').value = '';
-                    document.getElementById('fileNameText').innerText = "📁 Clicca qui per scegliere un file...";
-                    
-                    showToast("File caricato con successo!", "☁️");
-                    caricaAppunti('Tutte');
-                }).catch((error) => {
-                    console.error("Firestore error:", error);
-                    status.innerText = "Errore database.";
-                });
-            } else {
-                console.error("Cloudinary error:", xhr.responseText);
-                status.innerText = "Errore upload.";
-                progressContainer.style.display = 'none';
-            }
-        };
-
-        xhr.send(formData);
-    });
+    };
+    xhr.onload = () => {
+        if (xhr.status === 200) {
+            const downloadURL = JSON.parse(xhr.responseText).secure_url;
+            db.collection('appunti').add({ titolo, materia: materiaUploadSelezionata, nomeFile: file.name, urlFile: downloadURL, data: Date.now() })
+            .then(() => {
+                document.getElementById('uploadModal').classList.remove('active');
+                showToast("File caricato!", "☁️");
+                caricaAppunti('Tutte');
+            });
+        }
+    };
+    xhr.send(formData);
 });
 
 // ==========================================
-// 6. ANTEPRIMA MEDIA & LETTORE PDF PERSONALE NATIVO
+// 6. ANTEPRIMA MEDIA & BYPASS PDF NATIVO
 // ==========================================
 let currentMediaIndex = -1;
 
-// Funzione Custom per PDF
-function renderCustomPDF(url, container) {
-    container.innerHTML = `
-        <div id="pdfViewer" style="width: 100%; height: 100%; max-width: 1000px; background: transparent; border-radius: 16px; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; align-items: center; pointer-events: auto;">
-            <div id="pdfLoading" style="color:#fff; font-weight:800; font-size:1.2rem; margin-top:50px;">
-                Generazione PDF in corso... <div class="btn-spinner" style="border-top-color:#fff; display:inline-block; vertical-align:middle; margin-left:10px;"></div>
-            </div>
-        </div>`;
-    
-    const pdfViewer = document.getElementById('pdfViewer');
-    const pdfjsLib = window['pdfjs-dist/build/pdf'];
-    if(!pdfjsLib) {
-        pdfViewer.innerHTML = '<div style="color:red; font-weight:800; padding:20px;">Libreria PDF.js non caricata!</div>';
-        return;
+// Funzione magica per scaricare il file aggirando i blocchi CORS di Cloudinary usando un Proxy
+async function fetchSafeBlob(url) {
+    try {
+        let res = await fetch(url);
+        if(!res.ok) throw new Error("Fetch failed");
+        return await res.blob();
+    } catch(e) {
+        let proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(url);
+        let res = await fetch(proxyUrl);
+        return await res.blob();
     }
-    
-    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-
-    const loadingTask = pdfjsLib.getDocument(url);
-    loadingTask.promise.then(function(pdf) {
-        const loadingEl = document.getElementById('pdfLoading');
-        if(loadingEl) loadingEl.style.display = 'none';
-        
-        let currPage = 1;
-        const numPages = pdf.numPages;
-
-        function renderPage(pageNumber) {
-            pdf.getPage(pageNumber).then(function(page) {
-                const viewport = page.getViewport({scale: 1.5});
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-                canvas.style.width = "100%";
-                canvas.style.maxWidth = "800px";
-                canvas.style.backgroundColor = "#fff";
-                canvas.style.boxShadow = "0 20px 50px rgba(0,0,0,0.5)";
-                canvas.style.borderRadius = "8px";
-                canvas.style.marginBottom = "25px";
-                
-                pdfViewer.appendChild(canvas);
-
-                const renderContext = {
-                    canvasContext: ctx,
-                    viewport: viewport
-                };
-                page.render(renderContext).promise.then(() => {
-                    if (currPage < numPages) {
-                        currPage++;
-                        renderPage(currPage);
-                    }
-                });
-            });
-        }
-        renderPage(currPage);
-    }).catch(function(error) {
-        console.error("Errore PDF.js:", error);
-        pdfViewer.innerHTML = `<div style="color:var(--danger); font-weight:800; text-align:center; padding:20px; margin-top:50px; background:#fff; border-radius:12px;">
-            Impossibile visualizzare il PDF automaticamente. 
-            <br><br>
-            <a href="${url}" target="_blank" class="btn-premium" style="display:inline-block; margin-top:15px; text-decoration:none;">Scarica e Apri Manualmente</a>
-        </div>`;
-    });
 }
 
 window.apriMediaViewer = function(index) {
@@ -489,147 +283,158 @@ window.apriMediaViewer = function(index) {
     document.getElementById('mediaViewerModal').classList.add('active');
 };
 
-function aggiornaMediaViewer() {
+async function aggiornaMediaViewer() {
     const container = document.getElementById('mediaContainer');
     const item = window.mediaGallery[currentMediaIndex];
     
-    container.innerHTML = '<div class="btn-loader" style="color:white;"><div class="btn-spinner" style="border-top-color:#fff;"></div></div>'; 
+    container.innerHTML = '<div class="btn-loader" style="color:white; z-index:1000;"><div class="btn-spinner" style="border-top-color:#fff;"></div><span style="font-weight:bold; margin-left:10px;">Caricamento file...</span></div>'; 
     
     const geminiBtn = document.getElementById('btnGemini');
-    if (item.isImage || item.docType === 'pdf' || item.docType === 'text' || item.docType === 'office') {
+    if (item.isImage || item.docType === 'pdf' || item.docType === 'text') {
         geminiBtn.style.display = 'flex';
-        geminiBtn.onclick = () => preparaPerGemini(item.url, item.isImage, item.isDocument, item.docType);
+        geminiBtn.onclick = () => chiediAGeminiAI(item);
     } else {
         geminiBtn.style.display = 'none';
     }
-    
     document.getElementById('geminiResultContainer').style.display = 'none';
 
-    setTimeout(() => {
-        if (item.isVideo) {
-            container.innerHTML = `<video src="${item.url}" controls autoplay class="viewer-media-item viewer-video" style="box-shadow: 0 30px 60px rgba(0,0,0,0.5); border-radius: 16px; pointer-events:auto;"></video>`;
-        } else if (item.isImage) {
-            container.innerHTML = `<img src="${item.url}" class="viewer-media-item" alt="${item.titolo}" crossorigin="anonymous" style="pointer-events:auto;">`;
-        } else if (item.isDocument) {
-            if (item.docType === 'pdf') {
-                // IL NOSTRO SISTEMA NATIVO
-                renderCustomPDF(item.url, container);
-            } else if (item.docType === 'office') {
-                container.innerHTML = `<iframe src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(item.url)}" class="viewer-media-item" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); pointer-events:auto;"></iframe>`;
-            } else if (item.docType === 'text') {
-                fetch(item.url).then(res => res.text()).then(txt => {
-                    const safeTxt = txt.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                    container.innerHTML = `<div class="viewer-media-item" style="width: 100%; height: 85vh; max-width: 1000px; background: #1e293b; border-radius: 16px; padding: 25px; overflow-y: auto; text-align: left; box-sizing: border-box; box-shadow: 0 30px 60px rgba(0,0,0,0.5); pointer-events:auto;"><pre style="white-space: pre-wrap; font-family: 'Courier New', monospace; color: #f8fafc; font-size: 1rem; line-height: 1.5; margin: 0;">${safeTxt}</pre></div>`;
-                }).catch(err => {
-                    container.innerHTML = `<div style="color: white; font-weight: 800; pointer-events:auto;">Errore nel caricamento del file di testo.</div>`;
-                });
+    if (item.isVideo) {
+        container.innerHTML = `<video src="${item.url}" controls autoplay class="viewer-media-item" style="box-shadow: 0 30px 60px rgba(0,0,0,0.5); border-radius: 16px; pointer-events:auto; max-width:900px; width:100%;"></video>`;
+    } else if (item.isImage) {
+        container.innerHTML = `<img src="${item.url}" class="viewer-media-item" alt="${item.titolo}" style="pointer-events:auto; box-shadow: 0 30px 60px rgba(0,0,0,0.5); border-radius: 16px; max-height:85vh; max-width:90vw; object-fit:contain;">`;
+    } else if (item.isDocument) {
+        if (item.docType === 'pdf') {
+            // METODO INFALLIBILE: SCARICHIAMO IL PDF COME BLOB E LO MOSTRIAMO TRAMITE OBJECT URL
+            try {
+                let blobUrl = item.blobUrl;
+                if(!blobUrl) {
+                    const blob = await fetchSafeBlob(item.url);
+                    blobUrl = URL.createObjectURL(blob);
+                    window.mediaGallery[currentMediaIndex].blobUrl = blobUrl;
+                }
+                container.innerHTML = `<iframe src="${blobUrl}" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); pointer-events:auto;"></iframe>`;
+            } catch(e) {
+                // Se proprio anche il proxy fallisce (rarissimo), fallback a Google Docs
+                container.innerHTML = `<iframe src="https://docs.google.com/gview?url=${encodeURIComponent(item.url)}&embedded=true" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); pointer-events:auto;"></iframe>`;
             }
+        } else if (item.docType === 'office') {
+            container.innerHTML = `<iframe src="https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(item.url)}" style="width: 100%; height: 85vh; max-width: 1200px; background: white; border: none; border-radius: 16px; box-shadow: 0 30px 60px rgba(0,0,0,0.5); pointer-events:auto;"></iframe>`;
+        } else if (item.docType === 'text') {
+            fetchSafeBlob(item.url).then(b => b.text()).then(txt => {
+                const safeTxt = txt.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                container.innerHTML = `<div style="width: 100%; height: 85vh; max-width: 1000px; background: #1e293b; border-radius: 16px; padding: 25px; overflow-y: auto; text-align: left; box-sizing: border-box; box-shadow: 0 30px 60px rgba(0,0,0,0.5); pointer-events:auto;"><pre style="white-space: pre-wrap; font-family: monospace; color: #f8fafc; font-size: 1rem; line-height: 1.5; margin: 0;">${safeTxt}</pre></div>`;
+            });
         }
-    }, 100);
+    }
 
     const mostraFrecce = window.mediaGallery.length > 1 ? 'flex' : 'none';
     document.getElementById('btnPrevMedia').style.display = mostraFrecce;
     document.getElementById('btnNextMedia').style.display = mostraFrecce;
 }
 
-// LOGICA LETTURA TESTO PER GEMINI (IN BACKGROUND, INVISIBILE)
-window.preparaPerGemini = async function(url, isImage, isDocument, docType) {
+// ==========================================
+// 7. VERA INTEGRAZIONE CHAT GEMINI AI
+// ==========================================
+window.chiediAGeminiAI = async function(item) {
     const geminiBtn = document.getElementById('btnGemini');
+    const resContainer = document.getElementById('geminiResultContainer');
+    const resText = document.getElementById('geminiResultText');
+    
+    if (GEMINI_API_KEY === "INSERISCI_QUI_LA_TUA_CHIAVE" || !GEMINI_API_KEY) {
+        resText.innerHTML = "⚠️ <strong>CHIAVE API GEMINI MANCANTE</strong><br><br>Per far funzionare l'Intelligenza Artificiale devi inserire la tua chiave gratuita nel file <code>dashboard.js</code> alla riga 6.<br><br><a href='https://aistudio.google.com/app/apikey' target='_blank' style='color:#8b5cf6; text-decoration:underline;'>Clicca qui per ottenerne una gratis da Google.</a>";
+        resContainer.style.display = 'block';
+        return;
+    }
+
     const origHtml = geminiBtn.innerHTML;
-    geminiBtn.innerHTML = '<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:#8b5cf6; margin-right:8px;"></div> Lettura in corso...';
+    geminiBtn.innerHTML = '<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:#8b5cf6; margin-right:8px;"></div> Lettura Testo...';
     geminiBtn.disabled = true;
 
     try {
         let extractedText = "";
 
-        if (isImage) {
-            const result = await Tesseract.recognize(url, 'ita+eng', {
-                logger: m => {
-                    if (m.status === 'recognizing text') {
-                        geminiBtn.innerHTML = `<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:#8b5cf6; margin-right:8px;"></div> ${Math.round(m.progress * 100)}%`;
-                    }
-                }
-            });
+        // 1. Estrazione Testo
+        if (item.isImage) {
+            const proxyUrl = "https://api.allorigins.win/raw?url=" + encodeURIComponent(item.url);
+            const result = await Tesseract.recognize(proxyUrl, 'ita+eng', { logger: m => { if (m.status === 'recognizing text') geminiBtn.innerHTML = `<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:#8b5cf6; margin-right:8px;"></div> Scansione Foto ${Math.round(m.progress * 100)}%`; }});
             extractedText = result.data.text;
-        } else if (isDocument && docType === 'pdf') {
+        } else if (item.docType === 'pdf') {
             const pdfjsLib = window['pdfjs-dist/build/pdf'];
             pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
-            const pdf = await pdfjsLib.getDocument(url).promise;
-            for (let i = 1; i <= pdf.numPages; i++) {
-                geminiBtn.innerHTML = `<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:#8b5cf6; margin-right:8px;"></div> Pagina ${i}/${pdf.numPages}`;
+            const pdfUrlToUse = item.blobUrl || "https://api.allorigins.win/raw?url=" + encodeURIComponent(item.url);
+            const pdf = await pdfjsLib.getDocument(pdfUrlToUse).promise;
+            for (let i = 1; i <= Math.min(pdf.numPages, 10); i++) { // Leggiamo max 10 pagine per non intasare l'API
+                geminiBtn.innerHTML = `<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:#8b5cf6; margin-right:8px;"></div> Lettura PDF Pag. ${i}/${pdf.numPages}`;
                 const page = await pdf.getPage(i);
                 const content = await page.getTextContent();
-                extractedText += content.items.map(item => item.str).join(' ') + '\n\n';
+                extractedText += content.items.map(t => t.str).join(' ') + '\n\n';
             }
-        } else if (isDocument && docType === 'text') {
-            const res = await fetch(url);
-            extractedText = await res.text();
-        } else if (isDocument && docType === 'office') {
-            alert("Per i file Word o PowerPoint, seleziona il testo dal visualizzatore, copialo (Ctrl+C) e incollalo su Gemini.");
-            geminiBtn.innerHTML = origHtml;
-            geminiBtn.disabled = false;
-            return;
+        } else if (item.docType === 'text') {
+            const b = await fetchSafeBlob(item.url);
+            extractedText = await b.text();
         }
 
-        if (!extractedText || extractedText.trim() === '') {
-            extractedText = "Nessun testo rilevato nel documento.";
-        }
+        if (!extractedText || extractedText.trim() === '') throw new Error("Testo vuoto.");
 
-        document.getElementById('geminiResultText').value = extractedText;
-        document.getElementById('geminiResultContainer').style.display = 'block';
+        // 2. Chiamata API Ufficiale a Gemini
+        geminiBtn.innerHTML = '<div class="btn-spinner" style="width:18px; height:18px; border-width:2px; border-top-color:#8b5cf6; margin-right:8px;"></div> Gemini sta scrivendo...';
+        
+        const promptPersonale = "Sei un tutor avanzato per studenti dell'ITIS Amedeo Avogadro. Di seguito ti fornisco un testo estratto dai miei appunti scolastici. Analizzalo attentamente, fanne un riassunto chiaro, spiegami i concetti principali in modo facile da capire e usa grassetti e liste puntate per formattare la tua risposta. Ecco gli appunti:\n\n" + extractedText;
+
+        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_API_KEY}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ contents: [{ parts: [{ text: promptPersonale }] }] })
+        });
+
+        const data = await response.json();
+        if(data.error) throw new Error(data.error.message);
+
+        let aiText = data.candidates[0].content.parts[0].text;
+        
+        // Conversione Markdown a HTML per mostrarlo bene nella chat
+        aiText = aiText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+        aiText = aiText.replace(/\*(.*?)\*/g, '<em>$1</em>');
+        aiText = aiText.replace(/\n/g, '<br>');
+
+        resText.innerHTML = aiText;
+        resContainer.style.display = 'block';
 
     } catch (err) {
-        console.error("Errore lettura:", err);
-        showToast("Errore durante la lettura del documento", "⚠️");
+        console.error("Errore AI:", err);
+        showToast("Errore di comunicazione con l'IA", "⚠️");
     } finally {
         geminiBtn.innerHTML = origHtml;
         geminiBtn.disabled = false;
     }
 }
 
-window.copiaEApriGemini = function() {
-    const text = document.getElementById('geminiResultText').value;
-    navigator.clipboard.writeText(text).then(() => {
-        showToast("Testo copiato! Incollalo in Gemini.", "✨");
-        document.getElementById('geminiResultContainer').style.display = 'none';
-        window.open('https://gemini.google.com/app', '_blank');
-    }).catch(() => {
-        showToast("Impossibile copiare il testo", "⚠️");
-    });
+window.copiaRispostaGemini = function() {
+    const text = document.getElementById('geminiResultText').innerText;
+    navigator.clipboard.writeText(text).then(() => showToast("Risposta copiata negli appunti!", "✨"));
 };
 
+// ==========================================
+// CONTROLLI UI MODALE E FRECCE
+// ==========================================
 window.cambiaMedia = function(direzione) {
-    const container = document.getElementById('mediaContainer');
-    const elemento = container.querySelector('.viewer-media-item');
-    if(elemento) elemento.classList.add('media-switching');
-
-    setTimeout(() => {
-        if (direzione === 'next') {
-            currentMediaIndex = (currentMediaIndex + 1) % window.mediaGallery.length;
-        } else {
-            currentMediaIndex = (currentMediaIndex - 1 + window.mediaGallery.length) % window.mediaGallery.length;
-        }
-        aggiornaMediaViewer();
-    }, 250); 
+    if (direzione === 'next') currentMediaIndex = (currentMediaIndex + 1) % window.mediaGallery.length;
+    else currentMediaIndex = (currentMediaIndex - 1 + window.mediaGallery.length) % window.mediaGallery.length;
+    aggiornaMediaViewer();
 };
 
-const btnNextMedia = document.getElementById('btnNextMedia');
-if(btnNextMedia) btnNextMedia.addEventListener('click', () => cambiaMedia('next'));
-
-const btnPrevMedia = document.getElementById('btnPrevMedia');
-if(btnPrevMedia) btnPrevMedia.addEventListener('click', () => cambiaMedia('prev'));
+document.getElementById('btnNextMedia').addEventListener('click', () => cambiaMedia('next'));
+document.getElementById('btnPrevMedia').addEventListener('click', () => cambiaMedia('prev'));
 
 document.addEventListener('keydown', (e) => {
-    const modal = document.getElementById('mediaViewerModal');
-    if (modal && modal.classList.contains('active')) {
+    if (document.getElementById('mediaViewerModal').classList.contains('active')) {
         if (e.key === 'ArrowRight' && window.mediaGallery.length > 1) cambiaMedia('next');
         if (e.key === 'ArrowLeft' && window.mediaGallery.length > 1) cambiaMedia('prev');
         if (e.key === 'Escape') document.getElementById('btnChiudiViewer').click();
     }
 });
 
-const btnChiudiViewer = document.getElementById('btnChiudiViewer');
-if(btnChiudiViewer) btnChiudiViewer.addEventListener('click', () => {
+document.getElementById('btnChiudiViewer').addEventListener('click', () => {
     document.getElementById('mediaContainer').innerHTML = ''; 
     document.getElementById('mediaViewerModal').classList.remove('active');
     document.getElementById('geminiResultContainer').style.display = 'none';
