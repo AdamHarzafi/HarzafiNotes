@@ -48,7 +48,7 @@ let materiaUploadSelezionata = "Informatica";
 // ==========================================
 auth.onAuthStateChanged(user => {
     if (!user) {
-        window.location.href = "login.html";
+        window.location.href = "login.html?v=20260928-notes-auth-key";
     } else {
         const btnUpload = document.getElementById('btnUploadModal');
         if ((identityAuth.currentUser?.email || sessionStorage.getItem('harzafi_verified_email')) === ADMIN_EMAIL && btnUpload) btnUpload.style.display = 'block';
@@ -91,7 +91,7 @@ const btnEsci = document.getElementById('btnEsci');
 if(btnEsci) btnEsci.addEventListener('click', () => Promise.all([auth.signOut(), identityAuth.signOut()]).then(() => {
     ['harzafi_user', 'harzafi_user_uid', 'harzafi_auth_method', 'harzafi_verified_email', 'harzafi_role', 'harzafi_fsl_uid']
         .forEach(key => sessionStorage.removeItem(key));
-    window.location.href = "login.html";
+    window.location.href = "login.html?v=20260928-notes-auth-key";
 }));
 
 // ==========================================

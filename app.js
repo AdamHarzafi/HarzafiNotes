@@ -55,7 +55,7 @@ if(document.getElementById('notesContainer')) {
             }
             caricaAppunti("Tutte");
         } else {
-            window.location.href = "login.html"; // Redirect se non loggati
+            window.location.href = "login.html?v=20260928-notes-auth-key"; // Redirect se non loggati
         }
     });
 
@@ -63,7 +63,7 @@ if(document.getElementById('notesContainer')) {
         Promise.all([auth.signOut(), identityAuth.signOut()]).finally(() => {
             ['harzafi_user', 'harzafi_user_uid', 'harzafi_auth_method', 'harzafi_verified_email', 'harzafi_role', 'harzafi_fsl_uid']
                 .forEach(key => sessionStorage.removeItem(key));
-            window.location.href = 'login.html';
+            window.location.href = 'login.html?v=20260928-notes-auth-key';
         });
     });
 

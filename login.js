@@ -86,7 +86,7 @@ function entraNelPortale(nomeUtente, { email = '', role = 'studente', method = '
     sessionStorage.setItem('harzafi_verified_email', email);
     sessionStorage.setItem('harzafi_role', role);
     if (window.identityAuth?.currentUser) sessionStorage.setItem('harzafi_fsl_uid', window.identityAuth.currentUser.uid);
-    window.location.href = 'dashboard.html';
+    window.location.href = 'dashboard.html?v=20260928-notes-auth-key';
 }
 
 function mostraErrore(element, text) {
