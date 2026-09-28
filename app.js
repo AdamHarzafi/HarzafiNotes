@@ -1,7 +1,7 @@
 // Questo script va SOLO in dashboard.html. Il login usa login.js!
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfaklT7-0A",
+    apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
     authDomain: "harzafi-notes.firebaseapp.com",
     projectId: "harzafi-notes",
     messagingSenderId: "35834921638",

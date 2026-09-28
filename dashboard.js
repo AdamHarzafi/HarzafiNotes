@@ -5,7 +5,7 @@
 const GEMINI_API_KEY = "AQ.Ab8RN6LWwKcNQNo3j5WngHW2NAlTgiGf6B4XYgrYf0Tmx3ByyA";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfaklT7-0A",
+    apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
     authDomain: "harzafi-notes.firebaseapp.com",
     projectId: "harzafi-notes",
     messagingSenderId: "35834921638",
