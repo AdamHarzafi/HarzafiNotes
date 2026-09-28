@@ -3,192 +3,251 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Accessibilità - Harzafi Notes</title>
+    <title>Accessibilità - Harzafi FSL</title>
     <meta name="robots" content="noimageindex">
-    
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#ffffff">
-    
     <link rel="apple-touch-icon" sizes="180x180" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
     <link rel="icon" type="image/png" sizes="32x32" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
-    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="modern.css?v=20260928-notes">
-    <link rel="stylesheet" href="notes-theme.css?v=20260928-notes">
+    <link rel="stylesheet" href="accessibilita.css">
+    <link rel="stylesheet" href="modern.css?v=20260905-privacy-refinement">
+    <script defer src="site-motion.js?v=20260906"></script>
+    <link rel="stylesheet" href="carousel-motion.css?v=20260917-shared">
+    <script defer src="carousel-motion.js?v=20260917-shared"></script>
 </head>
-<body class="account-privacy-page notes-info-page">
-
-    <div class="privacy-bg-mesh" aria-hidden="true"></div>
-
-    <nav class="navbar-wrapper glass" id="navbar">
-        <div class="nav-logo">
-            <a href="index.html" aria-label="Torna alla home page">
-                <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Logo Harzafi" style="height: 36px; width: auto;">
-            </a>
-        </div>
+<body class="accessibility-page">
+    <nav class="navbar-wrapper glass" aria-label="Navigazione principale">
+        <a class="nav-logo" href="index.html" aria-label="Torna alla home page">
+            <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Harzafi">
+        </a>
         <div class="nav-links">
-            <a href="index.html#funzioni">Funzionalità</a>
-            <a href="privacy-account.html">Privacy</a>
+            <a href="index.html#features">Funzionalità</a>
+            <a href="supporto.html">Supporto</a>
+            <a href="index.html#footer">Contatti</a>
         </div>
         <a href="login.html" class="btn-premium nav-login">Accedi</a>
     </nav>
 
-    <main class="privacy-main">
-        <header class="privacy-header">
-            <div class="privacy-icon">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M12 2c1.1 0 2 .9 2 2s-.9 2-2 2-2-.9-2-2 .9-2 2-2zm9 7h-6v13h-2v-6h-2v6H9V9H3V7h18v2z"/>
-                </svg>
-            </div>
-            <h1 class="animated-gradient-text">Dichiarazione di Accessibilità</h1>
-            <p class="lead">L'ITIS Amedeo Avogadro si impegna a rendere il proprio sito web accessibile, conformemente al D.lgs 10 agosto 2018, n. 106 che ha recepito la direttiva UE 2016/2102 del Parlamento europeo e del Consiglio.</p>
+    <main class="page-content">
+        <header class="accessibility-hero reveal">
+            <img class="accessibility-hero-logo" src="IMMAGINI/ACCESSIBILITA-LOGO.png" alt="Accessibilità Harzafi">
+            <h1>
+                <span>L'accessibilità non è un'opzione.</span>
+                <span>È il punto di partenza.</span>
+            </h1>
         </header>
 
-        <section class="apple-summary-box">
-            <ul class="summary-list">
-                <li>La piattaforma è stata progettata seguendo i principi del <strong>Design for All</strong> per garantire un'esperienza equa e senza ostacoli.</li>
-                <li>Il portale è conforme alle <strong>Linee Guida WCAG 2.1 (Web Content Accessibility Guidelines)</strong> livello AA.</li>
-                <li>Garantita la piena navigabilità tramite tastiera, grazie all'integrazione di un sistema di "Focus Visibile" ottimizzato.</li>
-                <li>Contrasti cromatici e scala tipografica calibrati per supportare utenti con disabilità visive e semplificare la leggibilità tramite screen reader.</li>
-            </ul>
+        <section class="access-editorial-section" aria-labelledby="access-features-title">
+            <header class="access-section-header reveal">
+                <h2 id="access-features-title">
+                    <span class="access-title-main">Bellezza e funzionalità,</span>
+                    <span class="access-title-sub">naturalmente accessibili.</span>
+                </h2>
+            </header>
+
+            <div class="access-card-track" id="access-features-track" tabindex="0" role="region" aria-label="Funzioni di accessibilità del portale">
+                <article class="access-info-card access-info-card--blue reveal is-current">
+                    <span class="access-card-eyebrow">PERCEZIONE</span>
+                    <h3>Disabilità visive.</h3>
+                    <p class="access-card-summary">Descrizioni alternative, compatibilità con screen reader, contrasto elevato e zoom fino al 200%.</p>
+                    <div class="access-card-visual" aria-hidden="true">
+                        <img class="access-card-image access-card-image--vision" src="IMMAGINI/DISABILITA-VISIVE-BOX.png" alt="" loading="eager" fetchpriority="low" decoding="async">
+                    </div>
+                    <button class="access-card-more" type="button" data-access-detail="access-detail-vision" data-modal-eyebrow="PERCEZIONE" data-modal-title="Disabilità visive." aria-label="Apri tutti i dettagli sulle funzioni per le disabilità visive">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                    <template id="access-detail-vision">
+                        <p class="access-detail-intro">Il portale mantiene contenuti e comandi leggibili, riconoscibili e utilizzabili anche quando la vista è ridotta o assente.</p>
+                        <ul class="access-detail-list">
+                            <li><strong>Testo alternativo.</strong><span>Le immagini non testuali possiedono descrizioni accurate per essere interpretate dai software assistivi.</span></li>
+                            <li><strong>Screen reader.</strong><span>La struttura HTML5 è semantica e ottimizzata per VoiceOver, NVDA e JAWS.</span></li>
+                            <li><strong>Contrasto elevato.</strong><span>Testi e sfondi mantengono un rapporto minimo di luminanza pari a 4.5:1.</span></li>
+                            <li><strong>Testo ridimensionabile.</strong><span>Il layout può essere ingrandito fino al 200% senza sovrapposizioni o perdita di informazioni.</span></li>
+                        </ul>
+                    </template>
+                </article>
+
+                <article class="access-info-card access-info-card--violet reveal">
+                    <span class="access-card-eyebrow">INTERAZIONE</span>
+                    <h3>Disabilità motorie.</h3>
+                    <p class="access-card-summary">Navigazione completa da tastiera, focus sempre visibile e interazioni semplici e prevedibili.</p>
+                    <div class="access-card-visual" aria-hidden="true">
+                        <img class="access-card-image access-card-image--motor" src="IMMAGINI/DISABILITA-MOTORIE-BOX.png" alt="" loading="eager" fetchpriority="low" decoding="async">
+                    </div>
+                    <button class="access-card-more" type="button" data-access-detail="access-detail-motor" data-modal-eyebrow="INTERAZIONE" data-modal-title="Disabilità motorie." aria-label="Apri tutti i dettagli sulle funzioni per le disabilità motorie">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                    <template id="access-detail-motor">
+                        <p class="access-detail-intro">Ogni funzione essenziale è raggiungibile senza dipendere da movimenti precisi o dall'uso del mouse.</p>
+                        <ul class="access-detail-list">
+                            <li><strong>Navigazione da tastiera.</strong><span>Il sito, compresi modali, popup e menu, è utilizzabile con TAB, INVIO e frecce direzionali.</span></li>
+                            <li><strong>Focus visibile.</strong><span>Ogni elemento selezionato presenta un'indicazione chiara e coerente durante la navigazione.</span></li>
+                        </ul>
+                    </template>
+                </article>
+
+                <article class="access-info-card access-info-card--green reveal">
+                    <span class="access-card-eyebrow">COMPRENSIONE</span>
+                    <h3>Accessibilità cognitiva e uditiva.</h3>
+                    <p class="access-card-summary">Struttura ordinata, sottotitoli e trascrizioni, linguaggio semplice e contenuti immediati.</p>
+                    <div class="access-card-visual" aria-hidden="true">
+                        <img class="access-card-image access-card-image--cognitive" src="IMMAGINI/ACCESSIBILITA-COGNITIVA-UDITIVA-BOX.png" alt="" loading="eager" fetchpriority="low" decoding="async">
+                    </div>
+                    <button class="access-card-more" type="button" data-access-detail="access-detail-cognitive" data-modal-eyebrow="COMPRENSIONE" data-modal-title="Accessibilità cognitiva e uditiva." aria-label="Apri tutti i dettagli sull'accessibilità cognitiva e uditiva">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                    <template id="access-detail-cognitive">
+                        <p class="access-detail-intro">Una struttura prevedibile e un linguaggio diretto rendono le informazioni più facili da seguire, ascoltare e comprendere.</p>
+                        <ul class="access-detail-list">
+                            <li><strong>Struttura ordinata.</strong><span>Intestazioni, sezioni e menu seguono una gerarchia logica e coerente.</span></li>
+                            <li><strong>Sottotitoli e trascrizioni.</strong><span>I contenuti multimediali prevedono equivalenti testuali quando necessari.</span></li>
+                            <li><strong>Linguaggio semplice.</strong><span>I testi sono immediati e privi di elementi lampeggianti potenzialmente dannosi.</span></li>
+                        </ul>
+                    </template>
+                </article>
+            </div>
+
+            <div class="carousel-player access-carousel-player" id="access-features-player" style="--carousel-duration: 6500ms;" aria-label="Riproduzione automatica delle funzioni di accessibilità">
+                <div class="carousel-timeline" role="group" aria-label="Seleziona una funzione di accessibilità">
+                    <button class="carousel-timeline-step is-active" type="button" data-carousel-index="0" aria-label="Mostra disabilità visive" aria-current="true"></button>
+                    <button class="carousel-timeline-step" type="button" data-carousel-index="1" aria-label="Mostra disabilità motorie" aria-current="false"></button>
+                    <button class="carousel-timeline-step" type="button" data-carousel-index="2" aria-label="Mostra accessibilità cognitiva e uditiva" aria-current="false"></button>
+                </div>
+                <button class="carousel-play-toggle" type="button" aria-label="Metti in pausa il carosello" aria-pressed="false">
+                    <span class="carousel-pause-symbol" aria-hidden="true"><i></i><i></i></span>
+                    <svg class="carousel-play-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5 19 12 8 18.5Z" fill="currentColor"/></svg>
+                </button>
+            </div>
         </section>
 
-        <article class="privacy-content">
-            <section class="privacy-section">
-                <h2>Stato di Conformità</h2>
-                <p>La presente piattaforma, <strong>Harzafi Notes</strong>, è <strong>conforme</strong> a quanto previsto dalle linee guida sull'accessibilità degli strumenti informatici. Abbiamo integrato tecnologie moderne come WAI-ARIA per comunicare correttamente lo stato degli elementi interattivi alle tecnologie assistive.</p>
+        <section class="access-editorial-section access-editorial-section--standards" aria-labelledby="access-standards-title">
+            <header class="access-section-header reveal">
+                <h2 id="access-standards-title">
+                    <span class="access-title-main">Standard chiari,</span>
+                    <span class="access-title-sub">impegno continuo.</span>
+                </h2>
+            </header>
+
+            <div class="access-card-track" id="access-standards-track" tabindex="0" role="region" aria-label="Conformità e impegni per l'accessibilità">
+                <article class="access-info-card access-info-card--neutral reveal is-current">
+                    <span class="access-card-eyebrow">WCAG 2.1</span>
+                    <h3>Conforme al livello AA.</h3>
+                    <p class="access-card-summary">Requisiti tecnici verificati, eccezioni documentate e miglioramento continuo del portale.</p>
+                    <button class="access-card-more" type="button" data-access-detail="access-detail-wcag" data-modal-eyebrow="WCAG 2.1" data-modal-title="Conforme al livello AA." aria-label="Apri tutti i dettagli sulla conformità WCAG 2.1">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                    <template id="access-detail-wcag">
+                        <p class="access-detail-intro">Il Portale Registro FSL Harzafi rispetta i requisiti tecnici WCAG 2.1, Livello AA, con alcune eccezioni documentate.</p>
+                        <span class="access-status-pill">Conforme con eccezioni</span>
+                        <div class="access-detail-callout">
+                            <strong>Un processo continuo.</strong>
+                            <p>La conformità non viene considerata un traguardo definitivo: controlli, correzioni e miglioramenti accompagnano l'evoluzione del portale.</p>
+                        </div>
+                    </template>
+                </article>
+
+                <article class="access-info-card access-info-card--warm reveal">
+                    <span class="access-card-eyebrow">STATO</span>
+                    <h3>Dichiarazione trasparente.</h3>
+                    <p class="access-card-summary">Nessun onere sproporzionato, nessun contenuto escluso e stato dichiarato con chiarezza.</p>
+                    <button class="access-card-more" type="button" data-access-detail="access-detail-status" data-modal-eyebrow="STATO" data-modal-title="Dichiarazione trasparente." aria-label="Apri tutti i dettagli sullo stato della dichiarazione">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                    <template id="access-detail-status">
+                        <p class="access-detail-intro">Le condizioni che incidono sulla conformità vengono esposte in modo diretto e verificabile.</p>
+                        <dl class="access-detail-status-list">
+                            <div><dt>Inosservanza della Legge 4/2004</dt><dd>No</dd></div>
+                            <div><dt>Onere sproporzionato</dt><dd>No</dd></div>
+                            <div><dt>Contenuto escluso dalla legislazione</dt><dd>No</dd></div>
+                        </dl>
+                    </template>
+                </article>
+
+                <article class="access-info-card access-info-card--dark reveal">
+                    <span class="access-card-eyebrow">ITALIA · UE</span>
+                    <h3>Un impegno anche legale.</h3>
+                    <p class="access-card-summary">Dichiarazione sempre raggiungibile, conformità ufficiale e riferimenti italiani ed europei.</p>
+                    <button class="access-card-more" type="button" data-access-detail="access-detail-legal" data-modal-eyebrow="ITALIA · UE" data-modal-title="Un impegno anche legale." aria-label="Apri tutti i dettagli sull'impegno legale">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg>
+                    </button>
+                    <template id="access-detail-legal">
+                        <p class="access-detail-intro">La dichiarazione di accessibilità è presente nel footer delle pagine pubbliche e descrive ufficialmente lo stato di conformità del portale.</p>
+                        <div class="access-detail-callout">
+                            <strong>Riferimento normativo.</strong>
+                            <p>Contenuti redatti in ottemperanza alla Decisione di esecuzione UE 2018/1523.</p>
+                        </div>
+                    </template>
+                </article>
+            </div>
+
+            <div class="carousel-player access-carousel-player" id="access-standards-player" style="--carousel-duration: 6500ms;" aria-label="Riproduzione automatica degli standard di accessibilità">
+                <div class="carousel-timeline" role="group" aria-label="Seleziona uno standard di accessibilità">
+                    <button class="carousel-timeline-step is-active" type="button" data-carousel-index="0" aria-label="Mostra conformità WCAG" aria-current="true"></button>
+                    <button class="carousel-timeline-step" type="button" data-carousel-index="1" aria-label="Mostra dichiarazione trasparente" aria-current="false"></button>
+                    <button class="carousel-timeline-step" type="button" data-carousel-index="2" aria-label="Mostra impegno legale" aria-current="false"></button>
+                </div>
+                <button class="carousel-play-toggle" type="button" aria-label="Metti in pausa il carosello" aria-pressed="false">
+                    <span class="carousel-pause-symbol" aria-hidden="true"><i></i><i></i></span>
+                    <svg class="carousel-play-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5 19 12 8 18.5Z" fill="currentColor"/></svg>
+                </button>
+            </div>
+        </section>
+
+        <div class="access-modal-overlay" id="access-detail-modal" aria-hidden="true">
+            <section class="access-modal-panel" role="dialog" aria-modal="true" aria-labelledby="access-modal-title" aria-describedby="access-modal-content">
+                <button class="access-modal-close" type="button" aria-label="Chiudi i dettagli">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg>
+                </button>
+                <div class="access-modal-scroll">
+                    <span class="access-modal-eyebrow" id="access-modal-eyebrow"></span>
+                    <h2 id="access-modal-title"></h2>
+                    <div class="access-modal-content" id="access-modal-content"></div>
+                </div>
             </section>
-            <section class="privacy-section">
-                <h2>Meccanismo di Feedback e Recapiti</h2>
-                <p>Il nostro impegno per l'accessibilità è continuo. Se dovessi riscontrare difficoltà nell'accesso ai contenuti o nell'utilizzo delle funzionalità, o se desideri richiedere informazioni in formati alternativi, puoi contattarci utilizzando il seguente recapito:</p>
-                <ul>
-                    <li><strong>Email Responsabile Tecnico:</strong> <a href="mailto:harzafi.support@gmail.com" class="privacy-link">harzafi.support@gmail.com</a></li>
-                </ul>
-                <p>Nella segnalazione, ti preghiamo di indicare l'URL della pagina, una descrizione del problema e il dispositivo/screen reader utilizzato.</p>
-            </section>
-            <section class="privacy-section">
-                <h2>Procedura di Attuazione</h2>
-                <p>In caso di mancata o insoddisfacente risposta da parte dell'Amministrazione ai feedback inviati, conformemente all'art. 3-quinquies della Legge 4/2004, l'utente ha il diritto di fare ricorso al Difensore Civico per il Digitale tramite l'apposito servizio AGID.</p>
-            </section>
-        </article>
+        </div>
     </main>
 
-    <!-- FOOTER VISIBILE E FIXATO -->
-    <footer id="footer" class="footer-wrapper" style="margin-top: 0; box-shadow: none;">
-        <div class="mim-footer-wrap">
-            <a href="https://www.miur.gov.it/" target="_blank" rel="noopener noreferrer">
-                <img src="IMMAGINI/LOGO-MIM.png" loading="lazy" decoding="async" class="footer-logo-mim" alt="Logo Ministero">
-            </a>
-        </div>
-        <div class="grid-infos">
-            <div class="col-info">
-                <h4><svg viewBox="0 0 24 24"><path d="M12,3L2,12H5V20H19V12H22L12,3M12,7.7C14.1,7.7 15.8,9.4 15.8,11.5C15.8,13.6 14.1,15.3 12,15.3C9.9,15.3 8.2,13.6 8.2,11.5C8.2,9.4 9.9,7.7 12,7.7Z"/></svg>Struttura Operativa Scuola</h4>
-                <p>ITIS Amedeo Avogadro</p>
-                <p><a href="#" id="btn-open-maps" class="address-link">Corso San Maurizio, 8 - 10124 Torino</a></p>
-                <p>Tel: <a href="tel:+390118153611" class="tel-link">+39 011 815 3611</a></p>
+    <footer id="footer" class="harzafi-footer">
+        <div class="harzafi-footer-inner reveal">
+            <div class="harzafi-footer-main">
+                <div class="harzafi-footer-brand">
+                    <a href="index.html" aria-label="Harzafi FSL — Home"><img src="IMMAGINI/LOGO-HARZAFI.png" alt="Harzafi"></a>
+                    <h2>Un registro più semplice. <span>Creato con cura.</span></h2>
+                </div>
+                <div class="harzafi-footer-profile">
+                    <img class="harzafi-footer-avatar" src="IMMAGINI/ADAM%20HARZAFI.png" alt="Adam Harzafi" width="64" height="64" loading="lazy" decoding="async">
+                    <p class="harzafi-footer-eyebrow">Progetto personale</p>
+                    <h3>Harzafi Adam</h3>
+                    <p class="harzafi-footer-school"><span>Classe 4AI</span><span>Anno scolastico 2026/2027</span></p>
+                    <ul class="harzafi-footer-socials" aria-label="Social Harzafi">
+                        <li><a href="https://www.instagram.com/adamharzafi" target="_blank" rel="noopener noreferrer" aria-label="Apri Instagram di Adam Harzafi"><img src="IMMAGINI/SOCIAL-INSTAGRAM.svg" alt=""></a></li>
+                        <li><a href="https://www.snapchat.com/@adamharzafi" target="_blank" rel="noopener noreferrer" aria-label="Apri Snapchat di Adam Harzafi"><img src="IMMAGINI/SOCIAL-SNAPCHAT.svg" alt=""></a></li>
+                        <li><a href="https://it.linkedin.com/in/adamharzafi" target="_blank" rel="noopener noreferrer" aria-label="Apri LinkedIn di Adam Harzafi"><img src="IMMAGINI/SOCIAL-LINKEDIN.svg" alt=""></a></li>
+                        <li><a href="https://github.com/AdamHarzafi" target="_blank" rel="noopener noreferrer" aria-label="Apri GitHub di Adam Harzafi"><img src="IMMAGINI/SOCIAL-GITHUB.svg" alt=""></a></li>
+                        <li><a href="https://t.me/AdamHarzafi" target="_blank" rel="noopener noreferrer" aria-label="Apri Telegram di Adam Harzafi"><img src="IMMAGINI/SOCIAL-TELEGRAM.svg" alt=""></a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="col-info">
-                <h4><svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/></svg>Servizi Dati & Finanziari</h4>
-                <p>Email Segreteria:<br> <a href="mailto:tois05100c@istruzione.it" class="hi">tois05100c@istruzione.it</a></p>
-                <p>Rete PEC:<br> <a href="mailto:tois05100c@pec.istruzione.it" class="hi">tois05100c@pec.istruzione.it</a></p>
-            </div>
-            <div class="col-info">
-                <h4><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Informazioni Contatto</h4>
-                <p>Il sito è gestito da Harzafi Adam</p>
-                <p>Classe 3°A Informatica</p>
-                <p>Anno di Corso: 2025/2026</p>
-                <p>Richiesta di assistenza:<br> <a href="mailto:harzafi.support@gmail.com" class="hi">harzafi.support@gmail.com</a></p>
-            </div>
-        </div>
-        <div class="bottom-branding">
-            <div class="badge-views">
-                <svg style="width:20px; fill:currentColor;" viewBox="0 0 24 24"><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/></svg> 
-                Letture Tracciate: <strong id="dynamic-counter-tracker">...</strong>
-            </div>
-            <p class="copyright-text">Harzafi Notes - Portale Ufficiale © - Tutti i diritti riservati</p>
-            <div class="legal-links">
-                <a href="accessibilita.html" style="color: var(--primary);">Dichiarazione di Accessibilità</a>
-                <span class="desktop-divider">|</span>
-                <a href="privacy-account.html">Privacy Policy</a>
+            <div class="harzafi-footer-bottom">
+                <p>© 2026 Harzafi FSL. Tutti i diritti riservati.</p>
+<nav class="harzafi-footer-links" aria-label="Informazioni legali">
+                    <a href="accessibilita.html" aria-current="page">Accessibilità</a>
+                    <a href="privacy-account.html">Il tuo account</a>
+                    <a href="privacy.html">Norme sulla privacy</a>
+                    <a href="termini.html">Termini</a>
+                    <a href="supporto.html">Supporto</a>
+                </nav>
             </div>
         </div>
     </footer>
 
-    <!-- Modale Mappa -->
-    <div id="maps-modal" class="modal-overlay bottom-sheet">
-        <div class="modal-content">
-            <button class="close-btn" aria-label="Chiudi">&times;</button>
-            <div class="bottom-sheet-body">
-                <h2 style="font-size: 1.4rem; margin-bottom: 25px; color: var(--text-dark); text-align:center; font-weight: 900;">Scegli un'app per aprire.</h2>
-                <div style="display: flex; justify-content: space-around; align-items: flex-start;">
-                    <a href="https://www.google.com/maps/search/?api=1&query=Corso+San+Maurizio,+8+-+10124+Torino" target="_blank" class="map-app-btn">
-                        <img src="IMMAGINI/GOOGLE-MAPS-LOGO.png" loading="lazy" decoding="async" alt="Google Maps">
-                        <span>Google Maps</span>
-                    </a>
-                    <a href="http://maps.apple.com/?q=Corso+San+Maurizio+8+Torino" target="_blank" class="map-app-btn">
-                        <img src="IMMAGINI/APPLE-MAPS-LOGO.png" loading="lazy" decoding="async" alt="Apple Mappe">
-                        <span>Apple Mappe</span>
-                    </a>
-                    <a href="https://waze.com/ul?q=Corso+San+Maurizio+8+Torino" target="_blank" class="map-app-btn">
-                        <img src="IMMAGINI/WAZE-LOGO.png" loading="lazy" decoding="async" alt="Waze">
-                        <span>Waze</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Bottone Torna Su -->
-    <button id="scrollTopBtn" class="scroll-top-btn" aria-label="Torna su">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="18 15 12 9 6 15"></polyline>
-        </svg>
-    </button>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            // Navbar Scroll
-            const navbar = document.getElementById('navbar');
-            let isScrolled = false;
-            function handleScroll() {
-                const should = window.scrollY > 40;
-                if (should !== isScrolled) {
-                    isScrolled = should;
-                    navbar.classList.toggle('scrolled', isScrolled);
-                }
-            }
-            handleScroll();
-            window.addEventListener('scroll', handleScroll, { passive: true });
-
-            // Scroll to Top
-            const scrollTopBtn = document.getElementById('scrollTopBtn');
-            if(scrollTopBtn){
-                window.addEventListener('scroll', () => {
-                    if (window.scrollY > 300) { scrollTopBtn.classList.add('visible'); } 
-                    else { scrollTopBtn.classList.remove('visible'); }
-                }, { passive: true });
-                scrollTopBtn.addEventListener('click', () => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
-            }
-
-            // Logica Modale Mappa
-            const btnOpenMaps = document.getElementById('btn-open-maps');
-            const mapsModal = document.getElementById('maps-modal');
-            if(btnOpenMaps && mapsModal) {
-                btnOpenMaps.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    mapsModal.classList.add('active');
-                });
-                const closeBtn = mapsModal.querySelector('.close-btn');
-                if(closeBtn) {
-                    closeBtn.addEventListener('click', () => mapsModal.classList.remove('active'));
-                }
-            }
-        });
-    </script>
+    <script src="accessibilita.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check-compat.js"></script>
+    <script defer src="auth-session.js?v=20260923-app-check"></script>
 </body>
 </html>

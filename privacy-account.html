@@ -3,159 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Privacy Account - Harzafi Notes</title>
+    <title>Privacy Account - Harzafi FSL</title>
     <meta name="robots" content="noimageindex">
-
+    
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#ffffff">
-
+    
     <link rel="apple-touch-icon" sizes="180x180" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
     <link rel="icon" type="image/png" sizes="32x32" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
-
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="modern.css?v=20260928-notes">
-    <link rel="stylesheet" href="notes-theme.css?v=20260928-notes">
+
+
+    <link rel="stylesheet" href="modern.css?v=20260905-privacy-refinement">
+    <link rel="stylesheet" href="account-privacy.css?v=20260907-nav">
+    <meta name="description" content="Il tuo account Harzafi, in parole semplici. Scopri come funziona l’accesso, come vengono protetti i dati e a chi rivolgerti.">
+    <script defer src="carousel-player.js?v=20260917-shared-motion"></script>
+    <script defer src="account-privacy.js?v=20260906-rail-end"></script>
+    <script defer src="site-motion.js?v=20260906"></script>
+    <link rel="stylesheet" href="carousel-motion.css?v=20260917-shared">
+    <script defer src="carousel-motion.js?v=20260917-shared"></script>
 </head>
-<body class="account-privacy-page notes-info-page">
+<body class="account-privacy-page">
 
-    <div class="privacy-bg-mesh" aria-hidden="true"></div>
+    <a class="account-skip-link" href="#contenuto">Vai al contenuto</a>
 
-    <nav class="navbar-wrapper glass" id="navbar">
-        <div class="nav-logo">
-            <a href="index.html" aria-label="Torna alla home page">
-                <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Logo Harzafi" style="height: 36px; width: auto;">
-            </a>
-        </div>
+    <nav class="navbar-wrapper glass" id="navbar" aria-label="Navigazione principale">
+        <a class="nav-logo" href="index.html" aria-label="Torna alla home page">
+            <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Harzafi">
+        </a>
         <div class="nav-links">
-            <a href="index.html#funzioni">Funzionalità</a>
-            <a href="accessibilita.html">Accessibilità</a>
+            <a href="index.html#features">Funzionalità</a>
+            <a href="supporto.html">Supporto</a>
+            <a href="index.html#footer">Contatti</a>
         </div>
         <a href="login.html" class="btn-premium nav-login">Accedi</a>
     </nav>
 
-    <main class="privacy-main">
-        <header class="privacy-header">
-            <div class="privacy-icon">
-                <svg viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-                </svg>
-            </div>
-            <h1 class="animated-gradient-text">Account Harzafi e privacy</h1>
-            <p class="lead">Le informazioni relative all'Account Harzafi vengono utilizzate al momento del login per abilitare i servizi sicuri. La piattaforma è concepita in modo da proteggere le tue informazioni e garantirti la massima trasparenza.</p>
+    <main id="contenuto" class="account-story">
+        <header class="account-hero">
+            <img class="account-hero-logo" src="IMMAGINI/LOGO-HARZAFI-PRIVACY.png" width="2700" height="2700" alt="Harzafi Privacy" decoding="async" fetchpriority="high">
+            <h1><strong>Il tuo account.</strong><span>Tutto qui. Semplice.</span></h1>
         </header>
-
-        <section class="apple-summary-box">
-            <ul class="summary-list">
-                <li>Eseguendo l’accesso con il tuo Account Harzafi o Google Workspace d'Istituto, abiliterai servizi come Harzafi Notes, la dashboard, e la gestione documentale.</li>
-                <li>Raccogliamo solo i dati essenziali: nome, email istituzionale e orari di accesso. Tali dati verranno inviati in modo crittografato ai sistemi per permetterne la validazione.</li>
-                <li>Il tuo Harzafi ID (HID) verrà associato univocamente al tuo profilo al fine di fornirti un servizio di timbratura e assistenza migliori.</li>
-                <li>Non vendiamo, né venderemo mai, i tuoi dati personali a terzi. L'uso dei dati è strettamente circoscritto alle necessità dell'ITIS Amedeo Avogadro.</li>
-            </ul>
+        <section class="account-belief account-container" id="riservatezza" aria-labelledby="belief-title">
+            <img src="IMMAGINI/LOGO-PRIVACY-ACCOUNT-SECURITY.png" width="2160" height="2160" alt="Icona della privacy" decoding="async">
+            <h2 id="belief-title">La riservatezza è<br>uno spazio inviolabile.</h2>
+            <p>Da Harzafi progettiamo il futuro digitale partendo da una certezza: i tuoi dati appartengono alla tua vita, non ai nostri server.</p>
         </section>
-
-        <article class="privacy-content">
-            <section class="privacy-section">
-                <h2>Protezione dei Dati Fin Dalla Progettazione</h2>
-                <p>L'Account Harzafi e tutti i servizi di Harzafi Notes sono sono concepiti in modo da proteggere la tua privacy. Ci impegniamo a raccogliere <strong>solo i dati necessari</strong> a migliorare la tua esperienza scolastica.</p>
-            </section>
-            <section class="privacy-section">
-                <h2>Quali informazioni raccogliamo</h2>
-                <ul>
-                    <li><strong>Credenziali di accesso:</strong> Nome utente ed Email Istituzionale.</li>
-                    <li><strong>Dati di Autenticazione:</strong> Token di sessione generati tramite Google Workspace o password crittografate gestite nativamente.</li>
-                    <li><strong>Dati di Sistema e Sicurezza:</strong> Indirizzi IP resi anonimi, tentativi di accesso e metadati del dispositivo.</li>
-                    <li><strong>Log di Presenza:</strong> Orario e data della timbratura effettuata tramite Harzafi ID (HID).</li>
-                </ul>
-            </section>
-            <section class="privacy-section">
-                <h2>Come utilizziamo i tuoi dati</h2>
-                <ul>
-                    <li>Verificare la tua identità e il tuo ruolo.</li>
-                    <li>Inviarti comunicazioni di sicurezza tramite il nostro sistema integrato.</li>
-                    <li>Bloccare automaticamente gli accessi tramite reti non sicure (es. VPN commerciali).</li>
-                </ul>
-            </section>
-        </article>
+        <section class="account-basics" aria-labelledby="basics-title">
+            <div class="account-container account-section-heading">
+                <p class="account-eyebrow">Le cose da sapere</p>
+                <h2 id="basics-title">Come proteggere<br>il tuo account.<br><span>Ogni giorno.</span></h2>
+            </div>
+            <div class="account-carousel-shell" id="account-carousel-shell">
+                <div class="account-cards" id="account-cards" tabindex="0" role="region" aria-roledescription="carosello" aria-label="Il tuo account, in quattro schede">
+                    <article class="account-card account-card-profile" aria-labelledby="account-card-title-1">
+                        <div class="account-card-media"><img class="account-card-art account-card-emoji" src="IMMAGINI/LOGO-ACCOUNT-EMOJI-HARZAFI.png" width="3464" height="2308" alt="" loading="lazy" decoding="async"></div>
+                        <div class="account-card-copy">
+                            <h3 id="account-card-title-1"><span>Personale.</span><br>A partire dall’accesso.</h3>
+                            <p>Non condividere password o codici. Se usi un dispositivo condiviso, scegli «Esci» quando hai finito.</p>
+                            <a class="account-text-link" href="privacy.html#dati">Quali dati vengono usati <span aria-hidden="true">↗</span></a>
+                        </div>
+                    </article>
+                    <article class="account-card account-card-security" aria-labelledby="account-card-title-2">
+                        <div class="account-card-media"><img class="account-card-art account-card-lock" src="IMMAGINI/LOGO-HARZAFI-PRIVACY-BOX.png" width="800" height="800" alt="" loading="lazy" decoding="async"></div>
+                        <div class="account-card-copy">
+                            <h3 id="account-card-title-2"><span>Protetti.</span><br>Non per magia.</h3>
+                            <p>Cifriamo i dati durante il trasferimento e l’archiviazione. Chi ha i permessi di gestione può comunque accedervi.</p>
+                            <a class="account-text-link" href="privacy.html#sicurezza">Come funziona la protezione <span aria-hidden="true">↗</span></a>
+                        </div>
+                    </article>
+                    <article class="account-card account-card-rights" aria-labelledby="account-card-title-3">
+                        <div class="account-card-media"><img class="account-card-art account-card-topic" src="IMMAGINI/LOGO-DOMANDA-HARZAFI.png" width="1024" height="1024" alt="" loading="lazy" decoding="async"></div>
+                        <div class="account-card-copy">
+                            <h3 id="account-card-title-3"><span>Una domanda?</span><br>Parliamone.</h3>
+                            <p>Puoi chiedere quali dati ti riguardano, correggerli o richiederne la cancellazione, nei casi previsti dalla legge.</p>
+                            <a class="account-text-link" href="supporto.html">Contatta il supporto <span aria-hidden="true">↗</span></a>
+                        </div>
+                    </article>
+                    <article class="account-card account-card-details" aria-labelledby="account-card-title-4">
+                        <div class="account-card-media"><img class="account-card-art account-card-topic" src="IMMAGINI/LOGO-LIBRO-HARZAFI.png" width="2025" height="2025" alt="" loading="lazy" decoding="async"></div>
+                        <div class="account-card-copy">
+                            <h3 id="account-card-title-4"><span>Semplice da leggere.</span><br>Da approfondire.</h3>
+                            <p>Chi gestisce i dati, i servizi utilizzati, i backup e la conservazione: trovi le informazioni nell’informativa completa.</p>
+                            <a class="account-text-link" href="privacy.html">Leggi l’informativa privacy <span aria-hidden="true">↗</span></a>
+                        </div>
+                    </article>
+                </div>
+            </div>
+            <div class="carousel-player" id="account-carousel-player" style="--carousel-duration:6500ms;" aria-label="Riproduzione delle schede account" hidden>
+                <div class="carousel-timeline" role="group" aria-label="Scegli una scheda">
+                    <button type="button" class="carousel-timeline-step is-active" aria-label="Il tuo accesso" aria-controls="account-cards" aria-current="true"></button>
+                    <button type="button" class="carousel-timeline-step" aria-label="La protezione" aria-controls="account-cards" aria-current="false"></button>
+                    <button type="button" class="carousel-timeline-step" aria-label="Le tue richieste" aria-controls="account-cards" aria-current="false"></button>
+                    <button type="button" class="carousel-timeline-step" aria-label="Tutti i dettagli" aria-controls="account-cards" aria-current="false"></button>
+                </div>
+                <button type="button" class="carousel-play-toggle" aria-label="Metti in pausa le schede account" aria-pressed="false" aria-controls="account-cards">
+                    <span class="carousel-pause-symbol" aria-hidden="true"><i></i><i></i></span>
+                    <svg class="carousel-play-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5 19 12 8 18.5Z" fill="currentColor"/></svg>
+                </button>
+            </div>
+            <div class="account-disclosure account-container">
+                <p>Harzafi è un progetto personale indipendente, non un servizio ufficiale della scuola.</p>
+                <p>Questa pagina è una sintesi. L’<a href="privacy.html">informativa completa</a> descrive anche gli aspetti ancora da definire, tra cui i tempi di conservazione e la verifica degli accessi ai dati.</p>
+            </div>
+        </section>
+        <section class="account-values" aria-labelledby="values-title">
+            <div class="account-container">
+                <h2 id="values-title">Seguiamo sempre quello<br> in cui crediamo.</h2>
+                <div class="account-values-track" id="account-values-track" tabindex="0" role="region" aria-label="I valori di Harzafi">
+                    <article class="account-value">
+                        <img class="account-value-icon" src="IMMAGINI/ACCESSIBILITA-LOGO.png" width="1080" height="1080" alt="" loading="lazy" decoding="async">
+                        <h3>Accessibilità</h3>
+                        <p>Leggere, orientarsi, trovare ciò che serve. L’attenzione alle persone parte anche da qui.</p>
+                        <a href="accessibilita.html">Scopri l’accessibilità <span aria-hidden="true">›</span></a>
+                    </article>
+                    <article class="account-value">
+                        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="24" cy="24" r="21"/><path d="M24 22v13"/><circle cx="24" cy="14" r="1.4" fill="currentColor" stroke="none"/></svg>
+                        <h3>Trasparenza</h3>
+                        <p>Spiegare cosa succede ai dati. Anche quando significa raccontare i limiti e ciò che resta da migliorare.</p>
+                        <a href="privacy.html">Leggi la nostra informativa <span aria-hidden="true">›</span></a>
+                    </article>
+                    <article class="account-value">
+                        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M24 12c-6-5-13-6-20-4v30c7-2 14-1 20 4 6-5 13-6 20-4V8c-7-2-14-1-20 4Zm0 0v30"/></svg>
+                        <h3>Formazione</h3>
+                        <p>Un progetto nato per imparare. Uno spazio per esplorare come la tecnologia può aiutare a seguire un percorso.</p>
+                        <a href="index.html#features">Conosci il progetto <span aria-hidden="true">›</span></a>
+                    </article>
+                    <article class="account-value">
+                        <svg viewBox="0 0 48 48" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 7h32a3 3 0 0 1 3 3v23a3 3 0 0 1-3 3H21L9 44v-8H8a3 3 0 0 1-3-3V10a3 3 0 0 1 3-3Z"/><path d="M14 17h20M14 25h14"/></svg>
+                        <h3>Ascolto</h3>
+                        <p>Una domanda, una difficoltà, un’idea. Ogni segnalazione può aiutarci a rendere Harzafi più chiaro e utile.</p>
+                        <a href="supporto.html">Parla con noi <span aria-hidden="true">›</span></a>
+                    </article>
+                </div>
+                <div class="account-values-controls" hidden>
+                    <button type="button" id="values-prev" aria-label="Valori precedenti" aria-controls="account-values-track"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
+                    <button type="button" id="values-next" aria-label="Valori successivi" aria-controls="account-values-track"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 5 7 7-7 7"/></svg></button>
+                </div>
+            </div>
+        </section>
     </main>
 
-    <!-- FOOTER VISIBILE E FIXATO -->
-    <footer id="footer" class="footer-wrapper" style="margin-top: 0; box-shadow: none;">
-        <div class="mim-footer-wrap">
-            <a href="https://www.miur.gov.it/" target="_blank" rel="noopener noreferrer">
-                <img src="IMMAGINI/LOGO-MIM.png" loading="lazy" decoding="async" class="footer-logo-mim" alt="Logo Ministero">
-            </a>
-        </div>
-        <div class="grid-infos">
-            <div class="col-info">
-                <h4><svg viewBox="0 0 24 24"><path d="M12,3L2,12H5V20H19V12H22L12,3M12,7.7C14.1,7.7 15.8,9.4 15.8,11.5C15.8,13.6 14.1,15.3 12,15.3C9.9,15.3 8.2,13.6 8.2,11.5C8.2,9.4 9.9,7.7 12,7.7Z"/></svg>Struttura Operativa Scuola</h4>
-                <p>ITIS Amedeo Avogadro</p>
-                <p><a href="#" id="btn-open-maps" class="address-link">Corso San Maurizio, 8 - 10124 Torino</a></p>
-                <p>Tel: <a href="tel:+390118153611" class="tel-link">+39 011 815 3611</a></p>
+    <footer id="footer" class="harzafi-footer">
+        <div class="harzafi-footer-inner">
+            <div class="harzafi-footer-main">
+                <div class="harzafi-footer-brand">
+                    <a href="index.html" aria-label="Harzafi FSL — Home"><img src="IMMAGINI/LOGO-HARZAFI.png" alt="Harzafi"></a>
+                    <h2>Un registro più semplice. <span>Creato con cura.</span></h2>
+                </div>
+                <div class="harzafi-footer-profile">
+                    <img class="harzafi-footer-avatar" src="IMMAGINI/ADAM%20HARZAFI.png" alt="Adam Harzafi" width="64" height="64" loading="lazy" decoding="async">
+                    <p class="harzafi-footer-eyebrow">Progetto personale</p>
+                    <h3>Harzafi Adam</h3>
+                    <p class="harzafi-footer-school"><span>Classe 4AI</span><span>Anno scolastico 2026/2027</span></p>
+                    <ul class="harzafi-footer-socials" aria-label="Social Harzafi">
+                        <li><a href="https://www.instagram.com/adamharzafi" target="_blank" rel="noopener noreferrer" aria-label="Apri Instagram di Adam Harzafi"><img src="IMMAGINI/SOCIAL-INSTAGRAM.svg" alt=""></a></li>
+                        <li><a href="https://www.snapchat.com/@adamharzafi" target="_blank" rel="noopener noreferrer" aria-label="Apri Snapchat di Adam Harzafi"><img src="IMMAGINI/SOCIAL-SNAPCHAT.svg" alt=""></a></li>
+                        <li><a href="https://it.linkedin.com/in/adamharzafi" target="_blank" rel="noopener noreferrer" aria-label="Apri LinkedIn di Adam Harzafi"><img src="IMMAGINI/SOCIAL-LINKEDIN.svg" alt=""></a></li>
+                        <li><a href="https://github.com/AdamHarzafi" target="_blank" rel="noopener noreferrer" aria-label="Apri GitHub di Adam Harzafi"><img src="IMMAGINI/SOCIAL-GITHUB.svg" alt=""></a></li>
+                        <li><a href="https://t.me/AdamHarzafi" target="_blank" rel="noopener noreferrer" aria-label="Apri Telegram di Adam Harzafi"><img src="IMMAGINI/SOCIAL-TELEGRAM.svg" alt=""></a></li>
+                    </ul>
+                </div>
             </div>
-            <div class="col-info">
-                <h4><svg viewBox="0 0 24 24"><path d="M12,4A4,4 0 0,1 16,8A4,4 0 0,1 12,12A4,4 0 0,1 8,8A4,4 0 0,1 12,4M12,14C16.42,14 20,15.79 20,18V20H4V18C4,15.79 7.58,14 12,14Z"/></svg>Servizi Dati & Finanziari</h4>
-                <p>Email Segreteria:<br> <a href="mailto:tois05100c@istruzione.it" class="hi">tois05100c@istruzione.it</a></p>
-                <p>Rete PEC:<br> <a href="mailto:tois05100c@pec.istruzione.it" class="hi">tois05100c@pec.istruzione.it</a></p>
-            </div>
-            <div class="col-info">
-                <h4><svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>Informazioni Contatto</h4>
-                <p>Il sito è gestito da Harzafi Adam</p>
-                <p>Classe 3°A Informatica</p>
-                <p>Anno di Corso: 2025/2026</p>
-                <p>Richiesta di assistenza:<br> <a href="mailto:harzafi.support@gmail.com" class="hi">harzafi.support@gmail.com</a></p>
-            </div>
-        </div>
-        <div class="bottom-branding">
-            <div class="badge-views">
-                <svg style="width:20px; fill:currentColor;" viewBox="0 0 24 24"><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/></svg>
-                Letture Tracciate: <strong id="dynamic-counter-tracker">...</strong>
-            </div>
-            <p class="copyright-text">Harzafi Notes - Portale Ufficiale © - Tutti i diritti riservati</p>
-            <div class="legal-links">
-                <a href="accessibilita.html">Dichiarazione di Accessibilità</a>
-                <span class="desktop-divider">|</span>
-                <a href="privacy-account.html" style="color: var(--primary);">Privacy Policy</a>
+            <div class="harzafi-footer-bottom">
+                <p>© 2026 Harzafi FSL. Tutti i diritti riservati.</p>
+<nav class="harzafi-footer-links" aria-label="Informazioni legali">
+                    <a href="accessibilita.html">Accessibilità</a>
+                    <a href="privacy-account.html" aria-current="page">Il tuo account</a>
+                    <a href="privacy.html">Norme sulla privacy</a>
+                    <a href="termini.html">Termini</a>
+                    <a href="supporto.html">Supporto</a>
+                </nav>
             </div>
         </div>
     </footer>
-
-    <!-- Modale Mappa -->
-    <div id="maps-modal" class="modal-overlay bottom-sheet">
-        <div class="modal-content">
-            <button class="close-btn" aria-label="Chiudi">&times;</button>
-            <div class="bottom-sheet-body">
-                <h2 style="font-size: 1.4rem; margin-bottom: 25px; color: var(--text-dark); text-align:center; font-weight: 900;">Scegli un'app per aprire.</h2>
-                <div style="display: flex; justify-content: space-around; align-items: flex-start;">
-                    <a href="https://www.google.com/maps/search/?api=1&query=Corso+San+Maurizio,+8+-+10124+Torino" target="_blank" class="map-app-btn">
-                        <img src="IMMAGINI/GOOGLE-MAPS-LOGO.png" loading="lazy" decoding="async" alt="Google Maps">
-                        <span>Google Maps</span>
-                    </a>
-                    <a href="http://maps.apple.com/?q=Corso+San+Maurizio+8+Torino" target="_blank" class="map-app-btn">
-                        <img src="IMMAGINI/APPLE-MAPS-LOGO.png" loading="lazy" decoding="async" alt="Apple Mappe">
-                        <span>Apple Mappe</span>
-                    </a>
-                    <a href="https://waze.com/ul?q=Corso+San+Maurizio+8+Torino" target="_blank" class="map-app-btn">
-                        <img src="IMMAGINI/WAZE-LOGO.png" loading="lazy" decoding="async" alt="Waze">
-                        <span>Waze</span>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <button id="scrollTopBtn" class="scroll-top-btn" aria-label="Torna su">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="18 15 12 9 6 15"></polyline>
-        </svg>
-    </button>
 
     <script>
         document.addEventListener("DOMContentLoaded", function () {
             const navbar = document.getElementById('navbar');
             let isScrolled = false;
+
+            // Funzione di gestione dello scroll ottimizzata
             function handleScroll() {
                 const should = window.scrollY > 40;
                 if (should !== isScrolled) {
@@ -163,33 +194,17 @@
                     navbar.classList.toggle('scrolled', isScrolled);
                 }
             }
+
+            // Applica immediatamente all'apertura per prevenire scatti durante i refresh
             handleScroll();
+            
+            // Applica durante lo scroll
             window.addEventListener('scroll', handleScroll, { passive: true });
-
-            const scrollTopBtn = document.getElementById('scrollTopBtn');
-            if(scrollTopBtn){
-                window.addEventListener('scroll', () => {
-                    if (window.scrollY > 300) { scrollTopBtn.classList.add('visible'); }
-                    else { scrollTopBtn.classList.remove('visible'); }
-                }, { passive: true });
-                scrollTopBtn.addEventListener('click', () => {
-                    window.scrollTo({ top: 0, behavior: 'smooth' });
-                });
-            }
-
-            const btnOpenMaps = document.getElementById('btn-open-maps');
-            const mapsModal = document.getElementById('maps-modal');
-            if(btnOpenMaps && mapsModal) {
-                btnOpenMaps.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    mapsModal.classList.add('active');
-                });
-                const closeBtn = mapsModal.querySelector('.close-btn');
-                if(closeBtn) {
-                    closeBtn.addEventListener('click', () => mapsModal.classList.remove('active'));
-                }
-            }
         });
     </script>
+    <script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check-compat.js"></script>
+    <script defer src="auth-session.js?v=20260923-app-check"></script>
 </body>
 </html>
