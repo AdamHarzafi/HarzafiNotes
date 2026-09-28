@@ -5,19 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>Privacy Account - Harzafi Notes</title>
     <meta name="robots" content="noimageindex">
-    
+
     <meta name="mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#ffffff">
-    
+
     <link rel="apple-touch-icon" sizes="180x180" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
     <link rel="icon" type="image/png" sizes="32x32" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
-    
+
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="modern.css?v=20260928-notes">
+    <link rel="stylesheet" href="notes-theme.css?v=20260928-notes">
 </head>
-<body>
+<body class="account-privacy-page notes-info-page">
 
     <div class="privacy-bg-mesh" aria-hidden="true"></div>
 
@@ -28,10 +30,10 @@
             </a>
         </div>
         <div class="nav-links">
+            <a href="index.html#funzioni">Funzionalità</a>
             <a href="accessibilita.html">Accessibilità</a>
-            <a href="termini.html">Termini di Servizio</a>
         </div>
-        <a href="login.html" class="btn-premium">Torna al Login</a>
+        <a href="login.html" class="btn-premium nav-login">Accedi</a>
     </nav>
 
     <main class="privacy-main">
@@ -108,7 +110,7 @@
         </div>
         <div class="bottom-branding">
             <div class="badge-views">
-                <svg style="width:20px; fill:currentColor;" viewBox="0 0 24 24"><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/></svg> 
+                <svg style="width:20px; fill:currentColor;" viewBox="0 0 24 24"><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/></svg>
                 Letture Tracciate: <strong id="dynamic-counter-tracker">...</strong>
             </div>
             <p class="copyright-text">Harzafi Notes - Portale Ufficiale © - Tutti i diritti riservati</p>
@@ -116,8 +118,6 @@
                 <a href="accessibilita.html">Dichiarazione di Accessibilità</a>
                 <span class="desktop-divider">|</span>
                 <a href="privacy-account.html" style="color: var(--primary);">Privacy Policy</a>
-                <span class="desktop-divider">|</span>
-                <a href="termini.html">Termini di Servizio</a>
             </div>
         </div>
     </footer>
@@ -169,7 +169,7 @@
             const scrollTopBtn = document.getElementById('scrollTopBtn');
             if(scrollTopBtn){
                 window.addEventListener('scroll', () => {
-                    if (window.scrollY > 300) { scrollTopBtn.classList.add('visible'); } 
+                    if (window.scrollY > 300) { scrollTopBtn.classList.add('visible'); }
                     else { scrollTopBtn.classList.remove('visible'); }
                 }, { passive: true });
                 scrollTopBtn.addEventListener('click', () => {
