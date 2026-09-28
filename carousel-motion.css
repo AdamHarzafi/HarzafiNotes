@@ -1,0 +1,116 @@
+/* Dal cerchio alla pillola: lo spazio del player resta sempre stabile. */
+body .carousel-player.has-scroll-reveal {
+    --player-orb-size: 56px;
+    --player-orb-offset: 35px;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity .16s ease .2s, visibility 0s linear .36s;
+}
+
+body .has-scroll-reveal .carousel-timeline {
+    position: relative;
+    isolation: isolate;
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+body .has-scroll-reveal .carousel-timeline::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: 999px;
+    background: #e8e8ed;
+    clip-path: inset(0 calc((100% - var(--player-orb-size)) / 2) round 999px);
+    translate: var(--player-orb-offset) 12px;
+    scale: .85;
+    transition: clip-path .28s cubic-bezier(.4, 0, .6, 1), translate .28s ease, scale .28s ease;
+}
+
+body .has-scroll-reveal .carousel-timeline-step {
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity .12s ease, visibility 0s linear .12s, width .32s var(--apple-ease, cubic-bezier(.22, 1, .36, 1)), flex-basis .32s var(--harzafi-ease, ease), transform .22s ease;
+}
+
+body .has-scroll-reveal .carousel-play-toggle {
+    opacity: 0;
+    visibility: hidden;
+    translate: -22px 0;
+    scale: .65;
+    transition: opacity .12s ease, visibility 0s linear .12s, translate .24s ease, scale .24s ease, transform .24s ease;
+}
+
+body .carousel-player.has-scroll-reveal:is(.is-player-visible, :focus-within) {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity .16s ease, visibility 0s;
+}
+
+body .has-scroll-reveal:is(.is-player-visible, :focus-within) .carousel-timeline::before {
+    clip-path: inset(0 0 round 999px);
+    translate: 0 0;
+    scale: 1;
+    transition: clip-path .58s cubic-bezier(.22, 1, .36, 1) .18s, translate .58s cubic-bezier(.22, 1, .36, 1) .18s, scale .18s ease;
+}
+
+body .has-scroll-reveal:is(.is-player-visible, :focus-within) .carousel-timeline-step {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity .24s ease .4s, visibility 0s .4s, width .32s var(--apple-ease, cubic-bezier(.22, 1, .36, 1)), flex-basis .32s var(--harzafi-ease, ease), transform .22s ease;
+}
+
+body .has-scroll-reveal:is(.is-player-visible, :focus-within) .carousel-play-toggle {
+    opacity: 1;
+    visibility: visible;
+    translate: 0 0;
+    scale: 1;
+    transition: opacity .24s ease .55s, visibility 0s .55s, translate .36s cubic-bezier(.22, 1, .36, 1) .5s, scale .36s cubic-bezier(.22, 1, .36, 1) .5s, transform .24s ease;
+}
+
+@media (max-width: 760px) {
+    .home-page .carousel-player.has-scroll-reveal {
+        --player-orb-size: 54px;
+        --player-orb-offset: 33px;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    body .carousel-player.has-scroll-reveal,
+    body .carousel-player.has-scroll-reveal *,
+    body .carousel-player.has-scroll-reveal ::before {
+        transition: none !important;
+        translate: none !important;
+        scale: none !important;
+    }
+}
+
+
+body .access-carousel-player.has-scroll-reveal {
+    --player-orb-size: 54px;
+    --player-orb-offset: 33px;
+}
+
+/* La larghezza cresce senza deformare le due estremità semicircolari. */
+body .carousel-player.has-scroll-reveal .carousel-timeline-step::after {
+    width: 8px;
+    border-radius: 4px;
+    transform: translateY(-50%);
+}
+
+body .carousel-player.has-scroll-reveal .carousel-timeline-step.is-active::after {
+    animation-name: sharedCarouselTimelineFill;
+}
+
+@keyframes sharedCarouselTimelineFill {
+    from { width: 8px; }
+    to { width: 100%; }
+}
+
+
+body .access-carousel-player.has-scroll-reveal .carousel-timeline-step::after {
+    transform: none;
+}

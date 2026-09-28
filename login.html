@@ -18,58 +18,33 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css">
-
-    <style>
-        /* Regole blindate per la pagina login per evitare sfasamenti */
-        #login-page-wrapper {
-            min-height: 100vh; min-height: 100dvh; display: flex; align-items: center; justify-content: center; padding: 40px 20px; position: relative; background: #ffffff;
-        }
-        .login-bg-mesh {
-            position: fixed; inset: 0;
-            background: radial-gradient(ellipse at 15% 25%, rgba(14,165,233,0.13) 0%, transparent 40%), radial-gradient(ellipse at 85% 70%, rgba(2,132,199,0.10) 0%, transparent 45%);
-            filter: blur(35px); pointer-events: none; z-index: 0;
-        }
-        .login-card {
-            position: relative; z-index: 1; background: #ffffff; width: 100%; max-width: 580px; border-radius: 36px; padding: 44px 52px 36px;
-            box-shadow: 0 30px 70px rgba(2,132,199,0.10), 0 0 0 1px rgba(2,132,199,0.06); animation: cardReveal 0.6s cubic-bezier(0.32,0.72,0,1) both;
-        }
-        @keyframes cardReveal { from { opacity: 0; transform: translateY(24px) scale(0.97); } to { opacity: 1; transform: translateY(0) scale(1); } }
-        .back-link {
-            display: inline-flex; align-items: center; gap: 8px; color: var(--text-light); font-weight: 700; font-size: 0.9rem; text-decoration: none; margin-bottom: 28px; transition: color 0.3s, transform 0.3s var(--apple-ease);
-        }
-        .back-link svg { width: 18px; fill: currentColor; transition: transform 0.3s var(--apple-ease); }
-        .back-link:hover { color: var(--primary); }
-        .back-link:hover svg { transform: translateX(-3px); }
-        
-        /* Fix per il font del placeholder della password */
-        .apple-input::placeholder { font-family: 'Inter', sans-serif !important; letter-spacing: normal !important; color: #a1a1aa !important; }
-
-        @media (max-width: 767px) {
-            #login-page-wrapper { padding: 0; align-items: flex-start; }
-            .login-card { padding: 40px 24px 30px; border-radius: 0; box-shadow: none; max-width: 100%; min-height: 100vh; min-height: 100dvh; }
-            .login-bg-mesh { display: none; }
-        }
-    </style>
+    <link rel="stylesheet" href="fsl-base.css?v=20260928-notes">
+    <link rel="stylesheet" href="modern.css?v=20260928-notes">
+    <link rel="stylesheet" href="login-modern.css?v=20260928-notes">
+    <link rel="stylesheet" href="notes-theme.css?v=20260928-notes">
 </head>
-<body>
+<body class="auth-page notes-login-page">
 
     <div class="login-bg-mesh" aria-hidden="true"></div>
 
     <div id="login-page-wrapper">
         <div class="login-card">
+          <section class="login-panel" aria-labelledby="login-title">
+            <header class="login-topbar">
+                <a href="index.html" class="login-close" aria-label="Torna al portale Harzafi Notes">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6.4 5 12.6 12.6-1.4 1.4L5 6.4 6.4 5Zm11.2 0L19 6.4 6.4 19 5 17.6 17.6 5Z"/></svg>
+                </a>
+            </header>
 
-            <!-- IL PULSANTE TORNA AL PORTALE -->
-            <a href="index.html" class="back-link" aria-label="Torna alla home page">
-                <svg viewBox="0 0 24 24"><path d="M20,11H7.83l5.59-5.59L12,4l-8,8 8,8 1.41-1.41L7.83,13H20v-2Z"/></svg>
-                Torna al Portale
-            </a>
-
-            <!-- LOGO PRINCIPALE FISSATO A 40PX -->
-            <div class="modal-logo-wrapper" style="display: flex; justify-content: center; margin-bottom: 12px;">
-                <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Harzafi Logo" style="height: 40px; width: auto; object-fit: contain;">
+            <div class="login-hero-mark" aria-hidden="true">
+                <span class="orbit orbit-one"></span>
+                <span class="orbit orbit-two"></span>
+                <span class="orbit orbit-three"></span>
+                <img src="IMMAGINI/LOGO-HARZAFI.png" alt="">
             </div>
-            <h2 class="auth-title">Area Riservata</h2>
+            <p class="auth-eyebrow">Harzafi Notes</p>
+            <h1 class="auth-title" id="login-title">Accedi con il tuo<br>Account Harzafi.</h1>
+            <p class="auth-subtitle">Entra nel tuo spazio di studio e ritrova tutti i materiali della classe.</p>
 
             <div class="segmented-control" id="role-control">
                 <div class="seg-slider" id="role-slider"></div>
@@ -105,7 +80,7 @@
                         <div style="position:relative;width:100%;">
                             <!-- PASSWORD INPUT -->
                             <input type="password" id="password-input" name="password" autocomplete="current-password" class="apple-input" placeholder="Inserisci la password" style="padding-right:50px; font-family: Verdana, sans-serif; letter-spacing: 2px;">
-                            
+
                             <button type="button" id="toggle-password" class="toggle-password-btn" aria-label="Mostra o nascondi password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; color: var(--text-light); z-index: 5;">
                                 <svg id="eye-icon" viewBox="0 0 24 24" fill="currentColor" style="width: 22px; height: 22px; flex-shrink: 0;"><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/></svg>
                                 <svg id="eye-slash-icon" viewBox="0 0 24 24" fill="currentColor" style="display:none; width: 22px; height: 22px; flex-shrink: 0;"><path d="M11.83,9L15,12.16C15,12.11 15,12.05 15,12A3,3 0 0,0 12,9C11.94,9 11.89,9 11.83,9M7.53,9.8L9.08,11.35C9.03,11.56 9,11.77 9,12A3,3 0 0,0 12,15C12.22,15 12.44,14.97 12.65,14.92L14.2,16.47C13.53,16.8 12.79,17 12,17A5,5 0 0,1 7,12C7,11.21 7.2,10.47 7.53,9.8M2,4.27L4.28,6.55L4.73,7C3.08,8.3 1.78,10 1,12C2.73,16.39 7,19.5 12,19.5C13.55,19.5 15.03,19.2 16.38,18.66L16.81,19.08L19.73,22L21,20.73L3.27,3M12,7A5,5 0 0,1 17,12C17,12.64 16.87,13.26 16.64,13.82L19.57,16.75C21.07,15.5 22.27,13.86 23,12C21.27,7.61 17,4.5 12,4.5C10.6,4.5 9.26,4.75 8,5.2L10.17,7.35C10.74,7.13 11.35,7 12,7Z"/></svg>
@@ -176,6 +151,7 @@
                 </ul>
                 <button type="button" class="btn-text btn-back-login" style="font-weight:800;font-size:1rem;margin-top:5px;">← Torna al Login</button>
             </div>
+          </section>
         </div>
     </div>
 

@@ -1,0 +1,195 @@
+/* La larghezza utile esclude la scrollbar e resta stabile quando cambia il focus. */
+.home-document {
+    width: 100%;
+    overflow-x: clip;
+}
+
+/* Raccordo fisso al bianco: sopra lo sfondo, sotto testo e pulsanti. */
+.home-page .hero-stage {
+    z-index: 0;
+}
+
+.home-page .hero-wrapper::after {
+    content: "";
+    position: absolute;
+    inset: auto 0 0;
+    height: clamp(120px, 12vw, 200px);
+    z-index: 1;
+    pointer-events: none;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, .18) 25%,
+        rgba(255, 255, 255, .58) 55%,
+        rgba(255, 255, 255, .9) 80%,
+        #fff 100%
+    );
+}
+
+/* Le funzionalità usano gli stessi componenti del riquadro Specialist. */
+.home-page .apple-features-grid {
+    grid-auto-columns: 380px;
+    gap: 24px;
+    padding: 10px 4px 30px;
+    margin-inline: -4px;
+    scroll-snap-type: x mandatory;
+}
+
+.home-page .feature-card {
+    width: 100%;
+    min-width: 0;
+}
+
+.home-page .feature-card .apple-card-top {
+    flex-shrink: 0;
+}
+
+.home-page .feature-card--progress .apple-card-eyebrow {
+    color: #db286b;
+    --eyebrow-gradient: linear-gradient(90deg, #e52b64 0%, #d42d7c 55%, #b632a4 100%);
+}
+
+.home-page .feature-card--privacy .apple-card-eyebrow {
+    color: #049be9;
+}
+
+.home-page .feature-card--events .apple-card-eyebrow {
+    color: #c8925e;
+    --eyebrow-gradient: linear-gradient(90deg, #c8925e, #f8b667);
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+    .home-page .feature-card--progress .apple-card-eyebrow,
+    .home-page .feature-card--events .apple-card-eyebrow {
+        width: fit-content;
+        background-image: var(--eyebrow-gradient);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+    }
+}
+
+@media (forced-colors: active) {
+    .home-page .feature-card .apple-card-eyebrow {
+        background-image: none;
+        color: CanvasText;
+    }
+}
+
+.home-page .feature-card-media {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1 1 240px;
+    min-height: 0;
+    padding: 24px;
+    margin-top: 12px;
+}
+
+.home-page .feature-card-media > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    max-height: 280px;
+    object-fit: contain;
+}
+
+.home-page .feature-card--privacy .feature-card-media > img {
+    max-width: 190px;
+    max-height: 210px;
+}
+
+.home-page .feature-card--progress .feature-card-media > img {
+    max-width: 240px;
+    max-height: 240px;
+}
+
+.home-page .feature-card--events .feature-card-media,
+.home-page .feature-card--id .feature-card-media {
+    align-items: flex-end;
+    padding: 12px 12px 0;
+}
+
+.home-page .feature-card--events .feature-card-media > img,
+.home-page .feature-card--id .feature-card-media > img {
+    object-position: center bottom;
+}
+
+/* Nessuna velatura o sfocatura compare ai bordi durante lo scorrimento. */
+.home-page .apple-features-carousel::before,
+.home-page .apple-features-carousel::after,
+.home-page .apple-cards-carousel-shell::before,
+.home-page .apple-cards-carousel-shell::after {
+    content: none;
+    display: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+}
+
+.home-page .carousel-player[hidden] {
+    display: none;
+}
+
+@media (min-width: 901px) {
+    .home-page .apple-features-grid {
+        grid-auto-columns: calc((100% - 48px) / 3);
+        margin-inline: 0;
+        padding-inline: 0;
+    }
+}
+
+@media (max-width: 600px) {
+    .home-page .apple-features-section,
+    .home-page .apple-showcase-section {
+        padding-inline: 20px;
+    }
+
+    .home-page .apple-features-grid {
+        grid-auto-columns: min(309px, calc(100% - 20px));
+        gap: 18px;
+    }
+
+    .home-page .apple-cards-carousel {
+        gap: 18px;
+    }
+
+    .home-page .apple-cards-carousel > .apple-card {
+        flex-basis: min(309px, calc(100% - 20px));
+        width: min(309px, calc(100% - 20px));
+    }
+
+    .home-page .feature-card-media {
+        padding: 20px;
+    }
+
+    .home-page .feature-card--events .feature-card-media,
+    .home-page .feature-card--id .feature-card-media {
+        padding: 10px 8px 0;
+    }
+
+}
+
+@media (hover: none), (prefers-reduced-motion: reduce) {
+    .home-page .apple-card,
+    .home-page .apple-card:hover,
+    .home-page .apple-card:hover img {
+        transform: none;
+        transition: none;
+    }
+}
+
+/* Il computer occupa tutta la larghezza disponibile, senza tagliare il dispositivo. */
+.home-page .guide-photo-media {
+    padding: 0;
+    flex: 1;
+    min-height: 0;
+    align-items: center;
+}
+
+.home-page .harzafi-guide-photo {
+    width: 116%;
+    max-width: none;
+    height: auto;
+    flex: 0 0 116%;
+    object-fit: contain;
+}
