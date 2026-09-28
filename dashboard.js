@@ -46,14 +46,12 @@ let materiaUploadSelezionata = "Informatica";
 // ==========================================
 // 1. GESTIONE AUTENTICAZIONE E PROFILO
 // ==========================================
-const identityAuthReady = new Promise(resolve => identityAuth.onAuthStateChanged(resolve));
-auth.onAuthStateChanged(async user => {
-    const identityUser = await identityAuthReady;
-    if (!user || !identityUser) {
+auth.onAuthStateChanged(user => {
+    if (!user) {
         window.location.href = "login.html";
     } else {
         const btnUpload = document.getElementById('btnUploadModal');
-        if ((identityUser.email || sessionStorage.getItem('harzafi_verified_email')) === ADMIN_EMAIL && btnUpload) btnUpload.style.display = 'block';
+        if ((identityAuth.currentUser?.email || sessionStorage.getItem('harzafi_verified_email')) === ADMIN_EMAIL && btnUpload) btnUpload.style.display = 'block';
         
         const profilePicEl = document.getElementById('userProfilePic');
         if (profilePicEl) {

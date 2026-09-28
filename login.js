@@ -258,6 +258,11 @@ document.addEventListener('DOMContentLoaded', () => {
         // Verifica la password sullo stesso progetto usato da Harzafi FSL.
         // Notes conserva il proprio archivio e usa una sessione anonima solo per
         // autorizzare la lettura dei materiali condivisi già prevista dal progetto.
+        const persistence = firebase.auth.Auth.Persistence.LOCAL;
+        await Promise.all([
+            window.identityAuth.setPersistence(persistence),
+            window.auth.setPersistence(persistence)
+        ]);
         await window.identityAuth.signInWithEmailAndPassword(credentials.email, credentials.password);
         if (window.auth.currentUser) await window.auth.signOut();
         await window.auth.signInAnonymously();
@@ -335,6 +340,11 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const snapshot = await window.identityDb.collection('studenti').where('HID', '==', hid).limit(1).get();
             if (snapshot.empty) throw new Error('HID non valido');
+            const persistence = firebase.auth.Auth.Persistence.LOCAL;
+            await Promise.all([
+                window.identityAuth.setPersistence(persistence),
+                window.auth.setPersistence(persistence)
+            ]);
             if (window.identityAuth.currentUser) await window.identityAuth.signOut();
             await window.identityAuth.signInAnonymously();
             if (window.auth.currentUser) await window.auth.signOut();

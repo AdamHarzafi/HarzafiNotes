@@ -48,11 +48,9 @@ if(fileInput) {
 if(document.getElementById('notesContainer')) {
     
     // Controlla il login
-    const identityAuthReady = new Promise(resolve => identityAuth.onAuthStateChanged(resolve));
-    auth.onAuthStateChanged(async user => {
-        const identityUser = await identityAuthReady;
-        if (user && identityUser) {
-            if((identityUser.email || sessionStorage.getItem('harzafi_verified_email')) === ADMIN_EMAIL) {
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            if((identityAuth.currentUser?.email || sessionStorage.getItem('harzafi_verified_email')) === ADMIN_EMAIL) {
                 document.getElementById('btnUploadModal').style.display = 'block';
             }
             caricaAppunti("Tutte");
