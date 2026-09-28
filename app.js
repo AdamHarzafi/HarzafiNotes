@@ -9,7 +9,24 @@ const firebaseConfig = {
 };
 
 if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+const fslApp = firebase.apps.find(app => app.name === 'harzafi-fsl-identity') || firebase.initializeApp({
+    apiKey: "AIzaSyBisp324W7J5jGwF_s-nbXabOjEutcwMmc",
+    authDomain: "harzafi---fsl.firebaseapp.com",
+    projectId: "harzafi---fsl",
+    storageBucket: "harzafi---fsl.firebasestorage.app",
+    messagingSenderId: "743942918497",
+    appId: "1:743942918497:web:6d6e44ba348760ce137520"
+}, 'harzafi-fsl-identity');
+if (!['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname) && typeof firebase.appCheck === 'function') {
+    try {
+        firebase.appCheck(fslApp).activate(
+            new firebase.appCheck.ReCaptchaEnterpriseProvider('6LejpcksAAAAAEQEVz602t2PL78MzHE73T4a608-'),
+            true
+        );
+    } catch (error) { console.error('Protezione App Check non inizializzata:', error.code || 'errore'); }
+}
 const auth = firebase.auth();
+const identityAuth = firebase.auth(fslApp);
 const db = firebase.firestore();
 
 // CLOUDINARY
@@ -17,7 +34,7 @@ const CLOUDINARY_CLOUD_NAME = "dxttlpg0g";
 const CLOUDINARY_UPLOAD_PRESET = "harzafi_notes"; 
 
 // 🚨 ADMIN EMAIL
-const ADMIN_EMAIL = "INSERISCI_LA_TUA_EMAIL@studenti.itisavogadro.it";
+const ADMIN_EMAIL = "s11205413d@studenti.itisavogadro.it";
 
 // Testo Input File
 const fileInput = document.getElementById('upFile');
@@ -31,10 +48,11 @@ if(fileInput) {
 if(document.getElementById('notesContainer')) {
     
     // Controlla il login
-    auth.onAuthStateChanged(user => {
-        if (user) {
-            // MOSTRA IL PULSANTE DI CARICAMENTO SOLO SE L'EMAIL È ADMIN_EMAIL
-            if(user.email === ADMIN_EMAIL) {
+    const identityAuthReady = new Promise(resolve => identityAuth.onAuthStateChanged(resolve));
+    auth.onAuthStateChanged(async user => {
+        const identityUser = await identityAuthReady;
+        if (user && identityUser) {
+            if((identityUser.email || sessionStorage.getItem('harzafi_verified_email')) === ADMIN_EMAIL) {
                 document.getElementById('btnUploadModal').style.display = 'block';
             }
             caricaAppunti("Tutte");
@@ -43,7 +61,13 @@ if(document.getElementById('notesContainer')) {
         }
     });
 
-    document.getElementById('btnEsci').addEventListener('click', () => { auth.signOut(); });
+    document.getElementById('btnEsci').addEventListener('click', () => {
+        Promise.all([auth.signOut(), identityAuth.signOut()]).finally(() => {
+            ['harzafi_user', 'harzafi_user_uid', 'harzafi_auth_method', 'harzafi_verified_email', 'harzafi_role', 'harzafi_fsl_uid']
+                .forEach(key => sessionStorage.removeItem(key));
+            window.location.href = 'login.html';
+        });
+    });
 
     // Filtra Materia
     window.filtraMateria = function(materia) {

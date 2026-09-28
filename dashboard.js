@@ -5,33 +5,55 @@
 const GEMINI_API_KEY = "AQ.Ab8RN6LWwKcNQNo3j5WngHW2NAlTgiGf6B4XYgrYf0Tmx3ByyA";
 
 const firebaseConfig = {
-    apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
+    apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfaklT7-0A",
     authDomain: "harzafi-notes.firebaseapp.com",
     projectId: "harzafi-notes",
     messagingSenderId: "35834921638",
     appId: "1:35834921638:web:cb5d8d612b4a2936126a67"
 };
 
+const FSL_FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBisp324W7J5jGwF_s-nbXabOjEutcwMmc",
+    authDomain: "harzafi---fsl.firebaseapp.com",
+    projectId: "harzafi---fsl",
+    storageBucket: "harzafi---fsl.firebasestorage.app",
+    messagingSenderId: "743942918497",
+    appId: "1:743942918497:web:6d6e44ba348760ce137520"
+};
+
 try { if (!firebase.apps.length) firebase.initializeApp(firebaseConfig); } catch(e) {}
+const fslApp = firebase.apps.find(app => app.name === 'harzafi-fsl-identity') || firebase.initializeApp(FSL_FIREBASE_CONFIG, 'harzafi-fsl-identity');
+if (!['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname) && typeof firebase.appCheck === 'function') {
+    try {
+        firebase.appCheck(fslApp).activate(
+            new firebase.appCheck.ReCaptchaEnterpriseProvider('6LejpcksAAAAAEQEVz602t2PL78MzHE73T4a608-'),
+            true
+        );
+    } catch (error) { console.error('Protezione App Check non inizializzata:', error.code || 'errore'); }
+}
 
 const auth = firebase.auth();
+const identityAuth = firebase.auth(fslApp);
 const db = firebase.firestore();
 
 const CLOUDINARY_CLOUD_NAME = "dxttlpg0g";
 const CLOUDINARY_UPLOAD_PRESET = "harzafi_notes";
 const ADMIN_EMAIL = "s11205413d@studenti.itisavogadro.it";
+const isNotesAdmin = () => (identityAuth.currentUser?.email || sessionStorage.getItem('harzafi_verified_email')) === ADMIN_EMAIL;
 
 let materiaUploadSelezionata = "Informatica";
 
 // ==========================================
 // 1. GESTIONE AUTENTICAZIONE E PROFILO
 // ==========================================
-auth.onAuthStateChanged(user => {
-    if (!user) {
+const identityAuthReady = new Promise(resolve => identityAuth.onAuthStateChanged(resolve));
+auth.onAuthStateChanged(async user => {
+    const identityUser = await identityAuthReady;
+    if (!user || !identityUser) {
         window.location.href = "login.html";
     } else {
         const btnUpload = document.getElementById('btnUploadModal');
-        if (user.email === ADMIN_EMAIL && btnUpload) btnUpload.style.display = 'block';
+        if ((identityUser.email || sessionStorage.getItem('harzafi_verified_email')) === ADMIN_EMAIL && btnUpload) btnUpload.style.display = 'block';
         
         const profilePicEl = document.getElementById('userProfilePic');
         if (profilePicEl) {
@@ -68,7 +90,11 @@ function impostaSalutoDinamico(user) {
 }
 
 const btnEsci = document.getElementById('btnEsci');
-if(btnEsci) btnEsci.addEventListener('click', () => { auth.signOut().then(() => window.location.href = "login.html"); });
+if(btnEsci) btnEsci.addEventListener('click', () => Promise.all([auth.signOut(), identityAuth.signOut()]).then(() => {
+    ['harzafi_user', 'harzafi_user_uid', 'harzafi_auth_method', 'harzafi_verified_email', 'harzafi_role', 'harzafi_fsl_uid']
+        .forEach(key => sessionStorage.removeItem(key));
+    window.location.href = "login.html";
+}));
 
 // ==========================================
 // 2. FUNZIONI UTILI (TOAST, COPIA, PREFERITI)
@@ -200,7 +226,7 @@ function caricaAppunti(materia) {
                 indexMedia++;
             }
 
-            let deleteBtnHTML = (auth.currentUser && auth.currentUser.email === ADMIN_EMAIL) ? `<button class="btn-delete" onclick="eliminaFile('${docId}', event)">Elimina</button>` : '';
+            let deleteBtnHTML = isNotesAdmin() ? `<button class="btn-delete" onclick="eliminaFile('${docId}', event)">Elimina</button>` : '';
 
             let visualMedia = `<div class="note-icon ${iconClass}" style="margin-bottom:15px; width:100%; transition:transform 0.2s; font-size:28px;" ${currentItemMediaIndex !== -1 ? `onclick="apriMediaViewer(${currentItemMediaIndex}, event)" style="cursor:pointer;"` : ''}>${icon}</div>`;
             if (isImage) visualMedia = `<img src="${data.urlFile}" class="img-preview" alt="${data.titolo}" onclick="apriMediaViewer(${currentItemMediaIndex}, event)" style="cursor:pointer; transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">`;

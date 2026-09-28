@@ -201,36 +201,17 @@ body.notes-home-page {
 .notes-login-page #login-form { margin: 0 auto; }
 .notes-login-page .input-group { margin: 0 0 13px; }
 .notes-login-page .input-label { color: #a1a1a6; font-size: .72rem; text-transform: none; letter-spacing: .015em; }
-.notes-login-page .custom-select-trigger,
-.notes-login-page .apple-input,
-.notes-login-page input.apple-input { min-height: 54px; color: #f5f5f7 !important; border: 1px solid #5a5a60 !important; border-radius: 14px !important; background: rgba(255,255,255,.035) !important; box-shadow: none !important; }
-.notes-login-page .custom-select-trigger { width: 100%; display: flex; align-items: center; justify-content: space-between; padding: 0 16px; font: inherit; font-size: .95rem; text-align: left; cursor: pointer; }
-.notes-login-page .custom-select-trigger svg { color: #8e8e93 !important; }
-.notes-login-page .custom-select.open .custom-options { border-color: rgba(255,255,255,.12); background: #232326; box-shadow: 0 18px 40px rgba(0,0,0,.4); }
-.notes-login-page .custom-option { padding: 12px 16px; color: #f5f5f7; }
-.notes-login-page .custom-option:hover { background: #303034; color: #fff; }
 .notes-login-page #password-input { padding-right: 50px !important; color: #fff !important; font-family: inherit !important; }
 .notes-login-page .toggle-password-btn { color: #8e8e93 !important; }
 .notes-login-page .privacy-disclaimer { margin: 18px 2px !important; color: #a1a1a6 !important; font-size: .72rem !important; line-height: 1.55 !important; }
 .notes-login-page .privacy-disclaimer a { color: #2997ff !important; }
 .notes-login-page #login-submit,
 .notes-login-page .btn-gradient { min-height: 50px; border-radius: 14px !important; background: #0a84ff !important; box-shadow: 0 10px 24px rgba(10,132,255,.2) !important; font-size: .97rem !important; letter-spacing: 0 !important; }
-.notes-login-page .divider { margin: 16px 0 12px; color: #8e8e93; font-size: .68rem; letter-spacing: .12em; }
-.notes-login-page .divider::before,
-.notes-login-page .divider::after { background: rgba(255,255,255,.12); }
 .notes-login-page .btn-social { width: 100%; min-height: 50px; margin-top: 9px; padding: 0 18px !important; border: 1px solid rgba(255,255,255,.14) !important; border-radius: 14px !important; background: rgba(255,255,255,.055) !important; color: #f5f5f7 !important; }
 .notes-login-page#login-page-wrapper .btn-social,
 .notes-login-page #login-page-wrapper .btn-social { border-color: rgba(29,31,41,.1) !important; background: #fff !important; color: #1d1d1f !important; box-shadow: 0 4px 14px rgba(0,0,0,.045) !important; }
-.notes-login-page #custom-google-btn { display: flex; align-items: center; justify-content: center; }
-.notes-login-page #custom-google-btn > img { position: static !important; width: 20px !important; margin-right: 12px; }
-.notes-login-page #custom-google-btn > div { align-items: flex-start !important; }
-.notes-login-page .btn-social .btn-text-main { color: #1d1d1f !important; font-size: .77rem !important; }
-.notes-login-page .btn-social .btn-text-sub { color: #86868b !important; }
 .notes-login-page #btn-harzafi-id { border-color: rgba(0,113,227,.24) !important; color: #0071e3 !important; }
 .notes-login-page #btn-harzafi-id span { color: #0071e3 !important; }
-.notes-login-page .custom-select.open .custom-options { border-color: rgba(29,31,41,.1); background: #fff; box-shadow: 0 18px 40px rgba(0,0,0,.13); }
-.notes-login-page .custom-option { color: #1d1d1f; }
-.notes-login-page .custom-option:hover { background: #f5f8fc; color: #0071e3; }
 .notes-login-page .login-rules-banner { margin: 12px auto 13px !important; color: #a1a1a6 !important; border: 0 !important; background: transparent !important; font-size: .73rem !important; }
 .notes-login-page #rules-view > div { border-color: rgba(255,255,255,.1) !important; background: rgba(10,132,255,.1) !important; }
 .notes-login-page #rules-view p,

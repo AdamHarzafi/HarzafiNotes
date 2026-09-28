@@ -1,5 +1,5 @@
 /* ============================================================
-   login.js — Logica Login Avanzata (Harzafi Notes)
+   login.js — Accesso Harzafi Notes con identità Harzafi FSL
    ============================================================ */
 
 async function inviaEmail(emailDestinatario, idModelloBrevo, parametriMail) {
@@ -12,427 +12,384 @@ async function inviaEmail(emailDestinatario, idModelloBrevo, parametriMail) {
         });
         const data = await response.json();
         if (!data.success) throw new Error(data.error || "Errore sconosciuto");
-    } catch (err) { console.error("❌ Email error:", err); }
+    } catch (err) { console.error("Email accesso non inviata:", err); }
 }
 
-window.globalTurnstileToken = "";
-window.isWaitingForToken    = false;
-
-window.onTurnstileSuccess = function (token) {
-    window.globalTurnstileToken = token;
-    if (window.isWaitingForToken) {
-        window.isWaitingForToken      = false;
-        window.turnstileCallbackFired = true;
-        if (typeof window.eseguiAccessoServer === 'function') window.eseguiAccessoServer();
-    }
+const NOTES_FIREBASE_CONFIG = {
+    apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
+    authDomain: "harzafi-notes.firebaseapp.com",
+    projectId: "harzafi-notes",
+    messagingSenderId: "35834921638",
+    appId: "1:35834921638:web:cb5d8d612b4a2936126a67"
 };
-window.onTurnstileExpired = function () { window.globalTurnstileToken = ""; };
-window.onTurnstileError   = function () {
-    window.globalTurnstileToken = "";
-    if (window.isWaitingForToken) {
-        window.isWaitingForToken = false;
-        if (typeof window.eseguiAccessoServer === 'function') window.eseguiAccessoServer();
-    }
+
+const FSL_FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBisp324W7J5jGwF_s-nbXabOjEutcwMmc",
+    authDomain: "harzafi---fsl.firebaseapp.com",
+    projectId: "harzafi---fsl",
+    storageBucket: "harzafi---fsl.firebasestorage.app",
+    messagingSenderId: "743942918497",
+    appId: "1:743942918497:web:6d6e44ba348760ce137520"
 };
 
 function waitForFirebase(callback) {
-    if (typeof firebase !== 'undefined') {
-        const firebaseConfig = {
-            apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
-            authDomain: "harzafi-notes.firebaseapp.com", // Dominio corretto e autorizzato
-            projectId: "harzafi-notes",
-            messagingSenderId: "35834921638",
-            appId: "1:35834921638:web:cb5d8d612b4a2936126a67"
-        };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        window.auth = firebase.auth();
-        window.db   = firebase.firestore();
-        callback();
-    } else {
+    if (typeof firebase === 'undefined') {
         let attempts = 0;
         const interval = setInterval(() => {
-            attempts++;
             if (typeof firebase !== 'undefined') { clearInterval(interval); waitForFirebase(callback); }
-            else if (attempts > 50) { clearInterval(interval); console.error("Firebase non disponibile."); }
+            else if (++attempts > 50) { clearInterval(interval); console.error("Firebase non disponibile."); }
         }, 100);
+        return;
+    }
+
+    try {
+        const notesApp = firebase.apps.find(app => app.name === '[DEFAULT]') || firebase.initializeApp(NOTES_FIREBASE_CONFIG);
+        const fslApp = firebase.apps.find(app => app.name === 'harzafi-fsl-identity') || firebase.initializeApp(FSL_FIREBASE_CONFIG, 'harzafi-fsl-identity');
+        const isLocalPreview = ['localhost', '127.0.0.1', '[::1]'].includes(window.location.hostname);
+        let fslAppCheck = null;
+
+        // Le API Auth e Firestore di FSL richiedono App Check. Usa la stessa app web,
+        // la stessa chiave reCAPTCHA Enterprise e gli stessi domini di Harzafi FSL.
+        if (!isLocalPreview && typeof firebase.appCheck === 'function') {
+            try {
+                fslAppCheck = firebase.appCheck(fslApp);
+                fslAppCheck.activate(
+                    new firebase.appCheck.ReCaptchaEnterpriseProvider('6LejpcksAAAAAEQEVz602t2PL78MzHE73T4a608-'),
+                    true
+                );
+            } catch (error) {
+                console.error('Protezione App Check non inizializzata:', error.code || 'errore');
+            }
+        }
+
+        window.notesApp = notesApp;
+        window.fslApp = fslApp;
+        window.auth = firebase.auth(notesApp);
+        window.db = firebase.firestore(notesApp);
+        window.identityAuth = firebase.auth(fslApp);
+        window.identityDb = firebase.firestore(fslApp);
+        window.identityAppCheck = fslAppCheck;
+        callback();
+    } catch (error) {
+        console.error('Inizializzazione Firebase non riuscita:', error);
     }
 }
 
-window.addEventListener('load', () => {
-    waitForFirebase(() => {
-        if (typeof populateUserDropdown === 'function') populateUserDropdown('studente');
-    });
-});
-
-async function checkVPN() {
-    try {
-        const controller = new AbortController();
-        const tid = setTimeout(() => controller.abort(), 2000);
-        const res  = await fetch('https://ipapi.co/json/', { signal: controller.signal });
-        clearTimeout(tid);
-        if (!res.ok) return false;
-        const data = await res.json();
-        const org  = (data.org || "").toLowerCase();
-        return org.includes('vpn') || org.includes('hosting') || org.includes('cloud') || org.includes('datacenter');
-    } catch { return false; }
+function loginLoadingIndicator(status = "Accesso in corso") {
+    return `<span class="login-button-loader"><span class="login-button-spinner" aria-hidden="true"></span><span class="sr-only">${status}</span></span>`;
 }
 
-function entraNelPortale(nomeUtente) {
+function entraNelPortale(nomeUtente, { email = '', role = 'studente', method = 'hid' } = {}) {
     sessionStorage.setItem('harzafi_user', nomeUtente);
+    if (window.auth?.currentUser) sessionStorage.setItem('harzafi_user_uid', window.auth.currentUser.uid);
+    sessionStorage.setItem('harzafi_auth_method', method);
+    sessionStorage.setItem('harzafi_verified_email', email);
+    sessionStorage.setItem('harzafi_role', role);
+    if (window.identityAuth?.currentUser) sessionStorage.setItem('harzafi_fsl_uid', window.identityAuth.currentUser.uid);
     window.location.href = 'dashboard.html';
 }
 
-document.addEventListener("DOMContentLoaded", function () {
-    if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+function mostraErrore(element, text) {
+    if (!element) return;
+    element.textContent = text;
+    element.style.display = 'block';
+    element.style.animation = 'none';
+    void element.offsetWidth;
+    element.style.animation = 'shake 0.4s';
+}
+
+function nomeProfilo(profile) {
+    const name = profile && typeof profile.nome === 'string' ? profile.nome.trim() : '';
+    return name || 'Utente';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
     window.scrollTo(0, 0);
 
-    let selectedRole       = 'studente';
-    let selectedUserValue  = "";
-    let selectedUserEmail  = "";
+    let selectedRole = 'studente';
+    let selectedUserEmail = '';
+    let selectedUserName = '';
+    let pendingCredentials = null;
+    let verificationAttempt = 0;
 
-    const submitBtn           = document.getElementById('login-submit');
-    const passInput           = document.getElementById('password-input');
-    const errorMsg            = document.getElementById('login-error');
-    const hiddenUsernameInput = document.getElementById('hidden-username');
-    const usernameSelect      = document.getElementById('username-select');
+    const submitBtn = document.getElementById('login-submit');
+    const passInput = document.getElementById('password-input');
+    const errorMsg = document.getElementById('login-error');
+    const emailInput = document.getElementById('email-input');
+    const emailError = document.getElementById('email-error');
+    const emailStep = document.getElementById('login-email-step');
+    const passwordStep = document.getElementById('login-password-step');
+    const continueBtn = document.getElementById('login-continue');
+    const emailField = emailInput.parentElement;
+    const selectedEmail = document.getElementById('selected-email-display');
+    const subtitle = document.querySelector('.auth-subtitle');
+    const originalSubtitle = subtitle?.textContent || '';
 
-    window.populateUserDropdown = function (role) {
-        const optionsContainer = document.getElementById('username-options');
-        optionsContainer.innerHTML = '<div class="custom-option" style="color:var(--text-light);text-align:center;">Caricamento utenti...</div>';
-        const collectionName = role === 'studente' ? 'studenti' : 'docenti';
-
-        if (typeof window.db !== 'undefined') {
-            window.db.collection(collectionName).orderBy("nome", "asc").get()
-                .then(snapshot => {
-                    optionsContainer.innerHTML = '';
-                    snapshot.forEach(doc => creaOpzioneDropdown(doc.data().nome, doc.data().email || "email_mancante@scuola.it", optionsContainer));
-                })
-                .catch(() => {
-                    optionsContainer.innerHTML = '<div class="custom-option" style="color:var(--danger);">Errore di connessione al server</div>';
-                });
-        } else {
-            optionsContainer.innerHTML = '<div class="custom-option" style="color:var(--text-light);text-align:center;">In attesa di connessione...</div>';
-        }
-        resetDropdownDisplay();
-    };
-
-    function creaOpzioneDropdown(nome, email, container) {
-        const option = document.createElement('div');
-        option.className  = 'custom-option';
-        option.textContent = nome;
-        option.addEventListener('click', function (e) {
-            e.stopPropagation();
-            document.getElementById('username-display').textContent = nome;
-            document.getElementById('username-display').parentElement.classList.add('selected');
-            selectedUserValue = nome;
-            selectedUserEmail = email;
-            hiddenUsernameInput.value = nome;
-            usernameSelect.classList.remove('open');
-            errorMsg.style.display = 'none';
-        });
-        container.appendChild(option);
-    }
-
-    function resetDropdownDisplay() {
-        document.getElementById('username-display').textContent = 'Seleziona Utente';
-        document.getElementById('username-display').parentElement.classList.remove('selected');
-        selectedUserValue = ""; selectedUserEmail = ""; hiddenUsernameInput.value = "";
-    }
-
-    document.querySelectorAll('.custom-select-trigger').forEach(trigger => {
-        trigger.addEventListener('click', function (e) {
-            e.stopPropagation();
-            const parent = this.parentElement;
-            document.querySelectorAll('.custom-select').forEach(s => { if (s !== parent) s.classList.remove('open'); });
-            parent.classList.toggle('open');
-            this.setAttribute('aria-expanded', parent.classList.contains('open'));
-        });
-    });
-
-    document.addEventListener('click', () => {
-        document.querySelectorAll('.custom-select').forEach(sel => {
-            sel.classList.remove('open');
-            sel.querySelector('.custom-select-trigger').setAttribute('aria-expanded', 'false');
-        });
-    });
-
-    const segBtns   = document.querySelectorAll('#role-control .seg-btn');
-    const segSlider = document.getElementById('role-slider');
-    const loginView = document.getElementById('login-view');
-    const rulesView = document.getElementById('rules-view');
-
-    segBtns.forEach((btn, index) => btn.addEventListener('click', e => {
-        segBtns.forEach(b => b.classList.remove('active'));
-        e.target.classList.add('active');
-        selectedRole = e.target.dataset.role;
-        segSlider.style.transform = index === 0 ? 'translateX(0)' : 'translateX(100%)';
-        if (typeof window.populateUserDropdown === 'function') window.populateUserDropdown(selectedRole);
-        document.getElementById('google-login-error').style.display = 'none';
-    }));
-
-    document.getElementById('btn-rules-banner').addEventListener('click', () => {
-        loginView.style.display = 'none'; rulesView.style.display = 'block';
-    });
-    document.querySelectorAll('.btn-back-login').forEach(btn => {
-        btn.addEventListener('click', () => { rulesView.style.display = 'none'; loginView.style.display = 'block'; });
-    });
-
-    const togglePasswordBtn = document.getElementById('toggle-password');
-    const eyeIcon           = document.getElementById('eye-icon');
-    const eyeSlashIcon      = document.getElementById('eye-slash-icon');
-
-    togglePasswordBtn.addEventListener('click', () => {
-        if (passInput.type === 'password') {
-            passInput.type = 'text';
-            passInput.style.fontFamily    = "-apple-system, BlinkMacSystemFont, 'Inter', sans-serif";
-            passInput.style.letterSpacing = "normal";
-            eyeIcon.style.display      = 'none';
-            eyeSlashIcon.style.display = 'block';
-        } else {
-            passInput.type = 'password';
-            passInput.style.fontFamily    = "Verdana, sans-serif";
-            passInput.style.letterSpacing = "2px";
-            eyeIcon.style.display      = 'block';
-            eyeSlashIcon.style.display = 'none';
-        }
-    });
-
-    window.eseguiAccessoServer = function () {
-        const pass  = passInput.value.trim();
-        const uName = hiddenUsernameInput.value.trim();
-        submitBtn.innerText = "VERIFICA IN CORSO...";
-
-        if (typeof window.auth !== 'undefined') {
-            window.auth.signInWithEmailAndPassword(selectedUserEmail, pass)
-                .then(async () => {
-                    inviaEmail(selectedUserEmail, 7, {
-                        nome_utente:    uName,
-                        email_utente:   selectedUserEmail,
-                        orario_accesso: new Date().toLocaleString('it-IT')
-                    }).catch(e => console.log(e));
-                    submitBtn.innerText = "ENTRA";
-                    submitBtn.disabled  = false;
-                    entraNelPortale(uName);
-                })
-                .catch((error) => {
-                    submitBtn.innerText = "ENTRA";
-                    submitBtn.disabled  = false;
-                    passInput.value = '';
-                    window.globalTurnstileToken = "";
-                    if (typeof turnstile !== 'undefined') { try { turnstile.reset(); } catch (e) {} }
-                    if (error.code === 'auth/too-many-requests') errorMsg.innerText = "Troppi tentativi falliti. Riprova più tardi.";
-                    else errorMsg.innerText = "Credenziali errate. Riprova.";
-                    errorMsg.style.display   = 'block';
-                    errorMsg.style.animation = 'none';
-                    void errorMsg.offsetWidth;
-                    errorMsg.style.animation = 'shake 0.4s';
-                });
-        } else {
-            errorMsg.innerText = "Servizio temporaneamente offline.";
-            errorMsg.style.display = 'block';
-            submitBtn.innerText = "ENTRA";
-            submitBtn.disabled  = false;
-        }
-    };
-
-    document.getElementById('login-form').addEventListener('submit', async e => {
-        e.preventDefault();
-        if (document.activeElement) document.activeElement.blur();
-        const pass  = passInput.value.trim();
-        const uName = hiddenUsernameInput.value.trim();
-
-        if (typeof window.auth === 'undefined') { errorMsg.innerText = "Database offline."; errorMsg.style.display = 'block'; return; }
-        if (!uName || !selectedUserEmail)       { errorMsg.innerText = "Seleziona prima un utente dalla lista."; errorMsg.style.display = 'block'; return; }
-        if (!pass)                              { errorMsg.innerText = "Il campo password è obbligatorio."; errorMsg.style.display = 'block'; return; }
-
+    function mostraPassaggioEmail() {
+        verificationAttempt++;
+        if (!emailStep || submitBtn.disabled) return;
+        emailField.prepend(emailInput);
+        emailInput.setAttribute('aria-describedby', 'email-error');
+        emailStep.hidden = false;
+        passwordStep.hidden = true;
+        emailStep.classList.add('is-active');
+        passwordStep.classList.remove('is-active');
+        document.querySelector('.login-panel')?.classList.remove('is-password-step');
+        if (subtitle) subtitle.textContent = originalSubtitle;
+        continueBtn.disabled = false;
+        continueBtn.textContent = 'Continua';
+        continueBtn.removeAttribute('aria-busy');
+        emailError.style.display = 'none';
         errorMsg.style.display = 'none';
-        submitBtn.innerText = "VERIFICA SICUREZZA...";
-        submitBtn.disabled  = true;
+        emailInput.focus();
+    }
 
-        const isVpn = await checkVPN();
-        if (isVpn) {
-            errorMsg.innerText = "Disattivare la VPN per continuare.";
-            errorMsg.style.display = 'block';
-            submitBtn.innerText = "ENTRA";
-            submitBtn.disabled  = false;
+    async function mostraPassaggioPassword() {
+        if (continueBtn.disabled || submitBtn.disabled) return;
+        const email = emailInput.value.trim().toLowerCase();
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            mostraErrore(emailError, 'Inserisci un indirizzo email valido.');
+            emailInput.focus();
             return;
         }
 
-        if (window.globalTurnstileToken) {
-            window.eseguiAccessoServer();
-        } else {
-            window.isWaitingForToken      = true;
-            window.turnstileCallbackFired = false;
-            if (typeof turnstile !== 'undefined') { try { turnstile.execute(); } catch (e) {} }
-            setTimeout(() => {
-                if (window.isWaitingForToken && !window.turnstileCallbackFired) {
-                    window.isWaitingForToken = false;
-                    window.eseguiAccessoServer();
-                }
-            }, 2500);
+        const attempt = ++verificationAttempt;
+        const role = selectedRole;
+        continueBtn.disabled = true;
+        continueBtn.innerHTML = loginLoadingIndicator('Verifica account');
+        continueBtn.setAttribute('aria-busy', 'true');
+        emailError.style.display = 'none';
+
+        try {
+            if (!window.identityDb) throw new Error('service-unavailable');
+            if (window.identityAppCheck) await window.identityAppCheck.getToken(false);
+            const collection = role === 'studente' ? 'studenti' : 'docenti';
+            const snapshot = await window.identityDb.collection(collection)
+                .where('email', '==', email).limit(1).get();
+            if (attempt !== verificationAttempt || emailInput.value.trim().toLowerCase() !== email) return;
+            if (snapshot.empty) throw new Error('role-not-enabled');
+
+            const profile = snapshot.docs[0].data();
+            selectedUserEmail = email;
+            selectedUserName = nomeProfilo(profile);
+            emailInput.value = email;
+            selectedEmail.appendChild(emailInput);
+            emailInput.setAttribute('aria-describedby', 'login-error');
+            emailStep.hidden = true;
+            passwordStep.hidden = false;
+            emailStep.classList.remove('is-active');
+            passwordStep.classList.add('is-active');
+            document.querySelector('.login-panel')?.classList.add('is-password-step');
+            if (subtitle) subtitle.textContent = 'Inserisci la password del tuo Account Harzafi.';
+            passInput.focus();
+        } catch (error) {
+            if (attempt !== verificationAttempt) return;
+            const message = error.message === 'role-not-enabled'
+                ? 'Questo indirizzo non è abilitato per il ruolo selezionato.'
+                : 'Non è possibile verificare l’indirizzo adesso. Riprova tra poco.';
+            mostraErrore(emailError, message);
+        } finally {
+            if (attempt === verificationAttempt) {
+                continueBtn.disabled = false;
+                continueBtn.textContent = 'Continua';
+                continueBtn.removeAttribute('aria-busy');
+            }
         }
+    }
+
+    continueBtn.addEventListener('click', mostraPassaggioPassword);
+    document.getElementById('change-email').addEventListener('click', mostraPassaggioEmail);
+    emailInput.addEventListener('input', () => { emailError.style.display = 'none'; });
+    emailInput.addEventListener('keydown', event => { if (event.key === 'Enter') { event.preventDefault(); mostraPassaggioPassword(); } });
+
+    // Selettore del ruolo, identico alla pagina di accesso FSL.
+    const roleButtons = document.querySelectorAll('#role-control .seg-btn');
+    const roleSlider = document.getElementById('role-slider');
+    roleButtons.forEach((button, index) => button.addEventListener('click', event => {
+        if (submitBtn.disabled) return;
+        roleButtons.forEach(item => { item.classList.remove('active'); item.setAttribute('aria-pressed', 'false'); });
+        event.currentTarget.classList.add('active');
+        event.currentTarget.setAttribute('aria-pressed', 'true');
+        selectedRole = event.currentTarget.dataset.role;
+        roleSlider.style.transform = index === 0 ? 'translateX(0)' : 'translateX(100%)';
+        mostraPassaggioEmail();
+    }));
+    const togglePassword = document.getElementById('toggle-password');
+    const capsWarning = document.getElementById('caps-lock-warning');
+    let capsTimer;
+    togglePassword.addEventListener('click', () => {
+        const visible = passInput.type === 'password';
+        passInput.type = visible ? 'text' : 'password';
+        togglePassword.classList.toggle('is-visible', visible);
+        togglePassword.setAttribute('aria-label', visible ? 'Nascondi password' : 'Mostra password');
     });
-
-    // ── LOGIN GOOGLE CON POPUP (Ottimizzato e Definitivo) ──
-    const googleBtn      = document.getElementById('custom-google-btn');
-    const googleErrorMsg = document.getElementById('google-login-error');
-
-    googleBtn.addEventListener('click', async () => {
-        if (document.activeElement) document.activeElement.blur();
-        const originalHTML = googleBtn.innerHTML;
-        googleErrorMsg.style.display = 'none';
-
-        if (typeof window.auth === 'undefined') {
-            googleErrorMsg.innerText = "Servizio offline.";
-            googleErrorMsg.style.display = 'block';
-            return;
+    const updateCapsLock = event => {
+        if (!event.getModifierState) return;
+        const active = event.getModifierState('CapsLock');
+        capsWarning.hidden = !active;
+        if (active && event.type === 'keydown' && event.key.length === 1) {
+            capsWarning.classList.remove('is-typing');
+            void capsWarning.offsetWidth;
+            capsWarning.classList.add('is-typing');
+            clearTimeout(capsTimer);
+            capsTimer = setTimeout(() => capsWarning.classList.remove('is-typing'), 170);
         }
+    };
+    passInput.addEventListener('keydown', updateCapsLock);
+    passInput.addEventListener('keyup', updateCapsLock);
+    passInput.addEventListener('blur', () => { capsWarning.hidden = true; capsWarning.classList.remove('is-typing'); });
 
-        const isVpn = await checkVPN();
-        if (isVpn) {
-            googleErrorMsg.innerText = "Disattivare la VPN per continuare.";
-            googleErrorMsg.style.display = 'block';
-            return;
+    function mostraErroreLogin(error) {
+        const code = error?.code || '';
+        if (['auth/invalid-credential', 'auth/wrong-password', 'auth/user-not-found', 'auth/invalid-email'].includes(code)) {
+            return 'Credenziali non corrette. Controlla email e password usate su Harzafi FSL.';
         }
+        if (code === 'auth/too-many-requests') return 'Troppi tentativi falliti. Riprova più tardi.';
+        if (code.startsWith('auth/')) return 'Accesso non riuscito. Riprova con le credenziali di Harzafi FSL.';
+        return 'Accesso momentaneamente non disponibile. Riprova tra poco.';
+    }
 
-        googleBtn.innerHTML = `<div class="btn-loader"><div class="btn-spinner"></div><span class="btn-text-main" style="margin-left:5px;">CARICO...</span></div>`;
-        googleBtn.disabled  = true;
+    async function completaAccesso() {
+        const credentials = pendingCredentials;
+        pendingCredentials = null;
+        if (!credentials || !window.identityAuth || !window.auth) throw new Error('auth/unavailable');
 
-        const provider     = new firebase.auth.GoogleAuthProvider();
-        const targetDomain = selectedRole === 'studente' ? 'studenti.itisavogadro.it' : 'itisavogadro.it';
-        
-        // Forza Google a filtrare nativamente l'email corretta e ti obbliga a sceglierla
-        provider.setCustomParameters({ 
-            hd: targetDomain,
-            prompt: 'select_account' 
+        // Verifica la password sullo stesso progetto usato da Harzafi FSL.
+        // Notes conserva il proprio archivio e usa una sessione anonima solo per
+        // autorizzare la lettura dei materiali condivisi già prevista dal progetto.
+        await window.identityAuth.signInWithEmailAndPassword(credentials.email, credentials.password);
+        if (window.auth.currentUser) await window.auth.signOut();
+        await window.auth.signInAnonymously();
+
+        inviaEmail(credentials.email, 7, {
+            nome_utente: credentials.name,
+            email_utente: credentials.email,
+            orario_accesso: new Date().toLocaleString('it-IT')
         });
+        passInput.value = '';
+        sessionStorage.setItem('harzafi_verified_email', credentials.email);
+        entraNelPortale(credentials.name, { email: credentials.email, role: credentials.role, method: 'fsl-password' });
+    }
 
-        window.auth.signInWithPopup(provider)
-            .then(async result => {
-                const email = (result.user.email || "").trim().toLowerCase();
-                const nomeUtente = result.user.displayName || "Utente";
+    document.getElementById('login-form').addEventListener('submit', async event => {
+        event.preventDefault();
+        if (submitBtn.disabled) return;
+        if (passwordStep.hidden) { await mostraPassaggioPassword(); return; }
+        if (!selectedUserEmail || !selectedUserName) {
+            mostraErrore(errorMsg, 'Inserisci e verifica il tuo indirizzo email.');
+            mostraPassaggioEmail();
+            return;
+        }
+        const password = passInput.value;
+        if (!password) { mostraErrore(errorMsg, 'Inserisci la password.'); passInput.focus(); return; }
 
-                // Invia notifica di accesso (opzionale)
-                if(email) {
-                    inviaEmail(email, 7, {
-                        nome_utente: nomeUtente,
-                        email_utente: email,
-                        orario_accesso: new Date().toLocaleString('it-IT')
-                    }).catch(e => console.log(e));
-                }
-                
-                entraNelPortale(nomeUtente);
-            })
-            .catch(err => {
-                console.error("Login Error:", err);
-                googleErrorMsg.innerText = "Accesso annullato o non autorizzato.";
-                googleErrorMsg.style.display = 'block';
-                googleBtn.innerHTML = originalHTML;
-                googleBtn.disabled  = false;
-            });
+        pendingCredentials = { email: selectedUserEmail, password, role: selectedRole, name: selectedUserName };
+        errorMsg.style.display = 'none';
+        submitBtn.disabled = true;
+        submitBtn.setAttribute('aria-busy', 'true');
+        submitBtn.innerHTML = loginLoadingIndicator();
+        try {
+            await completaAccesso();
+        } catch (error) {
+            console.error('Accesso Harzafi Notes non riuscito:', error.code || error.message || 'errore');
+            await Promise.all([
+                window.identityAuth?.currentUser ? window.identityAuth.signOut().catch(() => {}) : Promise.resolve(),
+                window.auth?.currentUser ? window.auth.signOut().catch(() => {}) : Promise.resolve()
+            ]);
+            pendingCredentials = null;
+            passInput.value = '';
+            mostraErrore(errorMsg, mostraErroreLogin(error));
+            submitBtn.disabled = false;
+            submitBtn.removeAttribute('aria-busy');
+            submitBtn.textContent = 'Accedi';
+        }
     });
 
-    // ── HARZAFI ID ──
-    document.getElementById('btn-harzafi-id').addEventListener('click', () => { document.getElementById('hid-modal').classList.add('active'); });
-    document.getElementById('hid-close-btn').addEventListener('click',  () => document.getElementById('hid-modal').classList.remove('active'));
+    // ── Accesso Harzafi ID, mantenuto come in FSL ──
+    document.getElementById('btn-harzafi-id').addEventListener('click', () => document.getElementById('hid-modal').classList.add('active'));
+    document.getElementById('hid-close-btn').addEventListener('click', () => document.getElementById('hid-modal').classList.remove('active'));
     document.getElementById('hid-cancel-btn').addEventListener('click', () => document.getElementById('hid-modal').classList.remove('active'));
-    document.getElementById('hid-open-manual').addEventListener('click', e => {
-        e.preventDefault();
-        document.getElementById('hid-scan-view').style.display   = 'none';
+    document.getElementById('hid-open-manual').addEventListener('click', event => {
+        event.preventDefault();
+        document.getElementById('hid-scan-view').style.display = 'none';
         document.getElementById('hid-manual-view').style.display = 'block';
         document.getElementById('hid-input').focus();
     });
     document.getElementById('hid-back-btn').addEventListener('click', () => {
         document.getElementById('hid-manual-view').style.display = 'none';
-        document.getElementById('hid-scan-view').style.display   = 'block';
-        document.getElementById('hid-error').style.display       = 'none';
+        document.getElementById('hid-scan-view').style.display = 'block';
+        document.getElementById('hid-error').style.display = 'none';
     });
 
     document.getElementById('hid-submit-btn').addEventListener('click', async () => {
         if (document.activeElement) document.activeElement.blur();
-        const hidErrorEl   = document.getElementById('hid-error');
-        const hidSubmitBtn = document.getElementById('hid-submit-btn');
-        const origText     = hidSubmitBtn.innerHTML;
-        const inputVal     = document.getElementById('hid-input').value.trim();
-
-        const isVpn = await checkVPN();
-        if (isVpn) { hidErrorEl.innerText = "Disattivare la VPN per continuare."; hidErrorEl.style.display = 'block'; return; }
-        if (!inputVal.length) return;
-
-        hidSubmitBtn.innerHTML   = "VERIFICA IN CORSO...";
-        hidSubmitBtn.disabled    = true;
-        hidErrorEl.style.display = 'none';
-
-        if (typeof window.db !== 'undefined') {
-            window.db.collection("studenti").where("HID", "==", inputVal).get()
-                .then(async snap => {
-                    if (!snap.empty) {
-                        try { await window.auth.signInAnonymously(); } catch (err) {}
-                        document.getElementById('hid-modal').classList.remove('active');
-                        hidSubmitBtn.innerHTML = origText;
-                        hidSubmitBtn.disabled  = false;
-                        document.getElementById('hid-input').value = "";
-                        entraNelPortale(snap.docs[0].data().nome);
-                    } else { throw new Error("HID non valido"); }
-                })
-                .catch(() => {
-                    hidErrorEl.innerText = "HID non valido. Riprova.";
-                    hidErrorEl.style.display   = 'block';
-                    hidErrorEl.style.animation = 'none';
-                    void hidErrorEl.offsetWidth;
-                    hidErrorEl.style.animation = 'shake 0.4s';
-                    hidSubmitBtn.innerHTML = origText;
-                    hidSubmitBtn.disabled  = false;
-                });
-        } else {
-            hidErrorEl.innerText     = "Database offline.";
-            hidErrorEl.style.display = 'block';
-            hidSubmitBtn.innerHTML   = origText;
-            hidSubmitBtn.disabled    = false;
+        const error = document.getElementById('hid-error');
+        const button = document.getElementById('hid-submit-btn');
+        const original = button.innerHTML;
+        const hid = document.getElementById('hid-input').value.trim();
+        if (!hid) return;
+        button.disabled = true;
+        button.innerHTML = loginLoadingIndicator('Verifica Harzafi ID');
+        error.style.display = 'none';
+        try {
+            const snapshot = await window.identityDb.collection('studenti').where('HID', '==', hid).limit(1).get();
+            if (snapshot.empty) throw new Error('HID non valido');
+            if (window.identityAuth.currentUser) await window.identityAuth.signOut();
+            await window.identityAuth.signInAnonymously();
+            if (window.auth.currentUser) await window.auth.signOut();
+            await window.auth.signInAnonymously();
+            const name = nomeProfilo(snapshot.docs[0].data());
+            document.getElementById('hid-modal').classList.remove('active');
+            document.getElementById('hid-input').value = '';
+            entraNelPortale(name, { role: 'studente', method: 'hid' });
+        } catch (err) {
+            await Promise.all([
+                window.identityAuth?.currentUser ? window.identityAuth.signOut().catch(() => {}) : Promise.resolve(),
+                window.auth?.currentUser ? window.auth.signOut().catch(() => {}) : Promise.resolve()
+            ]);
+            mostraErrore(error, err.code ? 'Servizio Harzafi ID non disponibile. Riprova.' : 'HID non valido. Riprova.');
+            button.disabled = false;
+            button.innerHTML = original;
         }
     });
 
-    // ── RECUPERO PASSWORD ──
-    let targetCollectionOTP = 'studenti';
-    const forgotModal   = document.getElementById('forgot-sheet-modal');
-    const otpStep1      = document.getElementById('otp-step-1');
-    const otpStep3      = document.getElementById('otp-step-3');
+    // Il recupero invia il link dal progetto di autenticazione FSL, dove è stata
+    // creata la password condivisa.
+    const forgotModal = document.getElementById('forgot-sheet-modal');
+    const otpStep1 = document.getElementById('otp-step-1');
+    const otpStep3 = document.getElementById('otp-step-3');
     const otpEmailInput = document.getElementById('otp-email-input');
-
-    document.getElementById('btn-forgot-pass').addEventListener('click', e => {
-        e.preventDefault();
+    document.getElementById('btn-forgot-pass').addEventListener('click', event => {
+        event.preventDefault();
         otpStep1.style.display = 'block';
         otpStep1.style.opacity = '1';
         otpStep3.style.display = 'none';
         otpStep3.style.opacity = '0';
-        otpEmailInput.value    = '';
+        otpEmailInput.value = selectedUserEmail || '';
         document.getElementById('otp-error-msg').style.display = 'none';
-        targetCollectionOTP = selectedRole === 'studente' ? 'studenti' : 'docenti';
-        document.getElementById('otp-role-title').innerText = selectedRole === 'studente' ? 'Area Studenti' : 'Area Docenti';
+        document.getElementById('otp-role-title').textContent = selectedRole === 'studente' ? 'Area Studenti' : 'Area Docenti';
         forgotModal.classList.add('active');
     });
-
     document.getElementById('forgot-sheet-close').addEventListener('click', () => forgotModal.classList.remove('active'));
     document.getElementById('btn-otp-back-selection').addEventListener('click', () => forgotModal.classList.remove('active'));
-
     document.getElementById('btn-send-otp').addEventListener('click', async function () {
-        const emailVal   = otpEmailInput.value.trim().toLowerCase();
-        const errorDiv   = document.getElementById('otp-error-msg');
-        const origBtnTxt = this.innerHTML;
-
-        if (!emailVal || !emailVal.includes('@')) {
-            errorDiv.innerText     = "Inserisci un'email valida.";
-            errorDiv.style.display = 'block';
+        const email = otpEmailInput.value.trim().toLowerCase();
+        const error = document.getElementById('otp-error-msg');
+        const original = this.innerHTML;
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            mostraErrore(error, 'Inserisci un indirizzo email valido.');
             return;
         }
-        errorDiv.style.display = 'none';
-        this.innerHTML = '<div class="btn-loader"><div class="btn-spinner"></div><span>Invio in corso...</span></div>';
-        this.disabled  = true;
-
+        error.style.display = 'none';
+        this.disabled = true;
+        this.innerHTML = loginLoadingIndicator('Invio link di recupero');
         try {
-            const snapshot = await window.db.collection(targetCollectionOTP).where('email', '==', emailVal).get();
-            if (snapshot.empty) throw new Error("Email non trovata.");
-            await window.auth.sendPasswordResetEmail(emailVal);
+            if (window.identityAppCheck) await window.identityAppCheck.getToken(false);
+            const collection = selectedRole === 'studente' ? 'studenti' : 'docenti';
+            const profile = await window.identityDb.collection(collection).where('email', '==', email).limit(1).get();
+            if (profile.empty) throw new Error('role-not-enabled');
+            await window.identityAuth.sendPasswordResetEmail(email);
             otpStep1.style.opacity = '0';
             setTimeout(() => {
                 otpStep1.style.display = 'none';
@@ -440,14 +397,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 setTimeout(() => { otpStep3.style.opacity = '1'; }, 50);
             }, 400);
         } catch (err) {
-            errorDiv.innerText         = "Errore di connessione. Riprova.";
-            errorDiv.style.display     = 'block';
-            errorDiv.style.animation   = 'none';
-            void errorDiv.offsetWidth;
-            errorDiv.style.animation   = 'shake 0.4s';
+            mostraErrore(error, err.message === 'role-not-enabled'
+                ? 'Questo indirizzo non è abilitato per il ruolo selezionato.'
+                : 'Non è possibile inviare il link adesso. Controlla l’indirizzo e riprova.');
         } finally {
-            this.innerHTML = origBtnTxt;
-            this.disabled  = false;
+            this.innerHTML = original;
+            this.disabled = false;
         }
     });
 });
+
+waitForFirebase(() => {});

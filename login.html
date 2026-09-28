@@ -18,10 +18,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="fsl-base.css?v=20260928-notes">
-    <link rel="stylesheet" href="modern.css?v=20260928-notes">
-    <link rel="stylesheet" href="login-modern.css?v=20260928-notes">
-    <link rel="stylesheet" href="notes-theme.css?v=20260928-notes">
+    <link rel="stylesheet" href="fsl-base.css?v=20260928-shared-login">
+    <link rel="stylesheet" href="modern.css?v=20260928-shared-login">
+    <link rel="stylesheet" href="login-modern.css?v=20260928-shared-login">
+    <link rel="stylesheet" href="notes-theme.css?v=20260928-shared-login">
 </head>
 <body class="auth-page notes-login-page">
 
@@ -37,126 +37,65 @@
             </header>
 
             <div class="login-hero-mark" aria-hidden="true">
-                <span class="orbit orbit-one"></span>
-                <span class="orbit orbit-two"></span>
-                <span class="orbit orbit-three"></span>
                 <img src="IMMAGINI/LOGO-HARZAFI.png" alt="">
             </div>
             <p class="auth-eyebrow">Harzafi Notes</p>
             <h1 class="auth-title" id="login-title">Accedi con il tuo<br>Account Harzafi.</h1>
-            <p class="auth-subtitle">Entra nel tuo spazio di studio e ritrova tutti i materiali della classe.</p>
+            <p class="auth-subtitle">Accedi con le stesse credenziali che usi su Harzafi FSL.</p>
 
-            <div class="segmented-control" id="role-control">
+            <div class="segmented-control" id="role-control" aria-label="Tipo di account">
                 <div class="seg-slider" id="role-slider"></div>
-                <button class="seg-btn active" data-role="studente">Studente</button>
-                <button class="seg-btn" data-role="docente">Docente</button>
+                <button type="button" class="seg-btn active" data-role="studente" aria-pressed="true">Studente</button>
+                <button type="button" class="seg-btn" data-role="docente" aria-pressed="false">Docente</button>
             </div>
 
             <div id="login-view" class="fade-form">
-                <div class="login-rules-banner" id="btn-rules-banner">
-                    Leggi le regole di accesso dal 25/04/2026
-                </div>
 
-                <div id="cf-turnstile-widget" class="cf-turnstile" data-sitekey="0x4AAAAAAC6Galn1mtnng7_P" data-size="flexible" data-execution="execute" data-callback="onTurnstileSuccess" data-expired-callback="onTurnstileExpired" data-error-callback="onTurnstileError" style="position:absolute;width:0;height:0;overflow:hidden;opacity:0;pointer-events:none;"></div>
-
-                <form id="login-form" target="dummyframe" action="about:blank" method="POST">
-                    <div class="input-group">
-                        <label class="input-label">Seleziona Utente:</label>
-                        <div class="custom-select" id="username-select">
-                            <input type="text" id="hidden-username" name="username" autocomplete="username" style="position:absolute;width:1px;height:1px;opacity:0;pointer-events:none;" tabindex="-1">
-                            <button type="button" class="custom-select-trigger" aria-label="Seleziona utente" aria-expanded="false" aria-haspopup="listbox">
-                                <span id="username-display">Seleziona Utente</span>
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="width:16px;color:var(--text-light);"><polyline points="6 9 12 15 18 9"></polyline></svg>
-                            </button>
-                            <div class="custom-options" id="username-options" role="listbox" aria-labelledby="username-display"></div>
+                <form id="login-form" action="login.html" method="post" autocomplete="on" novalidate>
+                    <div id="login-email-step" class="login-step is-active">
+                        <div class="auth-field email-auth-field floating-auth-field">
+                            <input type="email" id="email-input" name="email" autocomplete="username" required inputmode="email" autocapitalize="none" spellcheck="false" placeholder=" " aria-describedby="email-error">
+                            <label class="floating-field-label" for="email-input">Indirizzo email</label>
                         </div>
-                    </div>
-
-                    <div class="input-group">
-                        <div class="input-label">
-                            <span>Password:</span>
-                            <a href="#" id="btn-forgot-pass" style="color:var(--primary);text-decoration:none;text-transform:none;letter-spacing:normal;">Password dimenticata?</a>
+                        <div class="error-msg" id="email-error" role="alert"></div>
+                        <div class="privacy-disclaimer login-privacy">
+                            <span class="privacy-people" aria-hidden="true"><img src="IMMAGINI/ICONA PRIVACY HARZAFI.svg" alt=""></span>
+                            <span>I dati del tuo Account Harzafi vengono utilizzati per offrirti un accesso sicuro a Harzafi Notes. Proteggiamo le informazioni necessarie all'accesso, alla sicurezza e all'assistenza. <a href="privacy-account.html" target="_blank" rel="noopener">Scopri come gestiamo i tuoi dati.</a></span>
                         </div>
-                        <div style="position:relative;width:100%;">
-                            <!-- PASSWORD INPUT -->
-                            <input type="password" id="password-input" name="password" autocomplete="current-password" class="apple-input" placeholder="Inserisci la password" style="padding-right:50px; font-family: Verdana, sans-serif; letter-spacing: 2px;">
-
-                            <button type="button" id="toggle-password" class="toggle-password-btn" aria-label="Mostra o nascondi password" style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; color: var(--text-light); z-index: 5;">
-                                <svg id="eye-icon" viewBox="0 0 24 24" fill="currentColor" style="width: 22px; height: 22px; flex-shrink: 0;"><path d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"/></svg>
-                                <svg id="eye-slash-icon" viewBox="0 0 24 24" fill="currentColor" style="display:none; width: 22px; height: 22px; flex-shrink: 0;"><path d="M11.83,9L15,12.16C15,12.11 15,12.05 15,12A3,3 0 0,0 12,9C11.94,9 11.89,9 11.83,9M7.53,9.8L9.08,11.35C9.03,11.56 9,11.77 9,12A3,3 0 0,0 12,15C12.22,15 12.44,14.97 12.65,14.92L14.2,16.47C13.53,16.8 12.79,17 12,17A5,5 0 0,1 7,12C7,11.21 7.2,10.47 7.53,9.8M2,4.27L4.28,6.55L4.73,7C3.08,8.3 1.78,10 1,12C2.73,16.39 7,19.5 12,19.5C13.55,19.5 15.03,19.2 16.38,18.66L16.81,19.08L19.73,22L21,20.73L3.27,3M12,7A5,5 0 0,1 17,12C17,12.64 16.87,13.26 16.64,13.82L19.57,16.75C21.07,15.5 22.27,13.86 23,12C21.27,7.61 17,4.5 12,4.5C10.6,4.5 9.26,4.75 8,5.2L10.17,7.35C10.74,7.13 11.35,7 12,7Z"/></svg>
+                        <div class="login-actions">
+                            <button type="button" id="login-continue" class="btn-gradient">Continua</button>
+                            <button type="button" id="btn-harzafi-id" class="btn-social" aria-controls="hid-modal">
+                                <img src="IMMAGINI/LOGO-HARZAFI.png" alt="" width="80" height="32">
+                                <span class="harzafi-id-separator" aria-hidden="true"></span>
+                                <span class="harzafi-id-label">Accedi con Harzafi ID</span>
+                                <svg class="harzafi-id-arrow" width="18" height="24" viewBox="0 0 18 24" fill="none" aria-hidden="true" focusable="false"><path d="m6 5 7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             </button>
                         </div>
-                        <div class="error-msg" id="login-error">Credenziali errate. Riprova.</div>
                     </div>
-
-                    <!-- DISCLAIMER PRIVACY CON ICONA FISSATA -->
-                    <div class="privacy-disclaimer">
-                        <svg viewBox="0 0 24 24" fill="currentColor" style="width: 26px; height: 26px; color: var(--primary); margin-bottom: 8px; display: block; margin-left: auto; margin-right: auto;">
-                            <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
-                        </svg>
-                        Le informazioni del tuo Account Harzafi vengono utilizzate per permetterti di accedere al tuo account e ai tuoi dati in modo sicuro. Il sistema registra alcuni dati ai fini di sicurezza, assistenza e rendicontazione. Se accetti, l'Istituto può utilizzare le informazioni sul tuo Account anche per inviarti e-mail e comunicazioni scolastiche, in base all’utilizzo che fai dei servizi.
-                        <a href="privacy-account.html" target="_blank">Scopri come vengono gestiti i tuoi dati...</a>
-                    </div>
-
-                    <button type="submit" id="login-submit" class="btn-gradient">ENTRA</button>
-
-                    <div class="divider">- OPPURE CON -</div>
-
-                    <!-- PULSANTE GOOGLE CON ICONA FISSATA -->
-                    <button type="button" id="custom-google-btn" class="btn-social" style="position: relative;">
-                        <img src="IMMAGINI/GOOGLE-LOGO.png" loading="lazy" alt="Google" style="width: 24px; position: absolute; left: 24px; height: auto;">
-                        <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;">
-                            <span class="btn-text-main" style="font-weight: 800; color: #374151; font-size: 0.95rem;">ACCEDI CON GOOGLE</span>
-                            <span class="btn-text-sub" style="font-weight: 600; color: #9ca3af; font-size: 0.75rem; text-transform: none;">Tramite account istituzionale</span>
+                    <div id="login-password-step" class="login-step" hidden>
+                        <div class="selected-account">
+                            <div class="selected-account-copy"><label for="email-input">Account Harzafi</label><div id="selected-email-display"></div></div>
+                            <button type="button" id="change-email" aria-label="Modifica email">Modifica</button>
                         </div>
-                    </button>
-                    <div class="error-msg" id="google-login-error" style="margin-bottom:10px;"></div>
-
-                    <!-- PULSANTE HARZAFI ID CON ICONA FISSATA -->
-                    <button type="button" id="btn-harzafi-id" class="btn-social" style="border-color: #0284c7;">
-                        <img src="IMMAGINI/LOGO-HARZAFI.png" loading="lazy" alt="Logo Harzafi" style="height: 18px; width: auto; margin-right: 8px;">
-                        <span style="color: #0284c7;">ACCEDI CON HARZAFI ID</span>
-                    </button>
+                        <div class="auth-field auth-password-field floating-auth-field">
+                            <input type="password" id="password-input" name="password" autocomplete="current-password" required placeholder=" ">
+                            <label class="floating-field-label" for="password-input">Password</label>
+                            <span id="caps-lock-warning" class="caps-lock-indicator" hidden aria-live="polite"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m12 4 6.5 7H15v5H9v-5H5.5L12 4Zm-3 14h6v2H9v-2Z"/></svg><span class="sr-only">Il Blocco Maiuscole è attivo.</span></span>
+                            <button type="button" id="toggle-password" class="toggle-password-btn" aria-label="Mostra password">
+                                <svg id="password-visibility-icon" viewBox="0 0 24 24" aria-hidden="true"><g class="icon-eye"><path d="M12 5c5 0 9.27 3.11 11 7-1.73 3.89-6 7-11 7S2.73 15.89 1 12c1.73-3.89 6-7 11-7Zm0 2c-3.79 0-7.17 2.13-8.82 5C4.83 14.87 8.21 17 12 17s7.17-2.13 8.82-5C19.17 9.13 15.79 7 12 7Zm0 2a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z"/></g><g class="icon-eye-off"><path d="m3.27 2 18.73 18.73-1.27 1.27-3.23-3.23A12.7 12.7 0 0 1 12 20C7 20 2.73 16.89 1 13a12.54 12.54 0 0 1 4.12-5.13L2 4.73 3.27 2ZM6.58 9.33A10.38 10.38 0 0 0 3.18 13C4.83 15.87 8.21 18 12 18c1.42 0 2.77-.3 4-.83l-1.57-1.57A4 4 0 0 1 9.4 10.57L6.58 9.33ZM12 6c5 0 9.27 3.11 11 7a12.45 12.45 0 0 1-2.28 3.46l-1.42-1.42A10.29 10.29 0 0 0 20.82 13C19.17 10.13 15.79 8 12 8c-.44 0-.88.03-1.3.09L8.98 6.37C9.95 6.13 10.96 6 12 6Z"/></g></svg>
+                            </button>
+                        </div>
+                        <div class="error-msg" id="login-error" role="alert">Credenziali errate. Riprova.</div>
+                        <a href="#" id="btn-forgot-pass" class="forgot-link">Hai dimenticato la password?</a>
+                        <button type="submit" id="login-submit" class="btn-gradient">Accedi</button>
+                    </div>
                 </form>
-            </div>
-
-            <div id="rules-view" class="fade-form" style="display:none;">
-                <div style="background:#f0f9ff;border:1px solid #bae6fd;padding:15px;border-radius:12px;margin-bottom:20px;">
-                    <p style="font-size:0.95rem;color:#0369a1;font-weight:600;text-align:justify;margin:0;line-height:1.5;">
-                        Per garantire la massima sicurezza dei dati e in linea con l'aggiornamento dei sistemi informatici d'Istituto, l'accesso ad Harzafi Notes è strettamente vincolato all'utilizzo dei seguenti metodi di autenticazione verificati:
-                    </p>
-                </div>
-                <ul class="rules-list">
-                    <li>
-                        <svg viewBox="0 0 24 24" fill="var(--primary)" style="width:30px;flex-shrink:0;"><path d="M12,3L1,9L4,10.63V17L12,21L20,17V10.63L23,9M12,5.16L19.5,9L12,12.84L4.5,9M18,16.08L12,19.08L6,16.08V11.72L12,15L18,11.72V16.08Z"/></svg>
-                        <div style="display:flex;flex-direction:column;">
-                            <span style="font-weight:800;">Studenti</span>
-                            <span style="font-size:0.8rem;color:var(--text-gray);font-weight:500;">Accesso tramite account Google d'Istituto o credenziali standard.</span>
-                        </div>
-                    </li>
-                    <li>
-                        <svg viewBox="0 0 24 24" fill="var(--primary)" style="width:30px;flex-shrink:0;"><path d="M12,15C7.58,15 4,16.79 4,19V21H20V19C20,16.79 16.42,15 12,15M8,9A4,4 0 0,0 12,13A4,4 0 0,0 16,9M11.5,2A2.5,2.5 0 0,0 9,4.5A2.5,2.5 0 0,0 11.5,7A2.5,2.5 0 0,0 14,4.5A2.5,2.5 0 0,0 11.5,2Z"/></svg>
-                        <div style="display:flex;flex-direction:column;">
-                            <span style="font-weight:800;">Amministrazione Centrale</span>
-                            <span style="font-size:0.8rem;color:var(--text-gray);font-weight:500;">Accesso riservato tramite credenziali dirette fornite dall'amministratore di sistema.</span>
-                        </div>
-                    </li>
-                    <li>
-                        <svg viewBox="0 0 24 24" fill="var(--primary)" style="width:30px;flex-shrink:0;"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
-                        <div style="display:flex;flex-direction:column;">
-                            <span style="font-weight:800;">Personale Scolastico (Docenti)</span>
-                            <span style="font-size:0.8rem;color:var(--text-gray);font-weight:500;">Accesso consentito tramite account Google d'Istituto o selezione rapida utente.</span>
-                        </div>
-                    </li>
-                </ul>
-                <button type="button" class="btn-text btn-back-login" style="font-weight:800;font-size:1rem;margin-top:5px;">← Torna al Login</button>
             </div>
           </section>
         </div>
     </div>
 
-    <!-- Modali (HID e OTP) -->
-    <iframe name="dummyframe" id="dummyframe" style="display:none;"></iframe>
+    <!-- Modali per Harzafi ID e recupero password -->
 
     <div id="hid-modal" class="modal-overlay bottom-sheet">
         <div class="modal-content">
@@ -217,14 +156,10 @@
     </div>
 
     <!-- Script -->
-    <script defer src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.8.1/firebase-auth-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-check-compat.js"></script>
-    <script defer src="https://www.gstatic.com/firebasejs/10.8.1/firebase-functions-compat.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/html5-qrcode/2.3.8/html5-qrcode.min.js"></script>
-    <script defer src="https://accounts.google.com/gsi/client"></script>
-    <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
-    <script defer src="login.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-auth-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-firestore-compat.js"></script>
+    <script defer src="https://www.gstatic.com/firebasejs/12.19.0/firebase-app-check-compat.js"></script>
+    <script defer src="login.js?v=20260928-spark-shared-login"></script>
 </body>
 </html>
