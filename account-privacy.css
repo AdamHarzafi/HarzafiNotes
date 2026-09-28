@@ -1,0 +1,210 @@
+/* Editorial layer; navigation and footer remain shared with the other pages. */
+:root { --apple-ease: cubic-bezier(.32,.72,0,1); }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body.account-privacy-page { margin: 0; color: #1d1d1f; background: #fff; font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; -webkit-font-smoothing: antialiased; }
+.account-privacy-page button { font: inherit; }
+.account-privacy-page .navbar-wrapper .nav-login {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    min-height: 38px;
+    padding: 10px 19px;
+    line-height: 1;
+    text-align: center;
+    white-space: nowrap;
+    align-self: center;
+}
+.account-story { overflow-wrap: break-word; }
+.account-cards:focus-visible, .account-values-track:focus-visible { outline-offset: -3px; }
+.account-privacy-page a { text-decoration: none; }
+.account-privacy-page a:hover { text-decoration: underline; text-underline-offset: .22em; }
+.account-privacy-page :focus-visible { outline: 3px solid #0071e3; outline-offset: 6px; }
+.account-privacy-page [hidden] { display: none !important; }
+.account-skip-link { position: fixed; top: -100px; left: 16px; z-index: 1100; padding: 14px 20px; background: #fff; color: #0066cc; border-radius: 12px; }
+.account-skip-link:focus { top: 12px; }
+.account-container { width: min(1280px, calc(100% - 96px)); margin-inline: auto; }
+.account-hero { min-height: 100vh; min-height: 100svh; padding: 90px 24px 48px; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+.account-hero-logo { display: block; width: clamp(132px, 13vw, 180px); height: auto; margin: 0 auto 28px; }
+.account-eyebrow { font-size: .875rem; font-weight: 600; line-height: 1.5; letter-spacing: .04em; color: #6e6e73; }
+.account-hero h1 { margin: 0 auto; font-size: clamp(2.8rem, 6.3vw, 6.4rem); font-weight: 600; line-height: 1.05; letter-spacing: -.065em; }
+.account-hero h1 strong { display: block; font-weight: 650; color: #1d1d1f; }
+.account-hero h1 span { display: block; color: #86868b; }
+.account-text-link { display: inline-flex; align-items: center; gap: 8px; color: #0066cc; font-size: 1rem; line-height: 1.5; font-weight: 500; }
+.account-belief { padding: 46px 0 clamp(100px, 10vw, 150px); text-align: center; scroll-margin-top: 100px; }
+.account-belief > img { display: block; width: 100px; height: auto; margin: 0 auto 30px; }
+.account-belief h2 { font-size: clamp(2rem, 4vw, 3.7rem); font-weight: 600; line-height: 1.08; letter-spacing: -.048em; }
+.account-belief > p { max-width: 740px; margin: 25px auto 0; font-size: clamp(1.125rem, 1.6vw, 1.4rem); line-height: 1.55; font-weight: 400; color: #6e6e73; text-wrap: pretty; }
+.account-basics { background: #fff; padding: clamp(64px, 7vw, 100px) 0 48px; }
+.account-section-heading { margin-bottom: 42px; }
+.account-section-heading h2 { margin-top: 15px; font-size: clamp(2.35rem, 4.3vw, 4rem); line-height: 1.06; font-weight: 600; letter-spacing: -.05em; }
+.account-section-heading h2 span { color: #86868b; }
+.account-carousel-shell { width: 100%; overflow: hidden; }
+.account-cards { --card-width: min(510px, calc((100vw - 120px) / 2)); --card-gap: 24px; --rail-inset: max(48px, calc((100vw - 1280px) / 2)); display: flex; align-items: stretch; gap: var(--card-gap); overflow-x: auto; padding: 8px var(--rail-inset) 30px; scroll-padding-inline: var(--rail-inset); scroll-snap-type: x mandatory; scrollbar-width: none; position: relative; }
+.account-cards::-webkit-scrollbar, .account-values-track::-webkit-scrollbar { display: none; }
+.account-card { flex: 0 0 var(--card-width); min-width: 0; min-height: 610px; padding: 0; border: 1px solid #e8e8ed; border-radius: 30px; background: #fff; scroll-snap-align: start; overflow: hidden; display: flex; flex-direction: column; }
+.account-card-media { width: 100%; aspect-ratio: 3 / 2; flex-shrink: 0; display: grid; place-items: center; overflow: hidden; }
+.account-card-art { display: block; width: 100%; height: 100%; object-fit: contain; min-height: 0; }
+.account-card-emoji { object-fit: cover; }
+.account-card-lock { width: 92%; height: 92%; }
+.account-card-topic { width: 78%; height: 78%; }
+.account-card-copy { margin-top: auto; padding: 28px 38px 34px; display: flex; flex-direction: column; flex: 1; }
+.account-card h3 { margin: 0 0 16px; font-size: clamp(1.65rem, 2.2vw, 2rem); font-weight: 600; line-height: 1.12; letter-spacing: -.035em; }
+.account-card h3 span { color: #0071e3; }
+.account-card-copy p { margin: 0 0 20px; font-size: 1rem; line-height: 1.5; color: #515158; font-weight: 400; }
+.account-card-copy a { margin-top: auto; padding-top: 4px; font-size: .875rem; line-height: 1.5; }
+.account-disclosure { max-width: 840px; text-align: center; padding-top: 36px; }
+.account-disclosure p { color: #6e6e73; font-size: .875rem; line-height: 1.6; }
+.account-disclosure p + p { margin-top: 8px; }
+.account-disclosure a { color: #0066cc; text-decoration: underline; text-underline-offset: .16em; }
+.account-values { background: #fff; color: #1d1d1f; padding: clamp(68px, 8vw, 112px) 0 72px; }
+.account-values h2 { margin: 0 0 52px; font-size: clamp(2.25rem, 4.1vw, 3.8rem); font-weight: 600; line-height: 1.06; letter-spacing: -.045em; }
+.account-values h2 br { display: none; }
+.account-values-track { display: grid; grid-auto-flow: column; grid-auto-columns: calc((100% - 54px) / 4); gap: 18px; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding: 8px 0 14px; }
+.account-value { background: #fff; border: 1px solid #e8e8ed; border-radius: 28px; padding: 30px 27px; min-width: 0; min-height: 345px; scroll-snap-align: start; display: flex; flex-direction: column; }
+.account-value > svg { width: 38px; height: 38px; margin-bottom: 24px; flex-shrink: 0; }
+.account-value-icon { display: block; width: 38px; height: 38px; margin-bottom: 24px; object-fit: contain; flex-shrink: 0; }
+.account-value h3 { font-size: 1.55rem; line-height: 1.15; font-weight: 600; letter-spacing: -.035em; margin-bottom: 14px; }
+.account-value p { font-size: 1rem; font-weight: 400; line-height: 1.45; color: #515158; }
+.account-value a { margin-top: 20px; color: #0066cc; font-size: 1rem; line-height: 1.4; }
+.account-values-controls { display: flex; justify-content: flex-end; gap: 14px; margin-top: 24px; }
+.account-values-controls button { display: grid; place-items: center; width: 44px; height: 44px; border: 0; border-radius: 50%; background: #f0f0f3; color: #1d1d1f; cursor: pointer; }
+.account-values-controls button:disabled { opacity: .35; cursor: default; }
+.account-values-controls button:not(:disabled):hover { background: #e8e8ed; }
+.account-values-controls svg { width: 20px; height: 20px; }
+#values-prev svg { transform: rotate(180deg); }
+.account-values :focus-visible { outline-color: #66b5ff; }
+@media (max-width: 1100px) {
+    .account-values-track { grid-auto-columns: calc((100% - 36px) / 3); }
+}
+@media (max-width: 760px) {
+    .account-container { width: calc(100% - 48px); }
+    .account-hero { padding: 88px 20px 48px; }
+    .account-hero h1 { font-size: clamp(2.4rem, 8.5vw, 4rem); letter-spacing: -.055em; }
+    .account-belief { padding-top: 24px; padding-bottom: 80px; }
+    .account-belief > img { width: 86px; }
+    .account-belief h2 { font-size: clamp(1.9rem, 6.5vw, 2.75rem); }
+    .account-belief > p { font-size: 1.125rem; line-height: 1.55; }
+    .account-section-heading { margin-bottom: 28px; }
+    .account-cards { --card-width: min(360px, calc(100vw - 64px)); --card-gap: 16px; --rail-inset: 24px; }
+    .account-card { min-height: 540px; padding: 0; border-radius: 26px; }
+    .account-card h3 { font-size: 1.65rem; }
+    .account-card-copy { padding: 24px 26px 28px; }
+    .account-disclosure { padding-top: 26px; }
+    .account-values { padding-bottom: 48px; }
+    .account-values h2 { margin-bottom: 32px; }
+    .account-values h2 br { display: block; }
+    .account-values-track { grid-auto-columns: min(320px, calc(100% - 20px)); gap: 16px; }
+    .account-value { min-height: 330px; padding: 28px; }
+}
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    .account-story *, .account-story *::before, .account-story *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+}
+@media (max-height: 540px) and (orientation: landscape) {
+    .account-hero { padding-top: 76px; padding-bottom: 28px; }
+    .account-hero-logo { width: 96px; margin-bottom: 16px; }
+    .account-hero h1 { font-size: clamp(2rem, 5vw, 3rem); }
+}
+.carousel-player {
+    --carousel-duration: 6500ms;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    width: 100%;
+    margin-top: 10px;
+}
+
+.carousel-timeline {
+    min-width: 178px;
+    height: 56px;
+    padding: 0 23px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    background: #f0f0f3;
+}
+
+.carousel-timeline-step {
+    position: relative;
+    flex: 0 0 auto;
+    width: 10px;
+    height: 32px;
+    padding: 0;
+    border: 0;
+    border-radius: 999px;
+    background: transparent;
+    cursor: pointer;
+    transition: width .32s var(--apple-ease), transform .22s ease;
+}
+
+.carousel-timeline-step::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: #747479;
+    transform: translate(-50%, -50%);
+    transition: width .32s var(--apple-ease), background-color .22s ease;
+}
+
+.carousel-timeline-step::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 8px;
+    border-radius: 999px;
+    background: #1d1d1f;
+    transform: translateY(-50%) scaleX(0);
+    transform-origin: left center;
+    opacity: 0;
+}
+
+.carousel-timeline-step.is-active { width: 48px; }
+.carousel-timeline-step.is-active::before { width: 48px; background: #8b8b90; }
+.carousel-timeline-step.is-active::after {
+    opacity: 1;
+    animation: carouselTimelineFill var(--carousel-duration) linear forwards;
+}
+.carousel-player.is-paused .carousel-timeline-step.is-active::after { animation-play-state: paused; }
+
+.carousel-play-toggle {
+    flex: 0 0 56px;
+    width: 56px;
+    height: 56px;
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #f0f0f3;
+    color: #1d1d1f;
+    cursor: pointer;
+    transition: transform .24s var(--apple-ease), background-color .24s ease;
+}
+
+.carousel-pause-symbol { display: flex; align-items: center; justify-content: center; gap: 5px; }
+.carousel-pause-symbol i { width: 5px; height: 19px; border-radius: 2px; background: currentColor; }
+.carousel-play-symbol { display: none; width: 23px; height: 23px; margin-left: 3px; }
+.carousel-player.is-paused .carousel-pause-symbol { display: none; }
+.carousel-player.is-paused .carousel-play-symbol { display: block; }
+
+@keyframes carouselTimelineFill {
+    from { transform: translateY(-50%) scaleX(0); }
+    to { transform: translateY(-50%) scaleX(1); }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .carousel-timeline-step:hover { transform: scale(1.12); }
+    .carousel-play-toggle:hover { transform: scale(1.06); background: #e8e8ed; }
+}
