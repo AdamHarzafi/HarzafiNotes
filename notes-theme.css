@@ -198,8 +198,18 @@ body.notes-home-page {
 }
 
 @media (max-width: 600px) {
-    .notes-home-page .hero-shell { padding: 75px 18px 34px; grid-template-rows: minmax(285px, 41vh) auto; gap: 10px; }
-    .notes-hero-stage { min-height: 285px; }
+    .notes-home-page .notes-hero { min-height: 100svh; min-height: 100dvh; }
+    .notes-home-page .hero-shell {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        min-height: 100svh;
+        min-height: 100dvh;
+        padding: calc(75px + env(safe-area-inset-top, 0px)) 18px max(24px, env(safe-area-inset-bottom, 0px));
+        gap: 0;
+    }
+    .notes-hero-stage { flex: 1 1 auto; min-height: 0; width: 100%; }
+    .notes-home-page .hero-copy-row { flex: 0 0 auto; margin-top: 0; padding: 0; }
     .notes-home-page .hero-copy h1 { font-size: clamp(2.5rem, 11vw, 3.5rem); }
     .notes-home-page .hero-cta-panel { padding: 5px; }
     .notes-home-page .hero-cta-panel > p { margin: 2px 10px 6px; font-size: .8rem; }
