@@ -43,6 +43,20 @@ const isNotesAdmin = () => (identityAuth.currentUser?.email || sessionStorage.ge
 
 let materiaUploadSelezionata = "Informatica";
 
+function nascondiLoaderIniziale() {
+    const loader = document.getElementById('notesInitialLoader');
+    if (!loader || loader.hidden || loader.classList.contains('is-leaving')) return;
+
+    loader.classList.add('is-leaving');
+    loader.setAttribute('aria-hidden', 'true');
+    window.setTimeout(() => { loader.hidden = true; }, 280);
+}
+
+function markupCaricamentoNote() {
+    const raggi = Array.from({ length: 12 }, () => '<span></span>').join('');
+    return `<div class="notes-loading-state" role="status" aria-live="polite"><span class="notes-page-activity" aria-hidden="true">${raggi}</span><span>Carico…</span></div>`;
+}
+
 // ==========================================
 // 1. GESTIONE AUTENTICAZIONE E PROFILO
 // ==========================================
@@ -175,7 +189,7 @@ if(searchNotesEl) {
 function caricaAppunti(materia) {
     const container = document.getElementById('notesContainer');
     if(!container) return;
-    container.innerHTML = `<div class="btn-loader" style="justify-content:flex-start; width:100%; grid-column:1/-1;"><div class="btn-spinner"></div><span style="font-weight:800; color:var(--text-gray); font-size:1.1rem; margin-left:10px;">Sincronizzazione archivio...</span></div>`;
+    container.innerHTML = markupCaricamentoNote();
     
     let query = db.collection('appunti');
     if (materia !== "Tutte" && materia !== "Preferiti") query = query.where('materia', '==', materia);
@@ -259,7 +273,7 @@ function caricaAppunti(materia) {
         });
     }).catch(err => {
         container.innerHTML = `<p style="color:var(--danger); font-weight:700;">Errore: ${err.message}</p>`;
-    });
+    }).finally(nascondiLoaderIniziale);
 }
 
 window.eliminaFile = function(docId, ev) {

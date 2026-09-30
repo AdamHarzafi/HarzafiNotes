@@ -50,9 +50,17 @@
     </style>
     <link rel="stylesheet" href="fsl-base.css?v=20260928-notes">
     <link rel="stylesheet" href="modern.css?v=20260928-notes">
-    <link rel="stylesheet" href="notes-theme.css?v=20260930-dashboard-greeting">
+    <link rel="stylesheet" href="notes-theme.css?v=20260930-apple-load-white-bg">
 </head>
 <body class="dashboard-page notes-dashboard-page">
+
+    <div id="notesInitialLoader" class="notes-initial-loader" role="status" aria-live="polite">
+        <span class="notes-page-activity" aria-hidden="true">
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span><span></span>
+        </span>
+        <span class="notes-initial-loader-label">Carico…</span>
+    </div>
 
     <nav class="navbar-wrapper glass scrolled" style="display:flex; justify-content:space-between; z-index:100; align-items:center;">
         <img src="IMMAGINI/LOGO-HARZAFI.png" alt="Logo Harzafi" class="nav-logo-img" style="height: 36px; object-fit: contain;">
@@ -75,7 +83,7 @@
     <div class="dash-layout">
         <div class="sidebar-mobile-wrapper">
             <aside class="sidebar-materie">
-                <h3 class="desktop-only-title" style="font-size: 0.9rem; color: var(--text-light);">Archivio 3°A</h3>
+                <h3 class="archive-class-label">Archivio 4°AI</h3>
                 <button class="materia-btn active" onclick="filtraMateria('Tutte')">Tutti i file</button>
                 <button class="materia-btn materia-btn-favorites desktop-mb" onclick="filtraMateria('Preferiti')">⭐ Preferiti <span class="prof-name">I tuoi appunti salvati</span></button>
 
@@ -108,8 +116,12 @@
             </div>
 
             <div id="notesContainer" class="notes-grid">
-                <div class="btn-loader" style="justify-content:flex-start; width: 100%; grid-column: 1 / -1;">
-                    <div class="btn-spinner"></div><span style="font-weight:800; color:var(--text-gray); font-size: 1.1rem; margin-left: 10px;">Sincronizzazione archivio...</span>
+                <div class="notes-loading-state" role="status" aria-live="polite">
+                    <span class="notes-page-activity" aria-hidden="true">
+                        <span></span><span></span><span></span><span></span><span></span><span></span>
+                        <span></span><span></span><span></span><span></span><span></span><span></span>
+                    </span>
+                    <span>Carico…</span>
                 </div>
             </div>
 
@@ -213,6 +225,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
     <!-- Il tuo JS Principale -->
-    <script src="dashboard.js?v=20260930-first-name-greeting"></script>
+    <script src="dashboard.js?v=20260930-apple-load-4ai"></script>
 </body>
 </html>
