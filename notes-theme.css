@@ -366,11 +366,15 @@ body.notes-home-page {
 }
 
 .notes-dashboard-page .greeting-container {
+    display: block;
     margin-bottom: 7px;
-    color: #6e6e73;
-    font-size: .73rem;
+    color: #1d1d1f;
+    font-size: clamp(2rem, 3.6vw, 2.8rem);
     font-weight: 650;
-    letter-spacing: .055em;
+    letter-spacing: -.055em;
+    line-height: 1.08;
+    text-transform: none;
+    text-wrap: balance;
 }
 
 .notes-dashboard-page .animated-gradient-text {
@@ -638,6 +642,7 @@ body.notes-home-page {
     .notes-dashboard-page .sidebar-mobile-wrapper { width: calc(100% + 32px); margin: 0 -16px; }
     .notes-dashboard-page .sidebar-materie { padding-inline: 16px; }
     .notes-dashboard-page .dash-title { font-size: clamp(1.9rem, 8vw, 2.3rem) !important; }
+    .notes-dashboard-page .greeting-container { font-size: clamp(1.9rem, 8vw, 2.3rem); }
     .notes-dashboard-page .search-bar { min-height: 45px; font-size: 16px; }
     .notes-dashboard-page .notes-grid { gap: 11px; }
     .notes-dashboard-page .note-card { padding: 17px; border-radius: 18px; }

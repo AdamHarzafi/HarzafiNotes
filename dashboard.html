@@ -14,12 +14,6 @@
     <link rel="icon" type="image/png" sizes="32x32" href="IMMAGINI/HARZAFI-LOGO-FOR-APPLE.png">
 
     <style>
-        .animated-gradient-text { background: linear-gradient(135deg, #0284c7 0%, #38bdf8 25%, #0ea5e9 50%, #0369a1 75%, #0284c7 100%); background-size: 300% 300%; -webkit-background-clip: text; -webkit-text-fill-color: transparent; animation: textPulseColor 5s cubic-bezier(0.25, 1, 0.5, 1) infinite; }
-        @keyframes textPulseColor { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
-
-        .greeting-container { font-weight: 900; font-size: 1.15rem; margin-bottom: 2px; text-transform: uppercase; letter-spacing: -0.5px; display: flex; align-items: center; gap: 4px; flex-wrap: wrap; }
-        @media (max-width: 900px) { .greeting-container { font-size: 1.35rem; margin-top: 14px; margin-bottom: 8px; } }
-
         .search-bar { width: 100%; min-width: 250px; padding: 12px 20px; border-radius: 24px; border: 1px solid var(--border-color); background: rgba(255,255,255,0.8); backdrop-filter: blur(10px); font-size: 0.95rem; font-weight: 600; color: var(--text-dark); transition: all 0.3s var(--apple-ease); box-shadow: 0 4px 15px rgba(0,0,0,0.02); }
         .search-bar:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 4px rgba(2, 132, 199, 0.15); background: #fff; }
 
@@ -56,7 +50,7 @@
     </style>
     <link rel="stylesheet" href="fsl-base.css?v=20260928-notes">
     <link rel="stylesheet" href="modern.css?v=20260928-notes">
-    <link rel="stylesheet" href="notes-theme.css?v=20260930-dashboard-polish">
+    <link rel="stylesheet" href="notes-theme.css?v=20260930-dashboard-greeting">
 </head>
 <body class="dashboard-page notes-dashboard-page">
 
@@ -101,7 +95,7 @@
             <div class="dash-header" style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 35px; flex-wrap: wrap; gap: 20px;">
                 <div>
                     <div id="greetingText" class="greeting-container">
-                        <span class="animated-gradient-text">Caricamento...</span>
+                        Caricamento…
                     </div>
                     <h2 id="titoloMateria" class="dash-title" style="margin-bottom: 0; font-size: 2.8rem; letter-spacing: -1.5px; font-weight: 900;">Tutti i file</h2>
                 </div>
@@ -219,6 +213,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
     <!-- Il tuo JS Principale -->
-    <script src="dashboard.js?v=20260928-notes-auth-key"></script>
+    <script src="dashboard.js?v=20260930-first-name-greeting"></script>
 </body>
 </html>

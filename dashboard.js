@@ -70,18 +70,23 @@ auth.onAuthStateChanged(user => {
 
 function impostaSalutoDinamico(user) {
     const hour = new Date().getHours();
-    let greetText = "Buongiorno"; let greetEmoji = "☀️";
-    if (hour >= 5 && hour < 13) { greetText = "Buongiorno"; greetEmoji = "☀️"; }
-    else if (hour >= 13 && hour < 18) { greetText = "Buon pomeriggio"; greetEmoji = "☕"; }
-    else { greetText = "Buonasera"; greetEmoji = "🌙"; }
-    
+    let greetText = "Buongiorno";
+    if (hour >= 5 && hour < 13) greetText = "Buongiorno";
+    else if (hour >= 13 && hour < 18) greetText = "Buon pomeriggio";
+    else greetText = "Buonasera";
+
     let name = "Studente";
     const sessionName = sessionStorage.getItem('harzafi_user');
-    if (sessionName && sessionName !== "Utente") name = sessionName.split(" ")[0];
-    else if (user && user.displayName) name = user.displayName.split(" ")[0];
-    
+    const givenName = (value, surnameFirst = false) => {
+        const parts = String(value || '').trim().split(/\s+/).filter(Boolean);
+        const first = parts.length > 1 && surnameFirst ? parts[parts.length - 1] : parts[0];
+        return first ? first.charAt(0).toLocaleUpperCase('it-IT') + first.slice(1).toLocaleLowerCase('it-IT') : '';
+    };
+    if (sessionName && sessionName !== "Utente") name = givenName(sessionName, true) || name;
+    else if (user && user.displayName) name = givenName(user.displayName) || name;
+
     const greetingTextEl = document.getElementById('greetingText');
-    if(greetingTextEl) greetingTextEl.innerHTML = `<span class="animated-gradient-text">${greetText}</span><span style="font-size: 1.1em; line-height: 1;">${greetEmoji}</span><span class="animated-gradient-text">, ${name}</span>`;
+    if (greetingTextEl) greetingTextEl.textContent = `${greetText}, ${name}`;
     
     const userNameDisplayEl = document.getElementById('userNameDisplay');
     if(userNameDisplayEl) userNameDisplayEl.textContent = name;
