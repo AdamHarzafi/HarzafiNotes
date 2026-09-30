@@ -31,6 +31,8 @@ body.notes-home-page {
 }
 
 .notes-hero-art {
+    position: relative;
+    z-index: 2;
     width: min(100%, 1120px);
     height: min(70vh, 680px);
     background-image: url("IMMAGINI/Mockup%20del%20tablet%20Harzafi%20Airways.png");
