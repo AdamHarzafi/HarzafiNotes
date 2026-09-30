@@ -38,6 +38,7 @@ body.notes-home-page {
     height: min(70vh, 680px);
     object-fit: contain;
     object-position: center;
+    mix-blend-mode: multiply;
 }
 
 .notes-home-page .hero-copy { max-width: 700px; }
