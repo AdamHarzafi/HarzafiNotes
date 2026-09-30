@@ -15,6 +15,9 @@ async function inviaEmail(emailDestinatario, idModelloBrevo, parametriMail) {
     } catch (err) { console.error("Email accesso non inviata:", err); }
 }
 
+// L'endpoint Apps Script allegato genera questa notifica solo per il modello 2.
+const LOGIN_EMAIL_TEMPLATE_ID = 2;
+
 const NOTES_FIREBASE_CONFIG = {
     apiKey: "AIzaSyCogx9XlPxHewLdxcdXKxOaIfakiLT7-0A",
     authDomain: "harzafi-notes.firebaseapp.com",
@@ -267,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.auth.currentUser) await window.auth.signOut();
         await window.auth.signInAnonymously();
 
-        inviaEmail(credentials.email, 7, {
+        inviaEmail(credentials.email, LOGIN_EMAIL_TEMPLATE_ID, {
             nome_utente: credentials.name,
             email_utente: credentials.email,
             orario_accesso: new Date().toLocaleString('it-IT')
