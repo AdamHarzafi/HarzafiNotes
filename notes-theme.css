@@ -180,8 +180,8 @@ body.notes-home-page {
     .notes-hero-stage { min-height: clamp(300px, 56vw, 425px); }
     .notes-hero-art { width: 100%; }
     .notes-home-page .hero-copy-row { display: grid; gap: 20px; text-align: center; }
-    .notes-home-page .hero-copy { max-width: none; }
-    .notes-home-page .hero-copy h1 { font-size: clamp(2.55rem, 9vw, 4.4rem); }
+    .notes-home-page .hero-copy { width: 100%; max-width: none; margin-inline: auto; text-align: center; }
+    .notes-home-page .hero-copy h1 { width: 100%; max-width: 100%; margin-inline: auto; text-align: center; font-size: clamp(2.55rem, 9vw, 4.4rem); }
     .notes-home-page .hero-cta-panel { max-width: none; width: fit-content; margin: 0 auto; justify-content: center; }
     .notes-home-page .hero-cta-panel > p { max-width: 430px; }
     .notes-features-carousel { overflow: hidden; }
