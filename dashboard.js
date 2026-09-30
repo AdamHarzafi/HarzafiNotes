@@ -226,7 +226,7 @@ function caricaAppunti(materia) {
 
             let deleteBtnHTML = isNotesAdmin() ? `<button class="btn-delete" onclick="eliminaFile('${docId}', event)">Elimina</button>` : '';
 
-            let visualMedia = `<div class="note-icon ${iconClass}" style="margin-bottom:15px; width:100%; transition:transform 0.2s; font-size:28px;" ${currentItemMediaIndex !== -1 ? `onclick="apriMediaViewer(${currentItemMediaIndex}, event)" style="cursor:pointer;"` : ''}>${icon}</div>`;
+            let visualMedia = `<div class="note-icon ${iconClass}" ${currentItemMediaIndex !== -1 ? `onclick="apriMediaViewer(${currentItemMediaIndex}, event)" style="cursor:pointer;"` : ''}>${icon}</div>`;
             if (isImage) visualMedia = `<img src="${data.urlFile}" class="img-preview" alt="${data.titolo}" onclick="apriMediaViewer(${currentItemMediaIndex}, event)" style="cursor:pointer; transition:transform 0.4s;" onmouseover="this.style.transform='scale(1.03)'" onmouseout="this.style.transform='scale(1)'">`;
             else if (isVideo) visualMedia = `<video src="${data.urlFile}" preload="metadata" class="img-preview" style="cursor:pointer; background:#000; object-fit:cover;" onclick="apriMediaViewer(${currentItemMediaIndex}, event)"></video>`;
 
