@@ -14,7 +14,11 @@
     <link rel="stylesheet" href="fsl-base.css?v=20260928-notes">
     <link rel="stylesheet" href="modern.css?v=20260928-notes">
     <link rel="stylesheet" href="home-cards.css?v=20260928-notes">
-    <link rel="stylesheet" href="notes-theme.css?v=20260930-notes-extra-features">
+    <link rel="stylesheet" href="notes-theme.css?v=20260930-notes-home-carousel">
+    <link rel="stylesheet" href="carousel-motion.css?v=20260917-shared-motion">
+    <script defer src="carousel-player.js?v=20260917-shared-motion"></script>
+    <script defer src="home-carousel.js?v=20260930-notes-home-carousel"></script>
+    <script defer src="carousel-motion.js?v=20260917-shared-motion"></script>
     <script defer src="site-motion.js?v=20260928-notes"></script>
 </head>
 <body class="home-page notes-home-page">
@@ -57,8 +61,8 @@
                         <span class="apple-title-sub">Semplice da trovare. Facile da usare.</span>
                     </h2>
                 </div>
-                <div class="apple-features-carousel notes-features-carousel">
-                    <div class="apple-features-grid notes-features-grid" role="list" aria-label="Funzionalità di Harzafi Notes">
+                <div class="apple-features-carousel notes-features-carousel" id="notes-core-cards-shell">
+                    <div class="apple-features-grid notes-features-grid" id="notes-core-cards" tabindex="0" role="list" aria-label="Funzionalità di Harzafi Notes">
                         <article class="apple-card feature-card feature-card--progress notes-feature-card" role="listitem">
                             <div class="apple-card-top">
                                 <span class="apple-card-eyebrow">TUTTO IN ORDINE</span>
@@ -92,6 +96,17 @@
                             </div>
                         </article>
                     </div>
+                    <div class="carousel-player notes-feature-player" id="notes-core-cards-player" style="--carousel-duration:6500ms;" aria-label="Riproduzione automatica delle funzionalità principali" hidden>
+                        <div class="carousel-timeline" role="group" aria-label="Scegli una funzionalità">
+                            <button type="button" class="carousel-timeline-step is-active" aria-label="Ogni materia, al suo posto" aria-controls="notes-core-cards" aria-current="true"></button>
+                            <button type="button" class="carousel-timeline-step" aria-label="Apri i tuoi file ovunque" aria-controls="notes-core-cards" aria-current="false"></button>
+                            <button type="button" class="carousel-timeline-step" aria-label="La classe studia insieme" aria-controls="notes-core-cards" aria-current="false"></button>
+                        </div>
+                        <button type="button" class="carousel-play-toggle" aria-label="Metti in pausa il carosello" aria-pressed="false" aria-controls="notes-core-cards">
+                            <span class="carousel-pause-symbol" aria-hidden="true"><i></i><i></i></span>
+                            <svg class="carousel-play-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5 19 12 8 18.5Z" fill="currentColor"/></svg>
+                        </button>
+                    </div>
                 </div>
                 <section class="notes-extra-features" aria-labelledby="notes-extra-features-title">
                     <div class="apple-features-header notes-extra-features-header">
@@ -100,8 +115,8 @@
                             <span class="apple-title-sub">Trova. Salva. Ritrova.</span>
                         </h2>
                     </div>
-                    <div class="apple-features-carousel notes-features-carousel">
-                        <div class="apple-features-grid notes-features-grid" role="list" aria-label="Strumenti per studiare con Harzafi Notes">
+                    <div class="apple-features-carousel notes-features-carousel" id="notes-extra-cards-shell">
+                        <div class="apple-features-grid notes-features-grid" id="notes-extra-cards" tabindex="0" role="list" aria-label="Strumenti per studiare con Harzafi Notes">
                             <article class="apple-card feature-card feature-card--search notes-feature-card" role="listitem">
                                 <div class="apple-card-top">
                                     <span class="apple-card-eyebrow">RICERCA RAPIDA</span>
@@ -147,6 +162,17 @@
                                     </div>
                                 </div>
                             </article>
+                        </div>
+                        <div class="carousel-player notes-feature-player" id="notes-extra-cards-player" style="--carousel-duration:6500ms;" aria-label="Riproduzione automatica degli strumenti di studio" hidden>
+                            <div class="carousel-timeline" role="group" aria-label="Scegli uno strumento">
+                                <button type="button" class="carousel-timeline-step is-active" aria-label="La lezione giusta, subito" aria-controls="notes-extra-cards" aria-current="true"></button>
+                                <button type="button" class="carousel-timeline-step" aria-label="Tienili a portata di mano" aria-controls="notes-extra-cards" aria-current="false"></button>
+                                <button type="button" class="carousel-timeline-step" aria-label="Le novità si fanno notare" aria-controls="notes-extra-cards" aria-current="false"></button>
+                            </div>
+                            <button type="button" class="carousel-play-toggle" aria-label="Metti in pausa il carosello" aria-pressed="false" aria-controls="notes-extra-cards">
+                                <span class="carousel-pause-symbol" aria-hidden="true"><i></i><i></i></span>
+                                <svg class="carousel-play-symbol" viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5 19 12 8 18.5Z" fill="currentColor"/></svg>
+                            </button>
                         </div>
                     </div>
                 </section>

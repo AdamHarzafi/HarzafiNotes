@@ -49,6 +49,7 @@ body.notes-home-page {
 .notes-home-page .hero-cta-panel .hero-discover { order: 2; }
 
 .notes-features-section { padding-top: clamp(70px, 9vw, 120px); }
+.notes-home-page .apple-features-section { margin-bottom: clamp(24px, 4vw, 40px); }
 .notes-features-section .apple-features-header { text-align: left; }
 .notes-features-section .apple-features-title { text-align: left; }
 .notes-features-carousel { overflow: visible; }
@@ -87,8 +88,8 @@ body.notes-home-page {
 .cloud-caption { color: #6e6e73; font-size: .74rem; font-weight: 600; }
 
 .notes-extra-features {
-    margin-top: clamp(76px, 9vw, 118px);
-    padding-top: clamp(36px, 5vw, 58px);
+    margin-top: clamp(44px, 6vw, 76px);
+    padding-top: clamp(24px, 3.2vw, 38px);
     border-top: 1px solid rgba(29, 29, 31, .07);
 }
 
@@ -174,11 +175,11 @@ body.notes-home-page {
 .notes-recent-row em { padding: 4px 7px; border-radius: 999px; background: #e7f6ef; color: #28785f; font-size: .5rem; font-style: normal; font-weight: 700; }
 .notes-recent-row .notes-recent-tag--old { background: #f1f2f4; color: #777780; }
 
-.notes-final-cta { width: min(100% - 40px, 1000px); margin: clamp(90px, 12vw, 150px) auto 0; padding: clamp(36px, 6vw, 76px); border: 1px solid rgba(29, 29, 31, .06); border-radius: 32px; background: #f5f5f7; text-align: center; }
+.notes-final-cta { width: min(100% - 40px, 1000px); margin: clamp(48px, 5vw, 72px) auto 0; padding: clamp(36px, 6vw, 76px); border: 1px solid rgba(29, 29, 31, .06); border-radius: 32px; background: #f5f5f7; text-align: center; }
 .notes-final-eyebrow { margin-bottom: 12px; color: #6e6e73; font-size: .8rem; font-weight: 650; letter-spacing: .08em; text-transform: uppercase; }
 .notes-final-cta h2 { margin-bottom: 24px; color: #1d1d1f; font-size: clamp(2rem, 5vw, 3.4rem); font-weight: 650; letter-spacing: -.055em; line-height: 1.02; }
 .notes-final-cta .btn-premium { min-height: 46px; padding: 0 20px; gap: 9px; border-radius: 999px; background: #0071e3; color: #fff; text-decoration: none; font-size: .9rem; font-weight: 600; }
-.notes-footer { margin-top: clamp(100px, 14vw, 180px); }
+.notes-footer { margin-top: clamp(24px, 3.5vw, 44px); }
 .notes-footer .harzafi-footer-main { grid-template-columns: minmax(0,1.2fr) minmax(260px,.8fr); }
 
 /* Login Notes usa il pannello scuro e la gerarchia di Harzafi FSL. */
@@ -328,7 +329,7 @@ body.notes-home-page {
     .notes-home-page .hero-cta-panel > p { margin: 2px 10px 6px; font-size: .8rem; }
     .notes-home-page .hero-cta-panel a { min-height: 40px; font-size: .82rem; }
     .notes-features-section { padding-right: 0; padding-left: 0; }
-    .notes-extra-features { margin-top: 65px; padding-top: 30px; }
+    .notes-extra-features { margin-top: 40px; padding-top: 22px; }
     .notes-features-section .apple-features-header { padding: 0 22px; }
     .notes-features-section .apple-features-title { font-size: clamp(2rem, 9vw, 2.7rem); }
     .notes-extra-features-header { padding: 0 22px; }
