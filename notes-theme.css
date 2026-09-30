@@ -28,107 +28,15 @@ body.notes-home-page {
 .notes-hero-stage {
     display: grid;
     place-items: center;
-    perspective: 1200px;
 }
 
 .notes-hero-art {
-    position: relative;
-    width: min(100%, 700px);
-    height: min(54vw, 430px);
-    min-height: 300px;
-    display: grid;
-    place-items: center;
-    isolation: isolate;
-}
-
-.notes-art-orbit {
-    position: absolute;
-    z-index: -1;
-    left: 50%;
-    top: 51%;
-    border: 1px solid rgba(71, 85, 105, .12);
-    border-radius: 50%;
-    transform: translate(-50%, -50%) rotate(-9deg);
-}
-
-.notes-art-orbit-one { width: 100%; height: 72%; }
-.notes-art-orbit-two { width: 82%; height: 53%; transform: translate(-50%, -50%) rotate(11deg); opacity: .7; }
-
-.notes-paper {
-    position: absolute;
-    width: clamp(235px, 36vw, 330px);
-    height: clamp(315px, 42vw, 390px);
-    padding: 30px;
-    border: 1px solid rgba(255, 255, 255, .85);
-    border-radius: 27px;
-    box-shadow: 0 28px 70px rgba(30, 41, 59, .16), inset 0 1px 0 rgba(255, 255, 255, .8);
-}
-
-.notes-paper-back {
-    z-index: 1;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    padding-top: 38px;
-    color: #6e6e73;
-    background: linear-gradient(145deg, rgba(255,255,255,.92), rgba(239,242,248,.94));
-    transform: translate(96px, -2px) rotate(9deg);
-}
-
-.notes-paper-back span {
-    margin-bottom: 13px;
-    color: #4b5563;
-    font-size: 13px;
-    font-weight: 650;
-}
-
-.notes-paper-back i,
-.notes-paper-lines i {
-    display: block;
-    height: 7px;
-    border-radius: 99px;
-    background: #e3e8f0;
-}
-
-.notes-paper-back i:nth-of-type(2) { width: 81%; }
-.notes-paper-back i:nth-of-type(3) { width: 65%; }
-
-.notes-paper-front {
-    z-index: 2;
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    overflow: hidden;
-    background:
-        radial-gradient(circle at 90% 5%, rgba(10, 132, 255, .12), transparent 35%),
-        linear-gradient(155deg, #fff 5%, #f5f8fd 100%);
-    transform: translate(-86px, 12px) rotate(-7deg);
-    animation: notes-cover-float 6s ease-in-out infinite;
-}
-
-.notes-paper-mark {
-    width: 56px;
-    height: 56px;
-    display: grid;
-    place-items: center;
-    margin: 4px 0 24px;
-    border: 1px solid rgba(0, 113, 227, .1);
-    border-radius: 18px;
-    background: rgba(255,255,255,.9);
-    box-shadow: 0 9px 24px rgba(0, 113, 227, .1);
-}
-
-.notes-paper-mark img { width: 42px; height: 25px; object-fit: contain; }
-.notes-paper-front strong { color: #1d1d1f; font-size: 36px; line-height: .97; font-weight: 650; letter-spacing: -.065em; }
-.notes-paper-front > span { margin-top: 12px; color: #6e6e73; font-size: 12px; font-weight: 550; }
-.notes-paper-lines { display: grid; width: 100%; gap: 10px; margin-top: 30px; }
-.notes-paper-lines i { height: 6px; background: #e6ebf2; }
-.notes-paper-lines i:nth-child(2) { width: 83%; }
-.notes-paper-lines i:nth-child(3) { width: 63%; }
-
-@keyframes notes-cover-float {
-    0%, 100% { translate: 0 5px; }
-    50% { translate: 0 -8px; }
+    width: min(100%, 1120px);
+    height: min(70vh, 680px);
+    background-image: url("IMMAGINI/Mockup%20del%20tablet%20Harzafi%20Airways.png");
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
 }
 
 .notes-home-page .hero-copy { max-width: 700px; }
@@ -263,10 +171,12 @@ body.notes-home-page {
 @media (max-width: 900px) {
     .notes-home-page .hero-wrapper { min-height: 0; }
     .notes-home-page .hero-shell { min-height: 0; padding-top: 84px; grid-template-rows: minmax(320px, 48vh) auto; gap: 14px; }
-    .notes-hero-art { width: 100%; height: 100%; min-height: 300px; }
-    .notes-paper { width: clamp(215px, 50vw, 285px); height: clamp(290px, 60vw, 355px); }
-    .notes-paper-back { transform: translate(60px, 0) rotate(8deg); }
-    .notes-paper-front { transform: translate(-53px, 10px) rotate(-6deg); }
+    .notes-hero-art { width: min(100%, 840px); height: auto; aspect-ratio: 1.65; }
+}
+
+@media (max-width: 760px) {
+    .notes-hero-stage { min-height: clamp(300px, 56vw, 425px); }
+    .notes-hero-art { width: 100%; }
     .notes-home-page .hero-copy-row { display: grid; gap: 20px; text-align: center; }
     .notes-home-page .hero-copy { max-width: none; }
     .notes-home-page .hero-copy h1 { font-size: clamp(2.55rem, 9vw, 4.4rem); }
@@ -288,10 +198,6 @@ body.notes-home-page {
 @media (max-width: 600px) {
     .notes-home-page .hero-shell { padding: 75px 18px 34px; grid-template-rows: minmax(285px, 41vh) auto; gap: 10px; }
     .notes-hero-stage { min-height: 285px; }
-    .notes-paper { width: 215px; height: 285px; padding: 23px; border-radius: 23px; }
-    .notes-paper-back { transform: translate(42px, 0) rotate(8deg); }
-    .notes-paper-front { transform: translate(-38px, 7px) rotate(-6deg); }
-    .notes-paper-front strong { font-size: 31px; }
     .notes-home-page .hero-copy h1 { font-size: clamp(2.5rem, 11vw, 3.5rem); }
     .notes-home-page .hero-cta-panel { padding: 5px; }
     .notes-home-page .hero-cta-panel > p { margin: 2px 10px 6px; font-size: .8rem; }
@@ -323,8 +229,4 @@ body.notes-home-page {
     .dashboard-page .note-card { padding: 17px; border-radius: 17px; }
     .dashboard-page .note-title { font-size: .96rem; }
     .dashboard-page .modal-content:not(#mediaViewerModal .modal-content) { width: calc(100% - 24px) !important; max-height: calc(100svh - 28px); overflow-y: auto; padding: 34px 20px 22px !important; border-radius: 23px !important; }
-}
-
-@media (prefers-reduced-motion: reduce) {
-    .notes-paper-front { animation: none; }
 }
